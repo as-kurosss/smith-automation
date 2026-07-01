@@ -9,4 +9,6 @@ serde_json.workspace = true
 smith-core = { version = "0.1.0", path = "../smith-core" }
 tokio.workspace = true
 tokio-util.workspace = true
+
+[target.'cfg(windows)'.dependencies]
 uiautomation = "0.25.0"

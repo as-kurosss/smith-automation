@@ -4,6 +4,7 @@ use chrono::Local;
 use clap::Parser;
 use ignore::gitignore::GitignoreBuilder;
 use std::collections::{BTreeMap, HashMap};
+use std::fmt::Write;
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
@@ -13,7 +14,7 @@ use walkdir::WalkDir;
 #[derive(Parser)]
 #[command(name = "smith-context")]
 #[command(about = "Collect project context into a single Markdown file")]
-#[allow(clippy::struct_excessive_bools)]
+#[allow(clippy::struct_excessive_bools)] // CLI flags are inherently boolean
 struct Cli {
     /// Root directory of the project
     #[arg(short, long, default_value = ".")]
@@ -31,7 +32,7 @@ struct Cli {
     #[arg(long)]
     graph: bool,
 
-    /// Include graphify-rs artifacts (graph.json, `GRAPH_REPORT.md`) if present
+    /// Include graphify-rs artifacts (`graph.json`, `GRAPH_REPORT.md`) if present
     #[arg(long)]
     graphify: bool,
 
@@ -148,7 +149,7 @@ fn main() -> Result<()> {
         if cli.no_graphify_build {
             println!("   ⏭️  Skipping graphify-rs build (--no-graphify-build)");
         } else {
-            let build_ok = run_graphify_build(&cli.root, &cli.graphify_dir)?;
+            let build_ok = run_graphify_build(&cli.root, &cli.graphify_dir);
             if !build_ok {
                 println!("      ⚠ Continuing with existing artifacts (if any)");
             }
@@ -190,7 +191,7 @@ fn main() -> Result<()> {
         git_log: git_log.as_deref(),
         todos: &todos,
     };
-    let markdown = format_markdown(&md_ctx)?;
+    let markdown = format_markdown(&md_ctx);
 
     // 11. Записываем в файл
     std::fs::write(&cli.output, &markdown)?;
@@ -284,9 +285,8 @@ fn collect_files(cli: &Cli) -> Result<Vec<FileEntry>> {
         }
 
         // Читаем содержимое (пропускаем если не UTF-8)
-        let content = match std::fs::read_to_string(path) {
-            Ok(c) => c,
-            Err(_) => continue,
+        let Ok(content) = std::fs::read_to_string(path) else {
+            continue;
         };
 
         // Нормализуем путь (Windows backslashes → forward slashes)
@@ -315,7 +315,7 @@ fn collect_files(cli: &Cli) -> Result<Vec<FileEntry>> {
 fn detect_language(path: &Path) -> &'static str {
     match path.extension().and_then(|e| e.to_str()) {
         Some("rs") => "rust",
-        Some("toml") => "toml",
+        Some("toml" | "lock") => "toml",
         Some("yaml" | "yml") => "yaml",
         Some("json") => "json",
         Some("md") => "markdown",
@@ -331,7 +331,6 @@ fn detect_language(path: &Path) -> &'static str {
         Some("ini" | "cfg") => "ini",
         Some("dockerfile") => "dockerfile",
         Some("gitignore") => "gitignore",
-        Some("lock") => "toml",
         _ => "text",
     }
 }
@@ -433,7 +432,7 @@ fn render_tree(node: &TreeNode, prefix: &str, output: &mut String) {
     for (i, child) in children.iter().enumerate() {
         let is_last = i == children.len() - 1;
         let connector = if is_last { "└── " } else { "├── " };
-        output.push_str(&format!("{}{}{}\n", prefix, connector, child.name));
+        let _ = writeln!(output, "{prefix}{connector}{}", child.name);
 
         if !child.is_file {
             let new_prefix = if is_last {
@@ -458,7 +457,12 @@ fn build_stats(files: &[FileEntry]) -> ProjectStats {
 
     for file in files {
         stats.total_lines += file.content.lines().count();
-        stats.total_bytes += file.size as usize;
+        // Для утилиты сбора контекста потеря точности на 32-бит допустима.
+        // Файлы >4GB всё равно фильтруются через max_file_size.
+        #[allow(clippy::cast_possible_truncation)]
+        {
+            stats.total_bytes += file.size as usize;
+        }
 
         *stats.languages.entry(file.language.clone()).or_insert(0) += 1;
 
@@ -550,12 +554,11 @@ fn load_graphify_artifacts(root: &Path, graphify_dir: &str) -> Result<GraphifyAr
     })
 }
 
-/// Запускает `graphify-rs build` для генерации артефактов
+/// Запускает `graphify-rs build` для генерации артефактов.
 ///
-/// Возвращает `Ok(true)` если сборка прошла успешно,
-/// `Ok(false)` если graphify-rs не установлен или сборка пропущена,
-/// `Err` если произошла критическая ошибка.
-fn run_graphify_build(root: &Path, graphify_dir: &str) -> Result<bool> {
+/// Возвращает `true` если сборка прошла успешно,
+/// `false` если graphify-rs не установлен или сборка пропущена.
+fn run_graphify_build(root: &Path, graphify_dir: &str) -> bool {
     println!("   🔨 Running: graphify-rs build --no-llm --output ./{graphify_dir}");
 
     // Проверяем, установлен ли graphify-rs
@@ -570,17 +573,17 @@ fn run_graphify_build(root: &Path, graphify_dir: &str) -> Result<bool> {
         }
         Ok(_) => {
             println!("      ⚠ graphify-rs returned error on --version, skipping build");
-            return Ok(false);
+            return false;
         }
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
             println!("      ⚠ graphify-rs not found in PATH");
             println!("        Install with: cargo install graphify-rs");
             println!("        Skipping build, will use existing artifacts if present");
-            return Ok(false);
+            return false;
         }
         Err(e) => {
             println!("      ⚠ Failed to check graphify-rs: {e}");
-            return Ok(false);
+            return false;
         }
     }
 
@@ -602,18 +605,18 @@ fn run_graphify_build(root: &Path, graphify_dir: &str) -> Result<bool> {
                 "      ✓ Graph built successfully in {:.2}s",
                 elapsed.as_secs_f64()
             );
-            Ok(true)
+            true
         }
         Ok(s) => {
             println!(
                 "      ⚠ graphify-rs build failed with exit code: {:?}",
                 s.code()
             );
-            Ok(false)
+            false
         }
         Err(e) => {
             println!("      ⚠ Failed to run graphify-rs build: {e}");
-            Ok(false)
+            false
         }
     }
 }
@@ -643,12 +646,13 @@ fn build_graph(root: &Path) -> Result<String> {
         for package in packages {
             let name = package["name"].as_str().unwrap_or("unknown");
             let version = package["version"].as_str().unwrap_or("0.0.0");
-            graph.push_str(&format!(
-                "    {}[\"{} v{}\"]\n",
+            let _ = writeln!(
+                graph,
+                "    {}[\"{} v{}\"]",
                 name.replace('-', "_"),
                 name,
                 version
-            ));
+            );
         }
 
         // Рендерим рёбра (зависимости между workspace crates)
@@ -662,11 +666,12 @@ fn build_graph(root: &Path) -> Result<String> {
                         .iter()
                         .any(|p| p["name"].as_str() == Some(dep_name));
                     if is_workspace_dep {
-                        graph.push_str(&format!(
-                            "    {} --> {}\n",
+                        let _ = writeln!(
+                            graph,
+                            "    {} --> {}",
                             name.replace('-', "_"),
                             dep_name.replace('-', "_")
-                        ));
+                        );
                     }
                 }
             }
@@ -714,13 +719,14 @@ fn build_env_info() -> Result<String> {
     };
 
     let mut info = String::new();
-    info.push_str(&format!("- **Rust:** {rust_version}\n"));
-    info.push_str(&format!(
-        "- **OS:** {} {}\n",
+    let _ = writeln!(info, "- **Rust:** {rust_version}");
+    let _ = writeln!(
+        info,
+        "- **OS:** {} {}",
         std::env::consts::OS,
         std::env::consts::ARCH
-    ));
-    info.push_str(&format!("- **Family:** {}\n", std::env::consts::FAMILY));
+    );
+    let _ = writeln!(info, "- **Family:** {}", std::env::consts::FAMILY);
 
     Ok(info)
 }
@@ -737,25 +743,23 @@ fn read_workspace_cargo(root: &Path) -> Result<Option<String>> {
 }
 
 /// Форматирует собранный контекст проекта в Markdown.
-fn format_markdown(ctx: &MarkdownContext) -> Result<String> {
+fn format_markdown(ctx: &MarkdownContext) -> String {
     let mut md = String::new();
 
     // Header
     md.push_str("# 📦 Project Context\n\n");
-    md.push_str(&format!(
+    let _ = write!(
+        md,
         "*Generated on {}*\n\n",
         Local::now().format("%Y-%m-%d %H:%M:%S")
-    ));
+    );
 
     // Statistics
     md.push_str("## 📊 Statistics\n\n");
-    md.push_str(&format!("- **Total files:** {}\n", ctx.stats.total_files));
-    md.push_str(&format!("- **Total lines:** {}\n", ctx.stats.total_lines));
-    md.push_str(&format!(
-        "- **Total size:** {} bytes\n",
-        ctx.stats.total_bytes
-    ));
-    md.push_str(&format!("- **Crates:** {}\n", ctx.stats.crates.len()));
+    let _ = writeln!(md, "- **Total files:** {}", ctx.stats.total_files);
+    let _ = writeln!(md, "- **Total lines:** {}", ctx.stats.total_lines);
+    let _ = writeln!(md, "- **Total size:** {} bytes", ctx.stats.total_bytes);
+    let _ = writeln!(md, "- **Crates:** {}", ctx.stats.crates.len());
     md.push('\n');
 
     // Environment
@@ -767,7 +771,7 @@ fn format_markdown(ctx: &MarkdownContext) -> Result<String> {
     if !ctx.stats.crates.is_empty() {
         md.push_str("## 📦 Workspace Crates\n\n");
         for crate_name in &ctx.stats.crates {
-            md.push_str(&format!("- `{crate_name}`\n"));
+            let _ = writeln!(md, "- `{crate_name}`");
         }
         md.push('\n');
     }
@@ -778,7 +782,7 @@ fn format_markdown(ctx: &MarkdownContext) -> Result<String> {
         let mut langs: Vec<_> = ctx.stats.languages.iter().collect();
         langs.sort_by(|a, b| b.1.cmp(a.1));
         for (lang, count) in langs {
-            md.push_str(&format!("- **{lang}:** {count} files\n"));
+            let _ = writeln!(md, "- **{lang}:** {count} files");
         }
         md.push('\n');
     }
@@ -799,7 +803,7 @@ fn format_markdown(ctx: &MarkdownContext) -> Result<String> {
     md.push_str(ctx.tree);
     md.push('\n');
 
-    // Dependency graph
+    // Dependency graph (cargo metadata)
     if let Some(graph) = ctx.graph {
         md.push_str("## 🔗 Dependency Graph (Cargo Metadata)\n\n");
         md.push_str(graph);
@@ -841,16 +845,17 @@ fn format_markdown(ctx: &MarkdownContext) -> Result<String> {
     if !ctx.todos.is_empty() {
         md.push_str("## 📝 TODOs and FIXMEs\n\n");
         for (file, line, content) in ctx.todos {
-            md.push_str(&format!("- **{file}:{line}** — `{content}`\n"));
+            let _ = writeln!(md, "- **{file}:{line}** — `{content}`");
         }
         md.push('\n');
     }
 
     // Source files
     md.push_str("## 📄 Source Files\n\n");
+
     for file in ctx.files {
-        md.push_str(&format!("### `{}`\n\n", file.relative_path));
-        md.push_str(&format!("```{}\n", file.language));
+        let _ = write!(md, "### `{}`\n\n", file.relative_path);
+        let _ = writeln!(md, "```{}", file.language);
         md.push_str(&file.content);
         if !file.content.ends_with('\n') {
             md.push('\n');
@@ -858,5 +863,5 @@ fn format_markdown(ctx: &MarkdownContext) -> Result<String> {
         md.push_str("```\n\n");
     }
 
-    Ok(md)
+    md
 }
