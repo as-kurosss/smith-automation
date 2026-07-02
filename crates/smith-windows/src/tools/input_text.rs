@@ -116,12 +116,18 @@ impl Tool for InputTextTool {
                     selector = selector.class_name(cn);
                 }
 
-                let element = tokio::task::spawn_blocking(move || selector.find_from_desktop())
-                    .await
-                    .map_err(|e| SmithError::PlatformError(format!("Blocking task join: {e}")))?
-                    .map_err(|e| SmithError::PlatformError(format!("Find element: {e}")))?;
+                let safe_element = tokio::task::spawn_blocking(move || {
+                    selector
+                        .find_from_desktop()
+                        .map(SafeUIElement::new)
+                })
+                .await
+                .map_err(|e| SmithError::PlatformWithCause {
+                    message: "Find element blocking task failed".into(),
+                    source: Box::new(e),
+                })??;
 
-                Some(SafeUIElement::new(element))
+                Some(safe_element)
             } else {
                 None
             };
@@ -133,26 +139,44 @@ impl Tool for InputTextTool {
                 element
                     .inner()
                     .set_focus()
-                    .map_err(|e| SmithError::PlatformError(format!("Set focus failed: {e}")))?;
+                    .map_err(|e| SmithError::PlatformWithCause {
+                        message: "Set focus failed".into(),
+                        source: Box::new(e),
+                    })?;
                 std::thread::sleep(std::time::Duration::from_millis(100));
                 element
                     .inner()
                     .send_keys(&text, 0)
-                    .map_err(|e| SmithError::PlatformError(format!("send_keys failed: {e}")))?;
+                    .map_err(|e| SmithError::PlatformWithCause {
+                        message: "send_keys failed".into(),
+                        source: Box::new(e),
+                    })?;
             } else {
                 // Просто вводим текст в активное окно через корневой элемент
                 let automation = uiautomation::core::UIAutomation::new()
-                    .map_err(|e| SmithError::PlatformError(format!("UIAutomation init: {e}")))?;
+                    .map_err(|e| SmithError::PlatformWithCause {
+                        message: "UIAutomation init failed".into(),
+                        source: Box::new(e),
+                    })?;
                 let root = automation
                     .get_root_element()
-                    .map_err(|e| SmithError::PlatformError(format!("Get root: {e}")))?;
+                    .map_err(|e| SmithError::PlatformWithCause {
+                        message: "Get root element failed".into(),
+                        source: Box::new(e),
+                    })?;
                 root.send_keys(&text, 0)
-                    .map_err(|e| SmithError::PlatformError(format!("send_keys failed: {e}")))?;
+                    .map_err(|e| SmithError::PlatformWithCause {
+                        message: "send_keys failed".into(),
+                        source: Box::new(e),
+                    })?;
             }
             Ok::<_, SmithError>(())
         })
         .await
-        .map_err(|_| SmithError::PlatformError("Blocking task join failed".into()))??;
+        .map_err(|e| SmithError::PlatformWithCause {
+            message: "Input text blocking task join failed".into(),
+            source: Box::new(e),
+        })??;
 
         Ok(json!({ "status": "input_sent" }))
     }

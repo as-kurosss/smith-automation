@@ -10,14 +10,20 @@ smith-automation/
 │   │   │   ├── lib.rs       # Публичный API (flat re-exports)
 │   │   │   ├── tool.rs      # Trait Tool, типы ToolConfig/ToolResult
 │   │   │   ├── context.rs   # ExecutionContext, ContextValue
+│   │   │   ├── registry.rs  # ToolRegistry
 │   │   │   └── error.rs     # SmithError, SmithResult
 │   │   └── Cargo.toml
-│   └── smith-windows/       # Windows UI automation
+│   ├── smith-windows/       # Windows UI automation
+│   │   ├── src/
+│   │   │   ├── lib.rs       # Реэкспорт под cfg(windows)
+│   │   │   ├── tools/mod.rs # Модуль инструментов
+│   │   │   ├── tools/       # Реализации инструментов
+│   │   │   ├── selector.rs  # ElementSelector
+│   │   │   └── element.rs   # SafeUIElement
+│   │   └── Cargo.toml
+│   └── smith-daemon/        # HTTP daemon
 │       ├── src/
-│       │   ├── lib.rs       # Реэкспорт под cfg(windows)
-│       │   ├── tools/mod.rs # Модуль инструментов
-│       │   ├── tools/click.rs # ClickTool
-│       │   └── element.rs   # SafeUIElement
+│       │   └── main.rs      # axum-сервер smithd
 │       └── Cargo.toml
 ├── apps/
 │   └── smith-context/       # Утилита сбора контекста (отдельная)
@@ -62,13 +68,16 @@ pub trait Tool: Send + Sync {
 - **CancellationToken** — поддержка graceful shutdown и timeout.
 - **ToolConfig/ToolResult** — тип `serde_json::Value` (гибкий транспорт).
 
-### ToolRegistry (планируется)
+### ToolRegistry
 
-На данный момент инструменты регистрируются статически. В будущем возможна динамическая загрузка через библиотеки (см. ADR-0001). Registry будет предоставлять:
+Реализован в `crates/smith-core/src/registry.rs`. Инструменты регистрируются статически (`HashMap<&str, Box<dyn Tool>>`). Предоставляет:
 
-- Регистрацию инструментов по имени.
-- Поиск и валидацию схемы перед выполнением.
-- Централизованный execute с единой обработкой ошибок и метрик.
+- Регистрацию инструментов по имени (`register`).
+- Поиск инструмента (`get`).
+- Централизованный `execute` с единой обработкой ошибок.
+- Список доступных инструментов (`list_tools`).
+
+Динамическая загрузка через библиотеки отложена (см. ADR-0001).
 
 ## ExecutionContext and scoped variables
 
@@ -139,6 +148,15 @@ uiautomation = "0.25.0"
 ```
 
 Библиотека `uiautomation` (и транзитивные зависимости через `windows`) загружаются только при сборке под Windows.
+
+### smith-daemon
+
+HTTP-сервер `smithd` (`crates/smith-daemon`) предоставляет удалённый доступ к инструментам:
+
+- Запускается на Windows и регистрирует все `smith-windows` инструменты.
+- Слушает на настраиваемом host/port (`--host`, `--port`, по умолчанию `127.0.0.1:8742`).
+- Endpoints: `POST /execute`, `GET /tools`, `GET /health`, `POST /reset`.
+- Позволяет управлять Windows UI из WSL или другого клиента по HTTP.
 
 ### 3. Планы на будущее
 

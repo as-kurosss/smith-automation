@@ -115,12 +115,18 @@ impl Tool for SetTextTool {
                     selector = selector.class_name(cn);
                 }
 
-                let ui_element = tokio::task::spawn_blocking(move || selector.find_from_desktop())
-                    .await
-                    .map_err(|e| SmithError::PlatformError(format!("Blocking task join: {e}")))?
-                    .map_err(|e| SmithError::PlatformError(format!("Find element: {e}")))?;
+                let safe_element = tokio::task::spawn_blocking(move || {
+                    selector
+                        .find_from_desktop()
+                        .map(SafeUIElement::new)
+                })
+                .await
+                .map_err(|e| SmithError::PlatformWithCause {
+                    message: "Find element blocking task failed".into(),
+                    source: Box::new(e),
+                })??;
 
-                SafeUIElement::new(ui_element)
+                safe_element
             };
 
         // 3. Устанавливаем текст через ValuePattern в блокирующем потоке
@@ -128,14 +134,23 @@ impl Tool for SetTextTool {
             let pattern = element
                 .inner()
                 .get_pattern::<uiautomation::patterns::UIValuePattern>()
-                .map_err(|e| SmithError::PlatformError(format!("Get ValuePattern failed: {e}")))?;
+                .map_err(|e| SmithError::PlatformWithCause {
+                    message: "Get ValuePattern failed".into(),
+                    source: Box::new(e),
+                })?;
             pattern
                 .set_value(&text)
-                .map_err(|e| SmithError::PlatformError(format!("Set value failed: {e}")))?;
+                .map_err(|e| SmithError::PlatformWithCause {
+                    message: "Set value failed".into(),
+                    source: Box::new(e),
+                })?;
             Ok::<_, SmithError>(())
         })
         .await
-        .map_err(|_| SmithError::PlatformError("Blocking task join failed".into()))??;
+        .map_err(|e| SmithError::PlatformWithCause {
+            message: "Set text blocking task join failed".into(),
+            source: Box::new(e),
+        })??;
 
         Ok(json!({ "status": "text_set" }))
     }

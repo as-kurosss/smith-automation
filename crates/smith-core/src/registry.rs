@@ -35,8 +35,8 @@ impl ToolRegistry {
     pub fn get(&self, name: &str) -> SmithResult<&dyn Tool> {
         self.tools
             .get(name)
-            .map(|boxed| boxed.as_ref())
-            .ok_or_else(|| SmithError::InvalidParams(format!("Tool '{}' not found", name)))
+            .map(AsRef::as_ref)
+            .ok_or_else(|| SmithError::InvalidParams(format!("Tool '{name}' not found")))
     }
 
     /// Выполняет инструмент по имени с переданными параметрами.

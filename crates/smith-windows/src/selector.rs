@@ -1,10 +1,7 @@
 // crates/smith-windows/src/selector.rs
-use std::time::Duration;
-
-use uiautomation::core::UIAutomation;
+use uiautomation::core::{UIAutomation, UICondition, UIElement};
 use uiautomation::types::{ControlType, PropertyConditionFlags, TreeScope, UIProperty};
 use uiautomation::variants::Variant;
-use uiautomation::{Condition, UIElement};
 
 use smith_core::SmithError;
 
@@ -18,7 +15,6 @@ pub struct ElementSelector {
     automation_id: Option<String>,
     control_type: Option<String>,
     class_name: Option<String>,
-    timeout: Duration,
 }
 
 impl Default for ElementSelector {
@@ -29,7 +25,6 @@ impl Default for ElementSelector {
             automation_id: None,
             control_type: None,
             class_name: None,
-            timeout: Duration::from_secs(5),
         }
     }
 }
@@ -76,30 +71,23 @@ impl ElementSelector {
         self
     }
 
-    /// Sets the maximum wait time for element discovery.
-    #[must_use]
-    pub fn timeout(mut self, timeout: Duration) -> Self {
-        self.timeout = timeout;
-        self
-    }
-
-    /// Builds a `UICondition` from the set fields.
+    /// Builds a `UICondition` from the set fields using an existing `UIAutomation` instance.
     ///
-    /// Returns `None` if no selectors are set (match everything).
-    fn build_condition(&self) -> Result<Condition, SmithError> {
-        let automation = UIAutomation::new()
-            .map_err(|e| SmithError::PlatformError(format!("UIAutomation init: {e}")))?;
-
-        let mut conditions: Vec<Condition> = Vec::new();
+    /// This avoids creating a new COM initialization on each call.
+    fn build_condition_with(&self, automation: &UIAutomation) -> Result<UICondition, SmithError> {
+        let mut conditions: Vec<UICondition> = Vec::new();
 
         if let Some(ref name) = self.name {
             let cond = automation
                 .create_property_condition(
                     UIProperty::Name,
                     Variant::from(name.as_str()),
-                    PropertyConditionFlags::None,
+                    Some(PropertyConditionFlags::None),
                 )
-                .map_err(|e| SmithError::PlatformError(format!("Name property condition: {e}")))?;
+                .map_err(|e| SmithError::PlatformWithCause {
+                    message: "Name property condition failed".into(),
+                    source: Box::new(e),
+                })?;
             conditions.push(cond);
         }
 
@@ -108,10 +96,11 @@ impl ElementSelector {
                 .create_property_condition(
                     UIProperty::AutomationId,
                     Variant::from(aid.as_str()),
-                    PropertyConditionFlags::None,
+                    Some(PropertyConditionFlags::None),
                 )
-                .map_err(|e| {
-                    SmithError::PlatformError(format!("AutomationId property condition: {e}"))
+                .map_err(|e| SmithError::PlatformWithCause {
+                    message: "AutomationId property condition failed".into(),
+                    source: Box::new(e),
                 })?;
             conditions.push(cond);
         }
@@ -122,11 +111,12 @@ impl ElementSelector {
                     .create_property_condition(
                         UIProperty::ControlType,
                         Variant::from(ct_value as i32),
-                        PropertyConditionFlags::None,
+                        Some(PropertyConditionFlags::None),
                     )
-                    .map_err(|e| {
-                        SmithError::PlatformError(format!("ControlType property condition: {e}"))
-                    })?;
+                .map_err(|e| SmithError::PlatformWithCause {
+                    message: "ControlType property condition failed".into(),
+                    source: Box::new(e),
+                })?;
                 conditions.push(cond);
             }
         }
@@ -136,10 +126,11 @@ impl ElementSelector {
                 .create_property_condition(
                     UIProperty::ClassName,
                     Variant::from(cn.as_str()),
-                    PropertyConditionFlags::None,
+                    Some(PropertyConditionFlags::None),
                 )
-                .map_err(|e| {
-                    SmithError::PlatformError(format!("ClassName property condition: {e}"))
+                .map_err(|e| SmithError::PlatformWithCause {
+                    message: "ClassName property condition failed".into(),
+                    source: Box::new(e),
                 })?;
             conditions.push(cond);
         }
@@ -149,10 +140,11 @@ impl ElementSelector {
                 .create_property_condition(
                     UIProperty::ProcessId,
                     Variant::from(pid as i32),
-                    PropertyConditionFlags::None,
+                    Some(PropertyConditionFlags::None),
                 )
-                .map_err(|e| {
-                    SmithError::PlatformError(format!("ProcessId property condition: {e}"))
+                .map_err(|e| SmithError::PlatformWithCause {
+                    message: "ProcessId property condition failed".into(),
+                    source: Box::new(e),
                 })?;
             conditions.push(cond);
         }
@@ -160,15 +152,22 @@ impl ElementSelector {
         if conditions.is_empty() {
             return automation
                 .create_true_condition()
-                .map_err(|e| SmithError::PlatformError(format!("True condition: {e}")));
+                .map_err(|e| SmithError::PlatformWithCause {
+                    message: "True condition creation failed".into(),
+                    source: Box::new(e),
+                });
         }
 
+        // SAFETY: conditions.is_empty() was checked above, so iter has at least one element.
         let mut iter = conditions.into_iter();
-        let first = iter.next().unwrap();
+        let first = iter.next().expect("conditions is non-empty at this point");
         let result = iter.try_fold(first, |acc, cond| {
             automation
                 .create_and_condition(acc, cond)
-                .map_err(|e| SmithError::PlatformError(format!("And condition: {e}")))
+                .map_err(|e| SmithError::PlatformWithCause {
+                    message: "And condition creation failed".into(),
+                    source: Box::new(e),
+                })
         })?;
 
         Ok(result)
@@ -179,31 +178,43 @@ impl ElementSelector {
     /// # Errors
     ///
     /// Returns `SmithError::ElementNotFound` if no element matches.
-    pub fn find_first(&self, root: &UIElement) -> Result<UIElement, SmithError> {
-        let condition = self.build_condition()?;
+    pub fn find_first(&self, root: &UIElement, automation: &UIAutomation) -> Result<UIElement, SmithError> {
+        let condition = self.build_condition_with(automation)?;
         root.find_first(TreeScope::Descendants, &condition)
             .map_err(|_| SmithError::ElementNotFound)
     }
 
     /// Finds all matching elements under `root`.
-    pub fn find_all(&self, root: &UIElement) -> Result<Vec<UIElement>, SmithError> {
-        let condition = self.build_condition()?;
+    pub fn find_all(&self, root: &UIElement, automation: &UIAutomation) -> Result<Vec<UIElement>, SmithError> {
+        let condition = self.build_condition_with(automation)?;
         root.find_all(TreeScope::Descendants, &condition)
-            .map_err(|e| SmithError::PlatformError(format!("Find all failed: {e}")))
+            .map_err(|e| SmithError::PlatformWithCause {
+                message: "Find all failed".into(),
+                source: Box::new(e),
+            })
     }
 
     /// Finds the first matching element starting from the desktop root.
+    ///
+    /// Uses a single `UIAutomation` instance for both the condition and root element
+    /// to avoid redundant COM initialization.
     ///
     /// # Errors
     ///
     /// Returns `SmithError::ElementNotFound` if no element matches.
     pub fn find_from_desktop(&self) -> Result<UIElement, SmithError> {
         let automation = UIAutomation::new()
-            .map_err(|e| SmithError::PlatformError(format!("UIAutomation init: {e}")))?;
+            .map_err(|e| SmithError::PlatformWithCause {
+                message: "UIAutomation init failed".into(),
+                source: Box::new(e),
+            })?;
         let root = automation
             .get_root_element()
-            .map_err(|e| SmithError::PlatformError(format!("Get root element: {e}")))?;
-        self.find_first(&root)
+            .map_err(|e| SmithError::PlatformWithCause {
+                message: "Get root element failed".into(),
+                source: Box::new(e),
+            })?;
+        self.find_first(&root, &automation)
     }
 }
 

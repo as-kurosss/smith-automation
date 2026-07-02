@@ -1,3 +1,5 @@
+use std::error::Error;
+
 use thiserror::Error;
 
 #[derive(Error, Debug)]
@@ -16,6 +18,14 @@ pub enum SmithError {
 
     #[error("Platform error: {0}")]
     PlatformError(String),
+
+    /// Platform error with full error chain preserved.
+    #[error("Platform error: {message}")]
+    PlatformWithCause {
+        message: String,
+        #[source]
+        source: Box<dyn Error + Send + Sync>,
+    },
 
     #[error(transparent)]
     Other(#[from] anyhow::Error),

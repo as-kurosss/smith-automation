@@ -106,14 +106,20 @@ impl Tool for FindTool {
             selector = selector.pid(pid as u32);
         }
 
-        // 4. Поиск в блокирующем потоке (COM-вызовы)
-        let element = tokio::task::spawn_blocking(move || selector.find_from_desktop())
-            .await
-            .map_err(|e| SmithError::PlatformError(format!("Blocking task join failed: {e}")))?
-            .map_err(|e| SmithError::PlatformError(format!("Find element failed: {e}")))?;
+        // 4. Поиск в блокирующем потоке (COM-вызовы).
+        //    SafeUIElement создаётся внутри spawn_blocking, т.к. UIElement не является Send.
+        let safe_element = tokio::task::spawn_blocking(move || {
+            selector
+                .find_from_desktop()
+                .map(SafeUIElement::new)
+        })
+        .await
+        .map_err(|e| SmithError::PlatformWithCause {
+            message: "Find element blocking task failed".into(),
+            source: Box::new(e),
+        })??;
 
         // 5. Сохраняем результат в контекст
-        let safe_element = SafeUIElement::new(element);
         ctx.set(
             output_key.to_string(),
             smith_core::ContextValue::Custom(std::sync::Arc::new(safe_element)),

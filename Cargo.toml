@@ -3,6 +3,7 @@ resolver = "2"
 members = [
     "apps/smith-context",
     "crates/smith-core",
+    "crates/smith-daemon",
     "crates/smith-windows",
 ]
 

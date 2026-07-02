@@ -76,10 +76,16 @@ impl Tool for ClickTool {
             element_clone
                 .inner()
                 .click()
-                .map_err(|e| SmithError::PlatformError(format!("Click failed: {e}")))
+                .map_err(|e| SmithError::PlatformWithCause {
+                    message: "Click failed".into(),
+                    source: Box::new(e),
+                })
         })
         .await
-        .map_err(|_| SmithError::PlatformError("Blocking task join failed".into()))??;
+        .map_err(|e| SmithError::PlatformWithCause {
+            message: "Blocking task join failed".into(),
+            source: Box::new(e),
+        })??;
 
         Ok(Value::Null)
     }

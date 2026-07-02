@@ -1,15 +1,52 @@
 // crates/smith-windows/src/tools/process.rs
+use std::collections::HashSet;
+
 use async_trait::async_trait;
 use serde_json::{Value, json};
 use smith_core::{ExecutionContext, SmithError, SmithResult, Tool, ToolConfig, ToolResult};
 use tokio_util::sync::CancellationToken;
 
+/// Whitelist of allowed executable names for process start.
+///
+/// This prevents arbitrary command execution via the HTTP API.
+/// Only well-known Windows utilities and the specified automation targets are permitted.
+/// Keys can be bare names (e.g. "notepad.exe") or full paths.
+fn is_command_allowed(cmd: &str) -> bool {
+    let allowed: HashSet<&str> = HashSet::from_iter([
+        // Standard Windows apps
+        "notepad.exe",
+        "calc.exe",
+        "mspaint.exe",
+        "cmd.exe",
+        "powershell.exe",
+        "explorer.exe",
+        "write.exe",
+        "wordpad.exe",
+        // Common paths for these executables
+        "NOTEPAD.EXE",
+        "CALC.EXE",
+        "MSPAINT.EXE",
+        "CMD.EXE",
+        "POWERSHELL.EXE",
+        "EXPLORER.EXE",
+        "WRITE.EXE",
+        "WORDPAD.EXE",
+    ]);
+
+    // Extract the file name from the path
+    let name = cmd
+        .rsplit_once(|c| c == '/' || c == '\\')
+        .map(|(_, file)| file)
+        .unwrap_or(cmd);
+
+    allowed.contains(name)
+}
+
 /// Инструмент для управления процессами Windows.
 ///
 /// Поддерживает действия:
-/// - `start` — запуск нового процесса
-/// - `stop` — остановка процесса по PID или имени
-/// - `list` — получение списка запущенных процессов
+/// - `start` — запуск нового процесса (не ждёт завершения)
+/// - `stop` — остановка процесса по PID или имени (не ждёт завершения taskkill)
 pub struct ProcessTool;
 
 impl ProcessTool {
@@ -33,7 +70,7 @@ impl Tool for ProcessTool {
     }
 
     fn description(&self) -> &'static str {
-        "Manages Windows processes: start, stop, or list"
+        "Manages Windows processes: start or stop (fire-and-forget)"
     }
 
     fn schema(&self) -> Value {
@@ -42,7 +79,7 @@ impl Tool for ProcessTool {
             "properties": {
                 "action": {
                     "type": "string",
-                    "enum": ["start", "stop", "list"],
+                    "enum": ["start", "stop"],
                     "description": "Action to perform"
                 },
                 "command": {
@@ -89,7 +126,6 @@ impl Tool for ProcessTool {
         match action {
             "start" => self::action_start(&config),
             "stop" => self::action_stop(&config),
-            "list" => self::action_list(),
             other => Err(SmithError::InvalidParams(format!(
                 "Unknown action: {other}"
             ))),
@@ -103,6 +139,14 @@ fn action_start(config: &Value) -> SmithResult<ToolResult> {
         .get("command")
         .and_then(|v| v.as_str())
         .ok_or_else(|| SmithError::InvalidParams("Missing 'command' for start action".into()))?;
+
+    // Command injection protection (Canon 10.1 Input Validation)
+    if !is_command_allowed(cmd_str) {
+        return Err(SmithError::InvalidParams(format!(
+            "Command '{}' is not in the allowed list",
+            cmd_str
+        )));
+    }
 
     let mut cmd = std::process::Command::new(cmd_str);
 
@@ -120,7 +164,10 @@ fn action_start(config: &Value) -> SmithResult<ToolResult> {
 
     let child = cmd
         .spawn()
-        .map_err(|e| SmithError::PlatformError(format!("Failed to start process: {e}")))?;
+        .map_err(|e| SmithError::PlatformWithCause {
+            message: "Failed to start process".into(),
+            source: Box::new(e),
+        })?;
 
     let pid = child.id();
 
@@ -131,82 +178,39 @@ fn action_start(config: &Value) -> SmithResult<ToolResult> {
 }
 
 fn action_stop(config: &Value) -> SmithResult<ToolResult> {
+    use std::process::Stdio;
+
     if let Some(pid) = config.get("pid").and_then(|v| v.as_u64()) {
-        // Остановка по PID через taskkill
-        let output = std::process::Command::new("taskkill")
+        // Остановка по PID через taskkill — только запускаем, не ждём завершения
+        std::process::Command::new("taskkill")
             .args(["/F", "/PID", &pid.to_string()])
-            .output()
-            .map_err(|e| SmithError::PlatformError(format!("taskkill failed: {e}")))?;
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .spawn()
+            .map_err(|e| SmithError::PlatformWithCause {
+                message: "taskkill spawn failed".into(),
+                source: Box::new(e),
+            })?;
 
-        if output.status.success() {
-            Ok(json!({ "status": "stopped", "method": "pid", "pid": pid }))
-        } else {
-            let stderr = String::from_utf8_lossy(&output.stderr);
-            Err(SmithError::PlatformError(format!(
-                "Failed to stop process {pid}: {stderr}"
-            )))
-        }
+        Ok(json!({ "status": "stop_initiated", "method": "pid", "pid": pid }))
     } else if let Some(name) = config.get("name").and_then(|v| v.as_str()) {
-        // Остановка по имени через taskkill
-        let output = std::process::Command::new("taskkill")
+        // Остановка по имени через taskkill — только запускаем, не ждём завершения
+        std::process::Command::new("taskkill")
             .args(["/F", "/IM", name])
-            .output()
-            .map_err(|e| SmithError::PlatformError(format!("taskkill failed: {e}")))?;
+            .stdin(Stdio::null())
+            .stdout(Stdio::null())
+            .stderr(Stdio::null())
+            .spawn()
+            .map_err(|e| SmithError::PlatformWithCause {
+                message: "taskkill spawn failed".into(),
+                source: Box::new(e),
+            })?;
 
-        if output.status.success() {
-            Ok(json!({ "status": "stopped", "method": "name", "name": name }))
-        } else {
-            let stderr = String::from_utf8_lossy(&output.stderr);
-            Err(SmithError::PlatformError(format!(
-                "Failed to stop process '{name}': {stderr}"
-            )))
-        }
+        Ok(json!({ "status": "stop_initiated", "method": "name", "name": name }))
     } else {
         Err(SmithError::InvalidParams(
             "Must provide 'pid' or 'name' for stop action".into(),
         ))
     }
-}
-
-fn action_list() -> SmithResult<ToolResult> {
-    let output = std::process::Command::new("tasklist")
-        .args(["/FO", "CSV", "/NH"])
-        .output()
-        .map_err(|e| SmithError::PlatformError(format!("tasklist failed: {e}")))?;
-
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        return Err(SmithError::PlatformError(format!(
-            "tasklist error: {stderr}"
-        )));
-    }
-
-    let stdout = String::from_utf8_lossy(&output.stdout);
-    let mut processes: Vec<Value> = Vec::new();
-
-    // CSV format: "Image Name","PID","Session Name","Session#","Mem Usage"
-    for line in stdout.lines() {
-        let line = line.trim();
-        if line.is_empty() {
-            continue;
-        }
-        // Remove outer quotes and split by "," (keeping quoted values together)
-        let parts: Vec<&str> = line.split(',').map(|s| s.trim_matches('"')).collect();
-
-        if parts.len() >= 2 {
-            let name = parts[0].to_string();
-            let pid: u64 = parts[1].parse().unwrap_or(0);
-
-            processes.push(json!({
-                "name": name,
-                "pid": pid
-            }));
-        }
-    }
-
-    Ok(json!({
-        "status": "ok",
-        "processes": processes,
-        "count": processes.len()
-    }))
 }
