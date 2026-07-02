@@ -8,6 +8,6 @@ community_label: TreeNode
 
 ## Connections
 
-- [[main]] (defines)
-- [[main__]] (calls)
+- [[main_1]] (defines)
+- [[main___1]] (calls)
 - [[extract_crate_name__]] (calls)

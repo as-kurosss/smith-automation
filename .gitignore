@@ -1,1 +1,14 @@
 /target
+
+# Generated graphify artifacts
+smith-graphify/cache/
+smith-graphify/html/
+smith-graphify/graph.html
+smith-graphify/graph.svg
+smith-graphify/graph.cypher
+smith-graphify/graph.graphml
+smith-graphify/graph.json
+smith-graphify/GRAPH_REPORT.md
+
+# Build artifacts
+apps/*/target/

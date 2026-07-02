@@ -1,23 +1,43 @@
-# Community 3: SafeUIElement
+# Community 3: parse_control_type()
 
-**Members:** 7
+**Members:** 14
 
 ## Nodes
 
-- **element** (`crates_smith_windows_src_element_rs`, File, degree: 3)
-- **std::sync::Arc** (`crates_smith_windows_src_element_rs_import_std_sync_arc`, Module, degree: 1)
-- **uiautomation::UIElement** (`crates_smith_windows_src_element_rs_import_uiautomation_uielement`, Module, degree: 1)
-- **SafeUIElement** (`crates_smith_windows_src_element_rs_safeuielement`, Struct, degree: 4)
-- **.clone()** (`crates_smith_windows_src_element_rs_safeuielement_clone`, Method, degree: 1)
-- **.inner()** (`crates_smith_windows_src_element_rs_safeuielement_inner`, Method, degree: 1)
-- **.new()** (`crates_smith_windows_src_element_rs_safeuielement_new`, Method, degree: 1)
+- **ElementSelector** (`crates_smith_windows_src_selector_rs_elementselector`, Struct, degree: 13)
+- **.automation_id()** (`crates_smith_windows_src_selector_rs_elementselector_automation_id`, Method, degree: 1)
+- **.build_condition()** (`crates_smith_windows_src_selector_rs_elementselector_build_condition`, Method, degree: 5)
+- **.class_name()** (`crates_smith_windows_src_selector_rs_elementselector_class_name`, Method, degree: 1)
+- **.control_type()** (`crates_smith_windows_src_selector_rs_elementselector_control_type`, Method, degree: 1)
+- **.default()** (`crates_smith_windows_src_selector_rs_elementselector_default`, Method, degree: 2)
+- **.find_all()** (`crates_smith_windows_src_selector_rs_elementselector_find_all`, Method, degree: 2)
+- **.find_first()** (`crates_smith_windows_src_selector_rs_elementselector_find_first`, Method, degree: 3)
+- **.find_from_desktop()** (`crates_smith_windows_src_selector_rs_elementselector_find_from_desktop`, Method, degree: 3)
+- **.name()** (`crates_smith_windows_src_selector_rs_elementselector_name`, Method, degree: 1)
+- **.new()** (`crates_smith_windows_src_selector_rs_elementselector_new`, Method, degree: 4)
+- **.pid()** (`crates_smith_windows_src_selector_rs_elementselector_pid`, Method, degree: 1)
+- **.timeout()** (`crates_smith_windows_src_selector_rs_elementselector_timeout`, Method, degree: 1)
+- **parse_control_type()** (`crates_smith_windows_src_selector_rs_parse_control_type`, Function, degree: 2)
 
 ## Relationships
 
-- crates_smith_windows_src_element_rs → crates_smith_windows_src_element_rs_import_std_sync_arc (imports)
-- crates_smith_windows_src_element_rs → crates_smith_windows_src_element_rs_import_uiautomation_uielement (imports)
-- crates_smith_windows_src_element_rs → crates_smith_windows_src_element_rs_safeuielement (defines)
-- crates_smith_windows_src_element_rs_safeuielement → crates_smith_windows_src_element_rs_safeuielement_new (defines)
-- crates_smith_windows_src_element_rs_safeuielement → crates_smith_windows_src_element_rs_safeuielement_inner (defines)
-- crates_smith_windows_src_element_rs_safeuielement → crates_smith_windows_src_element_rs_safeuielement_clone (defines)
+- crates_smith_windows_src_selector_rs_elementselector → crates_smith_windows_src_selector_rs_elementselector_default (defines)
+- crates_smith_windows_src_selector_rs_elementselector → crates_smith_windows_src_selector_rs_elementselector_new (defines)
+- crates_smith_windows_src_selector_rs_elementselector → crates_smith_windows_src_selector_rs_elementselector_pid (defines)
+- crates_smith_windows_src_selector_rs_elementselector → crates_smith_windows_src_selector_rs_elementselector_name (defines)
+- crates_smith_windows_src_selector_rs_elementselector → crates_smith_windows_src_selector_rs_elementselector_automation_id (defines)
+- crates_smith_windows_src_selector_rs_elementselector → crates_smith_windows_src_selector_rs_elementselector_control_type (defines)
+- crates_smith_windows_src_selector_rs_elementselector → crates_smith_windows_src_selector_rs_elementselector_class_name (defines)
+- crates_smith_windows_src_selector_rs_elementselector → crates_smith_windows_src_selector_rs_elementselector_timeout (defines)
+- crates_smith_windows_src_selector_rs_elementselector → crates_smith_windows_src_selector_rs_elementselector_build_condition (defines)
+- crates_smith_windows_src_selector_rs_elementselector → crates_smith_windows_src_selector_rs_elementselector_find_first (defines)
+- crates_smith_windows_src_selector_rs_elementselector → crates_smith_windows_src_selector_rs_elementselector_find_all (defines)
+- crates_smith_windows_src_selector_rs_elementselector → crates_smith_windows_src_selector_rs_elementselector_find_from_desktop (defines)
+- crates_smith_windows_src_selector_rs_elementselector_new → crates_smith_windows_src_selector_rs_elementselector_default (calls)
+- crates_smith_windows_src_selector_rs_elementselector_build_condition → crates_smith_windows_src_selector_rs_elementselector_new (calls)
+- crates_smith_windows_src_selector_rs_elementselector_build_condition → crates_smith_windows_src_selector_rs_parse_control_type (calls)
+- crates_smith_windows_src_selector_rs_elementselector_find_first → crates_smith_windows_src_selector_rs_elementselector_build_condition (calls)
+- crates_smith_windows_src_selector_rs_elementselector_find_all → crates_smith_windows_src_selector_rs_elementselector_build_condition (calls)
+- crates_smith_windows_src_selector_rs_elementselector_find_from_desktop → crates_smith_windows_src_selector_rs_elementselector_new (calls)
+- crates_smith_windows_src_selector_rs_elementselector_find_from_desktop → crates_smith_windows_src_selector_rs_elementselector_find_first (calls)
 

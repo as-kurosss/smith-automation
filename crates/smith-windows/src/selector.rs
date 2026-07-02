@@ -84,7 +84,7 @@ impl ElementSelector {
                     Variant::from(name.as_str()),
                     Some(PropertyConditionFlags::None),
                 )
-                .map_err(|e| SmithError::PlatformWithCause {
+                .map_err(|e| SmithError::PlatformError {
                     message: "Name property condition failed".into(),
                     source: Box::new(e),
                 })?;
@@ -98,7 +98,7 @@ impl ElementSelector {
                     Variant::from(aid.as_str()),
                     Some(PropertyConditionFlags::None),
                 )
-                .map_err(|e| SmithError::PlatformWithCause {
+                .map_err(|e| SmithError::PlatformError {
                     message: "AutomationId property condition failed".into(),
                     source: Box::new(e),
                 })?;
@@ -113,7 +113,7 @@ impl ElementSelector {
                         Variant::from(ct_value as i32),
                         Some(PropertyConditionFlags::None),
                     )
-                .map_err(|e| SmithError::PlatformWithCause {
+                .map_err(|e| SmithError::PlatformError {
                     message: "ControlType property condition failed".into(),
                     source: Box::new(e),
                 })?;
@@ -128,7 +128,7 @@ impl ElementSelector {
                     Variant::from(cn.as_str()),
                     Some(PropertyConditionFlags::None),
                 )
-                .map_err(|e| SmithError::PlatformWithCause {
+                .map_err(|e| SmithError::PlatformError {
                     message: "ClassName property condition failed".into(),
                     source: Box::new(e),
                 })?;
@@ -142,7 +142,7 @@ impl ElementSelector {
                     Variant::from(pid as i32),
                     Some(PropertyConditionFlags::None),
                 )
-                .map_err(|e| SmithError::PlatformWithCause {
+                .map_err(|e| SmithError::PlatformError {
                     message: "ProcessId property condition failed".into(),
                     source: Box::new(e),
                 })?;
@@ -152,7 +152,7 @@ impl ElementSelector {
         if conditions.is_empty() {
             return automation
                 .create_true_condition()
-                .map_err(|e| SmithError::PlatformWithCause {
+                .map_err(|e| SmithError::PlatformError {
                     message: "True condition creation failed".into(),
                     source: Box::new(e),
                 });
@@ -164,7 +164,7 @@ impl ElementSelector {
         let result = iter.try_fold(first, |acc, cond| {
             automation
                 .create_and_condition(acc, cond)
-                .map_err(|e| SmithError::PlatformWithCause {
+                .map_err(|e| SmithError::PlatformError {
                     message: "And condition creation failed".into(),
                     source: Box::new(e),
                 })
@@ -188,7 +188,7 @@ impl ElementSelector {
     pub fn find_all(&self, root: &UIElement, automation: &UIAutomation) -> Result<Vec<UIElement>, SmithError> {
         let condition = self.build_condition_with(automation)?;
         root.find_all(TreeScope::Descendants, &condition)
-            .map_err(|e| SmithError::PlatformWithCause {
+            .map_err(|e| SmithError::PlatformError {
                 message: "Find all failed".into(),
                 source: Box::new(e),
             })
@@ -204,13 +204,13 @@ impl ElementSelector {
     /// Returns `SmithError::ElementNotFound` if no element matches.
     pub fn find_from_desktop(&self) -> Result<UIElement, SmithError> {
         let automation = UIAutomation::new()
-            .map_err(|e| SmithError::PlatformWithCause {
+            .map_err(|e| SmithError::PlatformError {
                 message: "UIAutomation init failed".into(),
                 source: Box::new(e),
             })?;
         let root = automation
             .get_root_element()
-            .map_err(|e| SmithError::PlatformWithCause {
+            .map_err(|e| SmithError::PlatformError {
                 message: "Get root element failed".into(),
                 source: Box::new(e),
             })?;

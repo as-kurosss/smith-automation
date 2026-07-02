@@ -4,7 +4,7 @@
 - **Type:** Struct
 - **File:** `./crates/smith-core/src/context.rs`
 - **Location:** L75
-- **Community:** 5 (ExecutionContext)
+- **Community:** 7 (test_set_and_get_variable())
 
 ## Relationships
 

@@ -1,13 +1,23 @@
-# Community 14: render_tree()
+# Community 14: SafeUIElement
 
-**Members:** 2
+**Members:** 7
 
 ## Nodes
 
-- **build_tree()** (`apps_smith_context_src_main_rs_build_tree`, Function, degree: 3)
-- **render_tree()** (`apps_smith_context_src_main_rs_render_tree`, Function, degree: 2)
+- **element** (`crates_smith_windows_src_element_rs`, File, degree: 3)
+- **std::sync::Arc** (`crates_smith_windows_src_element_rs_import_std_sync_arc`, Module, degree: 1)
+- **uiautomation::UIElement** (`crates_smith_windows_src_element_rs_import_uiautomation_uielement`, Module, degree: 1)
+- **SafeUIElement** (`crates_smith_windows_src_element_rs_safeuielement`, Struct, degree: 4)
+- **.clone()** (`crates_smith_windows_src_element_rs_safeuielement_clone`, Method, degree: 1)
+- **.inner()** (`crates_smith_windows_src_element_rs_safeuielement_inner`, Method, degree: 1)
+- **.new()** (`crates_smith_windows_src_element_rs_safeuielement_new`, Method, degree: 1)
 
 ## Relationships
 
-- apps_smith_context_src_main_rs_build_tree → apps_smith_context_src_main_rs_render_tree (calls)
+- crates_smith_windows_src_element_rs → crates_smith_windows_src_element_rs_import_std_sync_arc (imports)
+- crates_smith_windows_src_element_rs → crates_smith_windows_src_element_rs_import_uiautomation_uielement (imports)
+- crates_smith_windows_src_element_rs → crates_smith_windows_src_element_rs_safeuielement (defines)
+- crates_smith_windows_src_element_rs_safeuielement → crates_smith_windows_src_element_rs_safeuielement_new (defines)
+- crates_smith_windows_src_element_rs_safeuielement → crates_smith_windows_src_element_rs_safeuielement_inner (defines)
+- crates_smith_windows_src_element_rs_safeuielement → crates_smith_windows_src_element_rs_safeuielement_clone (defines)
 

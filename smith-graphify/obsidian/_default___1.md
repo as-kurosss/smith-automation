@@ -1,12 +1,13 @@
 ---
-id: crates_smith_windows_src_tools_click_rs_clicktool_default
+id: crates_smith_core_src_registry_rs_toolregistry_default
 type: Method
-source: ./crates/smith-windows/src/tools/click.rs
+source: ./crates/smith-core/src/registry.rs
 community: 2
-community_label: ClickTool
+community_label: ToolRegistry
 ---
 
 ## Connections
 
-- [[ClickTool]] (defines)
+- [[ToolRegistry]] (defines)
 - [[_new___1]] (calls)
+- [[test_default_is_empty__]] (calls)

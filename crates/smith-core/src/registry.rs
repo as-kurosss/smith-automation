@@ -27,16 +27,10 @@ impl ToolRegistry {
         self.tools.insert(name, Box::new(tool));
     }
 
-    /// Возвращает ссылку на зарегистрированный инструмент по имени.
-    ///
-    /// # Errors
-    ///
-    /// Возвращает `SmithError::InvalidParams`, если инструмент не найден.
-    pub fn get(&self, name: &str) -> SmithResult<&dyn Tool> {
-        self.tools
-            .get(name)
-            .map(AsRef::as_ref)
-            .ok_or_else(|| SmithError::InvalidParams(format!("Tool '{name}' not found")))
+    /// Возвращает ссылку на зарегистрированный инструмент по имени, если он существует.
+    #[must_use]
+    pub fn get(&self, name: &str) -> Option<&dyn Tool> {
+        self.tools.get(name).map(AsRef::as_ref)
     }
 
     /// Выполняет инструмент по имени с переданными параметрами.
@@ -52,7 +46,8 @@ impl ToolRegistry {
         ctx: &mut ExecutionContext,
         token: CancellationToken,
     ) -> SmithResult<ToolResult> {
-        let tool = self.get(name)?;
+        let tool = self.get(name)
+            .ok_or_else(|| SmithError::InvalidParams(format!("Tool '{name}' not found")))?;
         tool.execute(config, ctx, token).await
     }
 
@@ -118,7 +113,7 @@ mod tests {
         registry.register(TestTool { name: "test.click" });
 
         let tool = registry.get("test.click");
-        assert!(tool.is_ok());
+        assert!(tool.is_some());
         assert_eq!(tool.unwrap().name(), "test.click");
     }
 
@@ -126,8 +121,7 @@ mod tests {
     fn test_get_unknown_tool() {
         let registry = ToolRegistry::new();
         let result = registry.get("nonexistent");
-        assert!(result.is_err());
-        assert!(matches!(result, Err(SmithError::InvalidParams(_))));
+        assert!(result.is_none());
     }
 
     #[tokio::test]

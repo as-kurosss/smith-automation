@@ -4,9 +4,6 @@ use serde_json::{Value, json};
 use smith_core::{ExecutionContext, SmithError, SmithResult, Tool, ToolConfig, ToolResult};
 use tokio_util::sync::CancellationToken;
 
-use crate::element::SafeUIElement;
-use crate::selector::ElementSelector;
-
 /// Инструмент для ввода текста в UI-элемент Windows.
 ///
 /// Если указан `element_key` или `selector`, сначала фокусирует элемент,
@@ -89,48 +86,7 @@ impl Tool for InputTextTool {
         }
 
         // 2. Пытаемся получить элемент из контекста или найти по селектору
-        let maybe_element: Option<SafeUIElement> =
-            if let Some(element_key) = config.get("element_key").and_then(|v| v.as_str()) {
-                // Извлекаем из контекста
-                let value = ctx.get(element_key).ok_or_else(|| {
-                    SmithError::ContextError(format!("Key '{element_key}' not found in context"))
-                })?;
-                Some(value.try_as_custom::<SafeUIElement>()?.clone())
-            } else if config.get("name").is_some()
-                || config.get("automation_id").is_some()
-                || config.get("control_type").is_some()
-                || config.get("class_name").is_some()
-            {
-                // Строим селектор и ищем
-                let mut selector = ElementSelector::new();
-                if let Some(name) = config.get("name").and_then(|v| v.as_str()) {
-                    selector = selector.name(name);
-                }
-                if let Some(aid) = config.get("automation_id").and_then(|v| v.as_str()) {
-                    selector = selector.automation_id(aid);
-                }
-                if let Some(ct) = config.get("control_type").and_then(|v| v.as_str()) {
-                    selector = selector.control_type(ct);
-                }
-                if let Some(cn) = config.get("class_name").and_then(|v| v.as_str()) {
-                    selector = selector.class_name(cn);
-                }
-
-                let safe_element = tokio::task::spawn_blocking(move || {
-                    selector
-                        .find_from_desktop()
-                        .map(SafeUIElement::new)
-                })
-                .await
-                .map_err(|e| SmithError::PlatformWithCause {
-                    message: "Find element blocking task failed".into(),
-                    source: Box::new(e),
-                })??;
-
-                Some(safe_element)
-            } else {
-                None
-            };
+        let maybe_element = crate::tools::resolve_element_from_config(&config, ctx).await?;
 
         // 3. Ввод текста в блокирующем потоке
         tokio::task::spawn_blocking(move || {
@@ -139,7 +95,7 @@ impl Tool for InputTextTool {
                 element
                     .inner()
                     .set_focus()
-                    .map_err(|e| SmithError::PlatformWithCause {
+                    .map_err(|e| SmithError::PlatformError {
                         message: "Set focus failed".into(),
                         source: Box::new(e),
                     })?;
@@ -147,25 +103,25 @@ impl Tool for InputTextTool {
                 element
                     .inner()
                     .send_keys(&text, 0)
-                    .map_err(|e| SmithError::PlatformWithCause {
+                    .map_err(|e| SmithError::PlatformError {
                         message: "send_keys failed".into(),
                         source: Box::new(e),
                     })?;
             } else {
                 // Просто вводим текст в активное окно через корневой элемент
                 let automation = uiautomation::core::UIAutomation::new()
-                    .map_err(|e| SmithError::PlatformWithCause {
+                    .map_err(|e| SmithError::PlatformError {
                         message: "UIAutomation init failed".into(),
                         source: Box::new(e),
                     })?;
                 let root = automation
                     .get_root_element()
-                    .map_err(|e| SmithError::PlatformWithCause {
+                    .map_err(|e| SmithError::PlatformError {
                         message: "Get root element failed".into(),
                         source: Box::new(e),
                     })?;
                 root.send_keys(&text, 0)
-                    .map_err(|e| SmithError::PlatformWithCause {
+                    .map_err(|e| SmithError::PlatformError {
                         message: "send_keys failed".into(),
                         source: Box::new(e),
                     })?;
@@ -173,7 +129,7 @@ impl Tool for InputTextTool {
             Ok::<_, SmithError>(())
         })
         .await
-        .map_err(|e| SmithError::PlatformWithCause {
+        .map_err(|e| SmithError::PlatformError {
             message: "Input text blocking task join failed".into(),
             source: Box::new(e),
         })??;

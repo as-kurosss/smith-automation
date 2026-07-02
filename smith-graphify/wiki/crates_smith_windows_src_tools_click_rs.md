@@ -3,7 +3,7 @@
 - **ID:** `crates_smith_windows_src_tools_click_rs`
 - **Type:** File
 - **File:** `./crates/smith-windows/src/tools/click.rs`
-- **Community:** 6 (click)
+- **Community:** 20 (click)
 
 ## Relationships
 

@@ -114,7 +114,7 @@ impl Tool for FindTool {
                 .map(SafeUIElement::new)
         })
         .await
-        .map_err(|e| SmithError::PlatformWithCause {
+        .map_err(|e| SmithError::PlatformError {
             message: "Find element blocking task failed".into(),
             source: Box::new(e),
         })??;

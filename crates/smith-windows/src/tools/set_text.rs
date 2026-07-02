@@ -4,9 +4,6 @@ use serde_json::{Value, json};
 use smith_core::{ExecutionContext, SmithError, SmithResult, Tool, ToolConfig, ToolResult};
 use tokio_util::sync::CancellationToken;
 
-use crate::element::SafeUIElement;
-use crate::selector::ElementSelector;
-
 /// Инструмент для установки текста через UI Automation ValuePattern.
 ///
 /// В отличие от `InputTextTool`, этот инструмент напрямую устанавливает
@@ -68,10 +65,12 @@ impl Tool for SetTextTool {
                 }
             },
             "required": ["text"],
-            "oneOf": [
+            "anyOf": [
                 { "required": ["element_key"] },
                 { "required": ["name"] },
-                { "required": ["automation_id"] }
+                { "required": ["automation_id"] },
+                { "required": ["control_type"] },
+                { "required": ["class_name"] }
             ]
         })
     }
@@ -94,60 +93,29 @@ impl Tool for SetTextTool {
         }
 
         // 2. Получаем элемент
-        let element: SafeUIElement =
-            if let Some(element_key) = config.get("element_key").and_then(|v| v.as_str()) {
-                let value = ctx.get(element_key).ok_or_else(|| {
-                    SmithError::ContextError(format!("Key '{element_key}' not found in context"))
-                })?;
-                value.try_as_custom::<SafeUIElement>()?.clone()
-            } else {
-                let mut selector = ElementSelector::new();
-                if let Some(name) = config.get("name").and_then(|v| v.as_str()) {
-                    selector = selector.name(name);
-                }
-                if let Some(aid) = config.get("automation_id").and_then(|v| v.as_str()) {
-                    selector = selector.automation_id(aid);
-                }
-                if let Some(ct) = config.get("control_type").and_then(|v| v.as_str()) {
-                    selector = selector.control_type(ct);
-                }
-                if let Some(cn) = config.get("class_name").and_then(|v| v.as_str()) {
-                    selector = selector.class_name(cn);
-                }
-
-                let safe_element = tokio::task::spawn_blocking(move || {
-                    selector
-                        .find_from_desktop()
-                        .map(SafeUIElement::new)
-                })
-                .await
-                .map_err(|e| SmithError::PlatformWithCause {
-                    message: "Find element blocking task failed".into(),
-                    source: Box::new(e),
-                })??;
-
-                safe_element
-            };
+        let element = crate::tools::resolve_element_from_config(&config, ctx)
+            .await?
+            .ok_or_else(|| SmithError::InvalidParams("Missing 'element_key' or selector fields".into()))?;
 
         // 3. Устанавливаем текст через ValuePattern в блокирующем потоке
         tokio::task::spawn_blocking(move || {
             let pattern = element
                 .inner()
                 .get_pattern::<uiautomation::patterns::UIValuePattern>()
-                .map_err(|e| SmithError::PlatformWithCause {
+                .map_err(|e| SmithError::PlatformError {
                     message: "Get ValuePattern failed".into(),
                     source: Box::new(e),
                 })?;
             pattern
                 .set_value(&text)
-                .map_err(|e| SmithError::PlatformWithCause {
+                .map_err(|e| SmithError::PlatformError {
                     message: "Set value failed".into(),
                     source: Box::new(e),
                 })?;
             Ok::<_, SmithError>(())
         })
         .await
-        .map_err(|e| SmithError::PlatformWithCause {
+        .map_err(|e| SmithError::PlatformError {
             message: "Set text blocking task join failed".into(),
             source: Box::new(e),
         })??;

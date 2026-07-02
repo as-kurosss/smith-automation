@@ -1,19 +1,25 @@
-# Community 8: is_binary_extension()
+# Community 8: lib
 
-**Members:** 5
+**Members:** 8
 
 ## Nodes
 
-- **collect_files()** (`apps_smith_context_src_main_rs_collect_files`, Function, degree: 6)
-- **detect_language()** (`apps_smith_context_src_main_rs_detect_language`, Function, degree: 2)
-- **is_always_excluded_dir()** (`apps_smith_context_src_main_rs_is_always_excluded_dir`, Function, degree: 2)
-- **is_always_excluded_file()** (`apps_smith_context_src_main_rs_is_always_excluded_file`, Function, degree: 2)
-- **is_binary_extension()** (`apps_smith_context_src_main_rs_is_binary_extension`, Function, degree: 2)
+- **lib** (`crates_smith_windows_src_lib_rs`, File, degree: 7)
+- **pub use element::SafeUIElement** (`crates_smith_windows_src_lib_rs_import_pub_use_element_safeuielement`, Module, degree: 1)
+- **pub use selector::ElementSelector** (`crates_smith_windows_src_lib_rs_import_pub_use_selector_elementselector`, Module, degree: 1)
+- **pub use tools::ClickTool** (`crates_smith_windows_src_lib_rs_import_pub_use_tools_clicktool`, Module, degree: 1)
+- **pub use tools::FindTool** (`crates_smith_windows_src_lib_rs_import_pub_use_tools_findtool`, Module, degree: 1)
+- **pub use tools::InputTextTool** (`crates_smith_windows_src_lib_rs_import_pub_use_tools_inputtexttool`, Module, degree: 1)
+- **pub use tools::ProcessTool** (`crates_smith_windows_src_lib_rs_import_pub_use_tools_processtool`, Module, degree: 1)
+- **pub use tools::SetTextTool** (`crates_smith_windows_src_lib_rs_import_pub_use_tools_settexttool`, Module, degree: 1)
 
 ## Relationships
 
-- apps_smith_context_src_main_rs_collect_files → apps_smith_context_src_main_rs_is_always_excluded_dir (calls)
-- apps_smith_context_src_main_rs_collect_files → apps_smith_context_src_main_rs_is_always_excluded_file (calls)
-- apps_smith_context_src_main_rs_collect_files → apps_smith_context_src_main_rs_is_binary_extension (calls)
-- apps_smith_context_src_main_rs_collect_files → apps_smith_context_src_main_rs_detect_language (calls)
+- crates_smith_windows_src_lib_rs → crates_smith_windows_src_lib_rs_import_pub_use_element_safeuielement (imports)
+- crates_smith_windows_src_lib_rs → crates_smith_windows_src_lib_rs_import_pub_use_selector_elementselector (imports)
+- crates_smith_windows_src_lib_rs → crates_smith_windows_src_lib_rs_import_pub_use_tools_clicktool (imports)
+- crates_smith_windows_src_lib_rs → crates_smith_windows_src_lib_rs_import_pub_use_tools_findtool (imports)
+- crates_smith_windows_src_lib_rs → crates_smith_windows_src_lib_rs_import_pub_use_tools_inputtexttool (imports)
+- crates_smith_windows_src_lib_rs → crates_smith_windows_src_lib_rs_import_pub_use_tools_processtool (imports)
+- crates_smith_windows_src_lib_rs → crates_smith_windows_src_lib_rs_import_pub_use_tools_settexttool (imports)
 

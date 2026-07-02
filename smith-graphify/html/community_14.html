@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>render_tree() — Community 14</title>
+<title>SafeUIElement — Community 14</title>
 <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -25,8 +25,8 @@ body { background: #0f0f1a; color: #e0e0e0; font-family: 'Segoe UI', system-ui, 
 <body>
 <div id="sidebar">
     <div>
-        <h2>render_tree()</h2>
-        <p style="font-size:12px;color:#666;">2 nodes · Community 14</p>
+        <h2>SafeUIElement</h2>
+        <p style="font-size:12px;color:#666;">7 nodes · Community 14</p>
     </div>
     <input id="search" type="text" placeholder="Search nodes…" />
     <div>
@@ -35,14 +35,14 @@ body { background: #0f0f1a; color: #e0e0e0; font-family: 'Segoe UI', system-ui, 
     </div>
     <div>
         <h3>Navigation</h3>
-        <a href="index.html" class="nav-link" style="font-weight:bold;">← Overview</a><a href="community_0.html" class="nav-link"><span class="legend-dot" style="background:#4E79A7"></span>TreeNode (2 links)</a><a href="community_1.html" class="nav-link"><span class="legend-dot" style="background:#F28E2B"></span>run_graphify_build() (1 links)</a>
+        <a href="index.html" class="nav-link" style="font-weight:bold;">← Overview</a>
     </div>
 </div>
 <div id="graph-container"></div>
 <script>
 (function() {
-    var nodesData = [{id:"apps_smith_context_src_main_rs_build_tree",label:"build_tree()",title:"build_tree()\nType: Function\nFile: ./apps/smith-context/src/main.rs\nDegree: 3",color:"#59A14F",size:14.9},{id:"apps_smith_context_src_main_rs_render_tree",label:"render_tree()",title:"render_tree()\nType: Function\nFile: ./apps/smith-context/src/main.rs\nDegree: 2",color:"#59A14F",size:13.7}];
-    var edgesData = [{from:"apps_smith_context_src_main_rs_build_tree",to:"apps_smith_context_src_main_rs_render_tree",label:"calls",dashes:true,title:"calls: apps_smith_context_src_main_rs_build_tree → apps_smith_context_src_main_rs_render_tree\nConfidence: Inferred"}];
+    var nodesData = [{id:"crates_smith_windows_src_element_rs",label:"element",title:"element\nType: File\nFile: ./crates/smith-windows/src/element.rs\nDegree: 3",color:"#59A14F",size:14.9},{id:"crates_smith_windows_src_element_rs_import_std_sync_arc",label:"std::sync::Arc",title:"std::sync::Arc\nType: Module\nFile: ./crates/smith-windows/src/element.rs\nDegree: 1",color:"#59A14F",size:12.0},{id:"crates_smith_windows_src_element_rs_import_uiautomation_uielement",label:"uiautomation::UIElement",title:"uiautomation::UIElement\nType: Module\nFile: ./crates/smith-windows/src/element.rs\nDegree: 1",color:"#59A14F",size:12.0},{id:"crates_smith_windows_src_element_rs_safeuielement",label:"SafeUIElement",title:"SafeUIElement\nType: Struct\nFile: ./crates/smith-windows/src/element.rs\nDegree: 4",color:"#59A14F",size:16.0},{id:"crates_smith_windows_src_element_rs_safeuielement_new",label:".new()",title:".new()\nType: Method\nFile: ./crates/smith-windows/src/element.rs\nDegree: 1",color:"#59A14F",size:12.0},{id:"crates_smith_windows_src_element_rs_safeuielement_inner",label:".inner()",title:".inner()\nType: Method\nFile: ./crates/smith-windows/src/element.rs\nDegree: 1",color:"#59A14F",size:12.0},{id:"crates_smith_windows_src_element_rs_safeuielement_clone",label:".clone()",title:".clone()\nType: Method\nFile: ./crates/smith-windows/src/element.rs\nDegree: 1",color:"#59A14F",size:12.0}];
+    var edgesData = [{from:"crates_smith_windows_src_element_rs",to:"crates_smith_windows_src_element_rs_import_std_sync_arc",label:"imports",dashes:false,title:"imports: crates_smith_windows_src_element_rs → crates_smith_windows_src_element_rs_import_std_sync_arc\nConfidence: Extracted"},{from:"crates_smith_windows_src_element_rs",to:"crates_smith_windows_src_element_rs_import_uiautomation_uielement",label:"imports",dashes:false,title:"imports: crates_smith_windows_src_element_rs → crates_smith_windows_src_element_rs_import_uiautomation_uielement\nConfidence: Extracted"},{from:"crates_smith_windows_src_element_rs",to:"crates_smith_windows_src_element_rs_safeuielement",label:"defines",dashes:false,title:"defines: crates_smith_windows_src_element_rs → crates_smith_windows_src_element_rs_safeuielement\nConfidence: Extracted"},{from:"crates_smith_windows_src_element_rs_safeuielement",to:"crates_smith_windows_src_element_rs_safeuielement_new",label:"defines",dashes:false,title:"defines: crates_smith_windows_src_element_rs_safeuielement → crates_smith_windows_src_element_rs_safeuielement_new\nConfidence: Extracted"},{from:"crates_smith_windows_src_element_rs_safeuielement",to:"crates_smith_windows_src_element_rs_safeuielement_inner",label:"defines",dashes:false,title:"defines: crates_smith_windows_src_element_rs_safeuielement → crates_smith_windows_src_element_rs_safeuielement_inner\nConfidence: Extracted"},{from:"crates_smith_windows_src_element_rs_safeuielement",to:"crates_smith_windows_src_element_rs_safeuielement_clone",label:"defines",dashes:false,title:"defines: crates_smith_windows_src_element_rs_safeuielement → crates_smith_windows_src_element_rs_safeuielement_clone\nConfidence: Extracted"}];
     var container = document.getElementById('graph-container');
     var nodes = new vis.DataSet(nodesData);
     var edges = new vis.DataSet(edgesData);

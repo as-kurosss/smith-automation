@@ -3,8 +3,8 @@
 - **ID:** `apps_smith_context_src_main_rs_collect_files`
 - **Type:** Function
 - **File:** `./apps/smith-context/src/main.rs`
-- **Location:** L222
-- **Community:** 8 (is_binary_extension())
+- **Location:** L224
+- **Community:** 0 (TreeNode)
 
 ## Relationships
 

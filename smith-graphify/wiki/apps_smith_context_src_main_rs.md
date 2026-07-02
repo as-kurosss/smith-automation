@@ -12,6 +12,7 @@
 - apps_smith_context_src_main_rs → apps_smith_context_src_main_rs_import_clap_parser (imports, Extracted)
 - apps_smith_context_src_main_rs → apps_smith_context_src_main_rs_import_ignore_gitignore_gitignorebuilder (imports, Extracted)
 - apps_smith_context_src_main_rs → apps_smith_context_src_main_rs_import_std_collections_btreemap_hashmap (imports, Extracted)
+- apps_smith_context_src_main_rs → apps_smith_context_src_main_rs_import_std_fmt_write (imports, Extracted)
 - apps_smith_context_src_main_rs → apps_smith_context_src_main_rs_import_std_path_path_pathbuf (imports, Extracted)
 - apps_smith_context_src_main_rs → apps_smith_context_src_main_rs_import_walkdir_walkdir (imports, Extracted)
 - apps_smith_context_src_main_rs → apps_smith_context_src_main_rs_cli (defines, Extracted)

@@ -1,5 +1,14 @@
 # Project Rules
 
+## Документация инструментов
+
+Спецификации реализованных инструментов находятся в `docs/design/<tool-name>/specification.md`:
+- `docs/design/windows-process/specification.md` — управление процессами
+- `docs/design/windows-find/specification.md` — поиск UI-элементов
+- `docs/design/windows-click/specification.md` — клик по элементу
+
+При генерации нового инструмента создавай specification по шаблону `docs/templates/specification-template.md`.
+
 ### Запросы к графу
 
 Для анализа архитектуры или поиска связей используй:

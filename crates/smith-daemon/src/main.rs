@@ -28,7 +28,7 @@
 //!   -d '{"tool":"windows.process","config":{"action":"start","command":"notepad.exe"}}'
 //! ```
 
-use std::net::{IpAddr, SocketAddr};
+use std::net::SocketAddr;
 use std::sync::Arc;
 
 use axum::{
@@ -38,6 +38,7 @@ use axum::{
     response::IntoResponse,
     routing::{get, post},
 };
+use clap::Parser;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 use smith_core::{ExecutionContext, SmithError, ToolRegistry};
@@ -188,41 +189,25 @@ fn classify_error(err: &SmithError) -> (StatusCode, String) {
         SmithError::InvalidParams(_)
         | SmithError::ContextError(_)
         | SmithError::ElementNotFound => (StatusCode::BAD_REQUEST, "BadRequest".into()),
-        SmithError::PlatformError(_) | SmithError::PlatformWithCause { .. } => {
+        SmithError::PlatformError { .. } => {
             (StatusCode::INTERNAL_SERVER_ERROR, "PlatformError".into())
         }
-        SmithError::Cancelled => (StatusCode::SERVICE_UNAVAILABLE, "Cancelled".into()),
+        SmithError::Cancelled => (StatusCode::BAD_REQUEST, "Cancelled".into()),
         SmithError::Other(_) => (StatusCode::INTERNAL_SERVER_ERROR, "InternalError".into()),
     }
 }
 
-/// Парсит аргументы командной строки.
-fn parse_args() -> SocketAddr {
-    let args: Vec<String> = std::env::args().collect();
+/// Аргументы командной строки для `smithd`.
+#[derive(Parser, Debug)]
+#[command(name = "smithd", about = "HTTP daemon for Windows UI automation")]
+struct Args {
+    /// Адрес для привязки (по умолчанию 127.0.0.1)
+    #[arg(long, default_value = "127.0.0.1", value_parser = clap::value_parser!(std::net::IpAddr))]
+    host: std::net::IpAddr,
 
-    let host = if let Some(pos) = args.iter().position(|a| a == "--host") {
-        args.get(pos + 1)
-            .and_then(|val| val.parse::<IpAddr>().ok())
-            .unwrap_or_else(|| {
-                warn!("Invalid or missing --host value, using default 127.0.0.1");
-                IpAddr::from([127, 0, 0, 1])
-            })
-    } else {
-        IpAddr::from([127, 0, 0, 1])
-    };
-
-    let port = if let Some(pos) = args.iter().position(|a| a == "--port") {
-        args.get(pos + 1)
-            .and_then(|val| val.parse::<u16>().ok())
-            .unwrap_or_else(|| {
-                warn!("Invalid or missing --port value, using default 8742");
-                8742
-            })
-    } else {
-        8742
-    };
-
-    SocketAddr::new(host, port)
+    /// Порт для привязки (по умолчанию 8742)
+    #[arg(long, default_value_t = 8742)]
+    port: u16,
 }
 
 // ---------------------------------------------------------------------------
@@ -259,8 +244,9 @@ async fn main() {
         .route("/reset", post(reset_handler))
         .with_state(state);
 
-    // Адрес
-    let addr = parse_args();
+    // Парсинг аргументов и запуск
+    let args = Args::parse();
+    let addr = SocketAddr::new(args.host, args.port);
     info!("Starting smithd on {addr}");
 
     // Graceful shutdown по Ctrl+C

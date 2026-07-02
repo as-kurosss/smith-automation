@@ -4,7 +4,7 @@
 - **Type:** Enum
 - **File:** `./crates/smith-core/src/context.rs`
 - **Location:** L10
-- **Community:** 9 (.try_as_string())
+- **Community:** 25 (.try_as_string())
 
 ## Relationships
 

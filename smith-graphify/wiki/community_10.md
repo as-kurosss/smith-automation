@@ -1,17 +1,23 @@
-# Community 10: lib
+# Community 10: selector
 
-**Members:** 4
+**Members:** 7
 
 ## Nodes
 
-- **lib** (`crates_smith_core_src_lib_rs`, File, degree: 3)
-- **pub use context::{ContextValue, ExecutionContext}** (`crates_smith_core_src_lib_rs_import_pub_use_context_contextvalue_executioncontext`, Module, degree: 1)
-- **pub use error::{SmithError, SmithResult}** (`crates_smith_core_src_lib_rs_import_pub_use_error_smitherror_smithresult`, Module, degree: 1)
-- **pub use tool::{Tool, ToolConfig, ToolResult}** (`crates_smith_core_src_lib_rs_import_pub_use_tool_tool_toolconfig_toolresult`, Module, degree: 1)
+- **selector** (`crates_smith_windows_src_selector_rs`, File, degree: 8)
+- **smith_core::SmithError** (`crates_smith_windows_src_selector_rs_import_smith_core_smitherror`, Module, degree: 1)
+- **std::time::Duration** (`crates_smith_windows_src_selector_rs_import_std_time_duration`, Module, degree: 1)
+- **uiautomation::{Condition, UIElement}** (`crates_smith_windows_src_selector_rs_import_uiautomation_condition_uielement`, Module, degree: 1)
+- **uiautomation::core::UIAutomation** (`crates_smith_windows_src_selector_rs_import_uiautomation_core_uiautomation`, Module, degree: 1)
+- **uiautomation::types::{ControlType, PropertyConditionFlags, TreeScope, UIProperty}** (`crates_smith_windows_src_selector_rs_import_uiautomation_types_controltype_propertyconditionflags_treescope_uiproperty`, Module, degree: 1)
+- **uiautomation::variants::Variant** (`crates_smith_windows_src_selector_rs_import_uiautomation_variants_variant`, Module, degree: 1)
 
 ## Relationships
 
-- crates_smith_core_src_lib_rs → crates_smith_core_src_lib_rs_import_pub_use_context_contextvalue_executioncontext (imports)
-- crates_smith_core_src_lib_rs → crates_smith_core_src_lib_rs_import_pub_use_error_smitherror_smithresult (imports)
-- crates_smith_core_src_lib_rs → crates_smith_core_src_lib_rs_import_pub_use_tool_tool_toolconfig_toolresult (imports)
+- crates_smith_windows_src_selector_rs → crates_smith_windows_src_selector_rs_import_std_time_duration (imports)
+- crates_smith_windows_src_selector_rs → crates_smith_windows_src_selector_rs_import_uiautomation_core_uiautomation (imports)
+- crates_smith_windows_src_selector_rs → crates_smith_windows_src_selector_rs_import_uiautomation_types_controltype_propertyconditionflags_treescope_uiproperty (imports)
+- crates_smith_windows_src_selector_rs → crates_smith_windows_src_selector_rs_import_uiautomation_variants_variant (imports)
+- crates_smith_windows_src_selector_rs → crates_smith_windows_src_selector_rs_import_uiautomation_condition_uielement (imports)
+- crates_smith_windows_src_selector_rs → crates_smith_windows_src_selector_rs_import_smith_core_smitherror (imports)
 

@@ -1,11 +1,11 @@
 ---
-id: crates_smith_core_src_context_rs_import_std_sync_arc
+id: crates_smith_daemon_src_main_rs_import_std_sync_arc
 type: Module
-source: ./crates/smith-core/src/context.rs
-community: 7
-community_label: context
+source: ./crates/smith-daemon/src/main.rs
+community: 1
+community_label: tools_handler()
 ---
 
 ## Connections
 
-- [[context]] (imports)
+- [[main_0]] (imports)

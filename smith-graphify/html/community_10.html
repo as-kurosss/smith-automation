@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>lib — Community 10</title>
+<title>selector — Community 10</title>
 <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -25,8 +25,8 @@ body { background: #0f0f1a; color: #e0e0e0; font-family: 'Segoe UI', system-ui, 
 <body>
 <div id="sidebar">
     <div>
-        <h2>lib</h2>
-        <p style="font-size:12px;color:#666;">4 nodes · Community 10</p>
+        <h2>selector</h2>
+        <p style="font-size:12px;color:#666;">7 nodes · Community 10</p>
     </div>
     <input id="search" type="text" placeholder="Search nodes…" />
     <div>
@@ -35,14 +35,14 @@ body { background: #0f0f1a; color: #e0e0e0; font-family: 'Segoe UI', system-ui, 
     </div>
     <div>
         <h3>Navigation</h3>
-        <a href="index.html" class="nav-link" style="font-weight:bold;">← Overview</a>
+        <a href="index.html" class="nav-link" style="font-weight:bold;">← Overview</a><a href="community_3.html" class="nav-link"><span class="legend-dot" style="background:#76B7B2"></span>parse_control_type() (2 links)</a>
     </div>
 </div>
 <div id="graph-container"></div>
 <script>
 (function() {
-    var nodesData = [{id:"crates_smith_core_src_lib_rs",label:"lib",title:"lib\nType: File\nFile: ./crates/smith-core/src/lib.rs\nDegree: 3",color:"#4E79A7",size:14.9},{id:"crates_smith_core_src_lib_rs_import_pub_use_context_contextvalue_executioncontext",label:"pub use context::{ContextValue, ExecutionContext}",title:"pub use context::{ContextValue, ExecutionContext}\nType: Module\nFile: ./crates/smith-core/src/lib.rs\nDegree: 1",color:"#4E79A7",size:12.0},{id:"crates_smith_core_src_lib_rs_import_pub_use_error_smitherror_smithresult",label:"pub use error::{SmithError, SmithResult}",title:"pub use error::{SmithError, SmithResult}\nType: Module\nFile: ./crates/smith-core/src/lib.rs\nDegree: 1",color:"#4E79A7",size:12.0},{id:"crates_smith_core_src_lib_rs_import_pub_use_tool_tool_toolconfig_toolresult",label:"pub use tool::{Tool, ToolConfig, ToolResult}",title:"pub use tool::{Tool, ToolConfig, ToolResult}\nType: Module\nFile: ./crates/smith-core/src/lib.rs\nDegree: 1",color:"#4E79A7",size:12.0}];
-    var edgesData = [{from:"crates_smith_core_src_lib_rs",to:"crates_smith_core_src_lib_rs_import_pub_use_context_contextvalue_executioncontext",label:"imports",dashes:false,title:"imports: crates_smith_core_src_lib_rs → crates_smith_core_src_lib_rs_import_pub_use_context_contextvalue_executioncontext\nConfidence: Extracted"},{from:"crates_smith_core_src_lib_rs",to:"crates_smith_core_src_lib_rs_import_pub_use_error_smitherror_smithresult",label:"imports",dashes:false,title:"imports: crates_smith_core_src_lib_rs → crates_smith_core_src_lib_rs_import_pub_use_error_smitherror_smithresult\nConfidence: Extracted"},{from:"crates_smith_core_src_lib_rs",to:"crates_smith_core_src_lib_rs_import_pub_use_tool_tool_toolconfig_toolresult",label:"imports",dashes:false,title:"imports: crates_smith_core_src_lib_rs → crates_smith_core_src_lib_rs_import_pub_use_tool_tool_toolconfig_toolresult\nConfidence: Extracted"}];
+    var nodesData = [{id:"crates_smith_windows_src_selector_rs",label:"selector",title:"selector\nType: File\nFile: ./crates/smith-windows/src/selector.rs\nDegree: 8",color:"#4E79A7",size:19.3},{id:"crates_smith_windows_src_selector_rs_import_std_time_duration",label:"std::time::Duration",title:"std::time::Duration\nType: Module\nFile: ./crates/smith-windows/src/selector.rs\nDegree: 1",color:"#4E79A7",size:12.0},{id:"crates_smith_windows_src_selector_rs_import_uiautomation_core_uiautomation",label:"uiautomation::core::UIAutomation",title:"uiautomation::core::UIAutomation\nType: Module\nFile: ./crates/smith-windows/src/selector.rs\nDegree: 1",color:"#4E79A7",size:12.0},{id:"crates_smith_windows_src_selector_rs_import_uiautomation_types_controltype_propertyconditionflags_treescope_uiproperty",label:"uiautomation::types::{ControlType, PropertyConditionFlags, TreeScope, UIProperty}",title:"uiautomation::types::{ControlType, PropertyConditionFlags, TreeScope, UIProperty}\nType: Module\nFile: ./crates/smith-windows/src/selector.rs\nDegree: 1",color:"#4E79A7",size:12.0},{id:"crates_smith_windows_src_selector_rs_import_uiautomation_variants_variant",label:"uiautomation::variants::Variant",title:"uiautomation::variants::Variant\nType: Module\nFile: ./crates/smith-windows/src/selector.rs\nDegree: 1",color:"#4E79A7",size:12.0},{id:"crates_smith_windows_src_selector_rs_import_uiautomation_condition_uielement",label:"uiautomation::{Condition, UIElement}",title:"uiautomation::{Condition, UIElement}\nType: Module\nFile: ./crates/smith-windows/src/selector.rs\nDegree: 1",color:"#4E79A7",size:12.0},{id:"crates_smith_windows_src_selector_rs_import_smith_core_smitherror",label:"smith_core::SmithError",title:"smith_core::SmithError\nType: Module\nFile: ./crates/smith-windows/src/selector.rs\nDegree: 1",color:"#4E79A7",size:12.0}];
+    var edgesData = [{from:"crates_smith_windows_src_selector_rs",to:"crates_smith_windows_src_selector_rs_import_std_time_duration",label:"imports",dashes:false,title:"imports: crates_smith_windows_src_selector_rs → crates_smith_windows_src_selector_rs_import_std_time_duration\nConfidence: Extracted"},{from:"crates_smith_windows_src_selector_rs",to:"crates_smith_windows_src_selector_rs_import_uiautomation_core_uiautomation",label:"imports",dashes:false,title:"imports: crates_smith_windows_src_selector_rs → crates_smith_windows_src_selector_rs_import_uiautomation_core_uiautomation\nConfidence: Extracted"},{from:"crates_smith_windows_src_selector_rs",to:"crates_smith_windows_src_selector_rs_import_uiautomation_types_controltype_propertyconditionflags_treescope_uiproperty",label:"imports",dashes:false,title:"imports: crates_smith_windows_src_selector_rs → crates_smith_windows_src_selector_rs_import_uiautomation_types_controltype_propertyconditionflags_treescope_uiproperty\nConfidence: Extracted"},{from:"crates_smith_windows_src_selector_rs",to:"crates_smith_windows_src_selector_rs_import_uiautomation_variants_variant",label:"imports",dashes:false,title:"imports: crates_smith_windows_src_selector_rs → crates_smith_windows_src_selector_rs_import_uiautomation_variants_variant\nConfidence: Extracted"},{from:"crates_smith_windows_src_selector_rs",to:"crates_smith_windows_src_selector_rs_import_uiautomation_condition_uielement",label:"imports",dashes:false,title:"imports: crates_smith_windows_src_selector_rs → crates_smith_windows_src_selector_rs_import_uiautomation_condition_uielement\nConfidence: Extracted"},{from:"crates_smith_windows_src_selector_rs",to:"crates_smith_windows_src_selector_rs_import_smith_core_smitherror",label:"imports",dashes:false,title:"imports: crates_smith_windows_src_selector_rs → crates_smith_windows_src_selector_rs_import_smith_core_smitherror\nConfidence: Extracted"}];
     var container = document.getElementById('graph-container');
     var nodes = new vis.DataSet(nodesData);
     var edges = new vis.DataSet(edgesData);

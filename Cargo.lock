@@ -848,6 +848,7 @@ name = "smith-daemon"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "clap",
  "serde",
  "serde_json",
  "smith-core",
@@ -867,6 +868,7 @@ dependencies = [
  "smith-core",
  "tokio",
  "tokio-util",
+ "tracing",
  "uiautomation",
 ]
 

@@ -9,28 +9,22 @@ use tokio_util::sync::CancellationToken;
 /// Whitelist of allowed executable names for process start.
 ///
 /// This prevents arbitrary command execution via the HTTP API.
-/// Only well-known Windows utilities and the specified automation targets are permitted.
-/// Keys can be bare names (e.g. "notepad.exe") or full paths.
+/// Only well-known Windows utilities are permitted.
+/// `cmd.exe` and `powershell.exe` are intentionally excluded because they allow
+/// arbitrary command execution via arguments (`/c`, `-Command`).
+///
+/// # Security
+///
+/// The daemon must NOT be exposed to untrusted networks (`--host 127.0.0.1`).
+/// Comparison is case-insensitive (Windows filesystem convention).
 fn is_command_allowed(cmd: &str) -> bool {
     let allowed: HashSet<&str> = HashSet::from_iter([
-        // Standard Windows apps
         "notepad.exe",
         "calc.exe",
         "mspaint.exe",
-        "cmd.exe",
-        "powershell.exe",
         "explorer.exe",
         "write.exe",
         "wordpad.exe",
-        // Common paths for these executables
-        "NOTEPAD.EXE",
-        "CALC.EXE",
-        "MSPAINT.EXE",
-        "CMD.EXE",
-        "POWERSHELL.EXE",
-        "EXPLORER.EXE",
-        "WRITE.EXE",
-        "WORDPAD.EXE",
     ]);
 
     // Extract the file name from the path
@@ -39,7 +33,7 @@ fn is_command_allowed(cmd: &str) -> bool {
         .map(|(_, file)| file)
         .unwrap_or(cmd);
 
-    allowed.contains(name)
+    allowed.contains(name.to_lowercase().as_str())
 }
 
 /// Инструмент для управления процессами Windows.
@@ -164,7 +158,7 @@ fn action_start(config: &Value) -> SmithResult<ToolResult> {
 
     let child = cmd
         .spawn()
-        .map_err(|e| SmithError::PlatformWithCause {
+        .map_err(|e| SmithError::PlatformError {
             message: "Failed to start process".into(),
             source: Box::new(e),
         })?;
@@ -181,31 +175,35 @@ fn action_stop(config: &Value) -> SmithResult<ToolResult> {
     use std::process::Stdio;
 
     if let Some(pid) = config.get("pid").and_then(|v| v.as_u64()) {
-        // Остановка по PID через taskkill — только запускаем, не ждём завершения
-        std::process::Command::new("taskkill")
+        let output = std::process::Command::new("taskkill")
             .args(["/F", "/PID", &pid.to_string()])
             .stdin(Stdio::null())
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .spawn()
-            .map_err(|e| SmithError::PlatformWithCause {
+            .output()
+            .map_err(|e| SmithError::PlatformError {
                 message: "taskkill spawn failed".into(),
                 source: Box::new(e),
             })?;
 
+        if !output.status.success() {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            tracing::warn!("taskkill for pid {} failed: {}", pid, stderr);
+        }
+
         Ok(json!({ "status": "stop_initiated", "method": "pid", "pid": pid }))
     } else if let Some(name) = config.get("name").and_then(|v| v.as_str()) {
-        // Остановка по имени через taskkill — только запускаем, не ждём завершения
-        std::process::Command::new("taskkill")
+        let output = std::process::Command::new("taskkill")
             .args(["/F", "/IM", name])
             .stdin(Stdio::null())
-            .stdout(Stdio::null())
-            .stderr(Stdio::null())
-            .spawn()
-            .map_err(|e| SmithError::PlatformWithCause {
+            .output()
+            .map_err(|e| SmithError::PlatformError {
                 message: "taskkill spawn failed".into(),
                 source: Box::new(e),
             })?;
+
+        if !output.status.success() {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            tracing::warn!("taskkill for {} failed: {}", name, stderr);
+        }
 
         Ok(json!({ "status": "stop_initiated", "method": "name", "name": name }))
     } else {

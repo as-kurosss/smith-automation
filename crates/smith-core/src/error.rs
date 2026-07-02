@@ -16,12 +16,8 @@ pub enum SmithError {
     #[error("Context error: {0}")]
     ContextError(String),
 
-    #[error("Platform error: {0}")]
-    PlatformError(String),
-
-    /// Platform error with full error chain preserved.
     #[error("Platform error: {message}")]
-    PlatformWithCause {
+    PlatformError {
         message: String,
         #[source]
         source: Box<dyn Error + Send + Sync>,
@@ -63,7 +59,10 @@ mod tests {
 
     #[test]
     fn test_platform_error_display() {
-        let err = SmithError::PlatformError("access denied".into());
+        let err = SmithError::PlatformError {
+            message: "access denied".into(),
+            source: Box::new(std::io::Error::new(std::io::ErrorKind::PermissionDenied, "os error")),
+        };
         assert_eq!(err.to_string(), "Platform error: access denied");
     }
 

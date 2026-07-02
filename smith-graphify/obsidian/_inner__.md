@@ -2,7 +2,7 @@
 id: crates_smith_windows_src_element_rs_safeuielement_inner
 type: Method
 source: ./crates/smith-windows/src/element.rs
-community: 3
+community: 14
 community_label: SafeUIElement
 ---
 

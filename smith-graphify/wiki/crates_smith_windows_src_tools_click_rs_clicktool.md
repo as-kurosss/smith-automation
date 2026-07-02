@@ -4,7 +4,7 @@
 - **Type:** Struct
 - **File:** `./crates/smith-windows/src/tools/click.rs`
 - **Location:** L10
-- **Community:** 2 (ClickTool)
+- **Community:** 16 (ClickTool)
 
 ## Relationships
 

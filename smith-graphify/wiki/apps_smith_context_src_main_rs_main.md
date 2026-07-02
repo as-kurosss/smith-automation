@@ -3,8 +3,8 @@
 - **ID:** `apps_smith_context_src_main_rs_main`
 - **Type:** Function
 - **File:** `./apps/smith-context/src/main.rs`
-- **Location:** L118
-- **Community:** 1 (run_graphify_build())
+- **Location:** L120
+- **Community:** 0 (TreeNode)
 
 ## Relationships
 
