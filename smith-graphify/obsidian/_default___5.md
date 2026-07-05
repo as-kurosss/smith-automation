@@ -1,12 +1,12 @@
 ---
-id: crates_smith_windows_src_tools_find_rs_findtool_default
+id: crates_smith_windows_src_tools_process_rs_processtool_default
 type: Method
-source: ./crates/smith-windows/src/tools/find.rs
-community: 15
-community_label: FindTool
+source: .\crates\smith-windows\src\tools\process.rs
+community: 56
+community_label: ProcessTool
 ---
 
 ## Connections
 
-- [[FindTool]] (defines)
-- [[_new___5]] (calls)
+- [[ProcessTool]] (defines)
+- [[_new___10]] (calls)

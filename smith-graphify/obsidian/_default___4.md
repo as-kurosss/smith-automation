@@ -1,12 +1,12 @@
 ---
-id: crates_smith_windows_src_tools_process_rs_processtool_default
+id: crates_smith_windows_src_tools_input_text_rs_inputtexttool_default
 type: Method
-source: ./crates/smith-windows/src/tools/process.rs
-community: 23
-community_label: ProcessTool
+source: .\crates\smith-windows\src\tools\input_text.rs
+community: 32
+community_label: InputTextTool
 ---
 
 ## Connections
 
-- [[ProcessTool]] (defines)
-- [[_new___4]] (calls)
+- [[InputTextTool]] (defines)
+- [[_new___9]] (calls)

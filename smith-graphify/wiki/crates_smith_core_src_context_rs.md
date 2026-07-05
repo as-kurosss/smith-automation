@@ -2,8 +2,8 @@
 
 - **ID:** `crates_smith_core_src_context_rs`
 - **Type:** File
-- **File:** `./crates/smith-core/src/context.rs`
-- **Community:** 4 (test_new_creates_empty_scope())
+- **File:** `.\crates\smith-core\src\context.rs`
+- **Community:** 19 (test_context_value_try_as_string())
 
 ## Relationships
 

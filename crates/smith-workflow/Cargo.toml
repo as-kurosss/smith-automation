@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 smith-core = { path = "../smith-core" }
+smith-graph = { path = "../smith-graph" }
 async-recursion = { workspace = true }
 async-trait = { workspace = true }
 serde = { workspace = true }

@@ -6,6 +6,7 @@ edition = "2024"
 [dependencies]
 smith-core = { path = "../smith-core" }
 smith-workflow = { path = "../smith-workflow" }
+anyhow = { workspace = true }
 rig = { workspace = true }
 serde_json = { workspace = true }
 async-trait = { workspace = true }

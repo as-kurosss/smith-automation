@@ -1,10 +1,10 @@
 // crates/smith-ai/src/lib.rs
-//! Rig-based LLM агент.
+//! Rig-based LLM agent.
 //!
-//! Содержит:
-//! - `adapter` — конвертация smith_core::Tool → rig::tool::Tool
-//! - `agent` — SmithAgent, обёртка над Rig Agent
-//! - `provider` — конфигурация провайдера (OpenAI, Anthropic)
+//! Contains:
+//! - `adapter` — converts smith_core::Tool → rig::tool::Tool
+//! - `agent` — SmithAgent, wrapper over Rig Agent
+//! - `provider` — provider configuration (OpenAI, Anthropic)
 
 pub mod adapter;
 pub mod agent;

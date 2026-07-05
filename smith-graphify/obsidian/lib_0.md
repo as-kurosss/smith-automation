@@ -1,14 +1,13 @@
 ---
-id: crates_smith_core_src_lib_rs
+id: crates_smith_ai_src_lib_rs
 type: File
-source: ./crates/smith-core/src/lib.rs
-community: 21
-community_label: lib (21)
+source: .\crates\smith-ai\src\lib.rs
+community: 59
+community_label: lib (59)
 ---
 
 ## Connections
 
-- [[pub use context___ContextValue_ ExecutionContext_]] (imports)
-- [[pub use error___SmithError_ SmithResult_]] (imports)
-- [[pub use registry__ToolRegistry]] (imports)
-- [[pub use tool___Tool_ ToolConfig_ ToolResult_]] (imports)
+- [[pub use adapter__ToolAdapter]] (imports)
+- [[pub use agent__SmithAgent]] (imports)
+- [[pub use provider__ProviderConfig]] (imports)

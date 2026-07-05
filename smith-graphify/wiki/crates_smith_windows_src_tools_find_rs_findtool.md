@@ -2,9 +2,9 @@
 
 - **ID:** `crates_smith_windows_src_tools_find_rs_findtool`
 - **Type:** Struct
-- **File:** `./crates/smith-windows/src/tools/find.rs`
+- **File:** `.\crates\smith-windows\src\tools\find.rs`
 - **Location:** L14
-- **Community:** 15 (FindTool)
+- **Community:** 41 (FindTool)
 
 ## Relationships
 

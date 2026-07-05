@@ -2,9 +2,9 @@
 
 - **ID:** `crates_smith_windows_src_tools_set_text_rs_settexttool`
 - **Type:** Struct
-- **File:** `./crates/smith-windows/src/tools/set_text.rs`
-- **Location:** L15
-- **Community:** 12 (SetTextTool)
+- **File:** `.\crates\smith-windows\src\tools\set_text.rs`
+- **Location:** L12
+- **Community:** 35 (SetTextTool)
 
 ## Relationships
 

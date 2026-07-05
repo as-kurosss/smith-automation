@@ -1,60 +1,60 @@
 // crates/smith-workflow/src/error.rs
 use thiserror::Error;
 
-/// Ошибки выполнения workflow.
+/// Workflow execution errors.
 #[derive(Error, Debug)]
 pub enum WorkflowError {
-    /// Ошибка валидации workflow (на этапе build()).
+    /// Workflow validation error (at build() stage).
     #[error("Workflow validation error: {0}")]
     ValidationError(String),
 
-    /// Инструмент RPA не найден в реестре.
+    /// RPA tool not found in the registry.
     #[error("Tool '{0}' not found in registry")]
     ToolNotFound(String),
 
-    /// Ошибка выполнения RPA-шага.
+    /// RPA step execution error.
     #[error("Step {} failed: {source}", step_idx)]
     StepError {
-        /// Индекс шага в workflow.
+        /// Step index in the workflow.
         step_idx: usize,
-        /// Причина ошибки.
+        /// Error cause.
         #[source]
         source: Box<dyn std::error::Error + Send + Sync>,
     },
 
-    /// Ошибка выполнения AI-агента.
+    /// AI agent execution error.
     #[error("Agent error: {0}")]
     AgentError(String),
 
-    /// Агент не сконфигурирован (пытаемся выполнить Agent/Think/Decide без AI).
+    /// Agent not configured (attempting to execute Agent/Think/Decide without AI).
     #[error("Agent not configured but AI step was requested")]
     AgentNotConfigured,
 
-    /// Workflow отменён.
+    /// Workflow cancelled.
     #[error("Workflow cancelled")]
     Cancelled,
 
-    /// Ошибка провайдера (OpenAI/Anthropic и т.д.).
+    /// Provider error (OpenAI/Anthropic etc.).
     #[error("Provider error: {0}")]
     ProviderError(String),
 
-    /// Ошибка сериализации/десериализации.
+    /// Serialization/deserialization error.
     #[error("Serialization error: {0}")]
     SerdeError(#[from] serde_json::Error),
 
-    /// Прочие ошибки.
+    /// Other errors.
     #[error("{0}")]
     Other(String),
 }
 
-/// Контекст ошибки RPA-шага: имя тула + аргументы + оригинальная ошибка.
+/// RPA step error context: tool name + arguments + original error.
 #[derive(Debug)]
 pub struct StepErrorContext {
-    /// Имя инструмента (например "windows.click").
+    /// Tool name (e.g. "windows.click").
     pub tool: String,
-    /// Аргументы вызова.
+    /// Call arguments.
     pub args: serde_json::Value,
-    /// Оригинальная ошибка выполнения.
+    /// Original execution error.
     pub inner: smith_core::SmithError,
 }
 
@@ -74,19 +74,19 @@ impl std::error::Error for StepErrorContext {
     }
 }
 
-/// Результат выполнения workflow.
+/// Workflow execution result.
 #[derive(Debug, Clone)]
 pub struct AgentResult {
-    /// Успешно ли выполнен workflow.
+    /// Whether the workflow completed successfully.
     pub success: bool,
-    /// Имя workflow.
+    /// Workflow name.
     pub workflow_name: String,
-    /// Количество выполненных шагов.
+    /// Number of completed steps.
     pub steps_completed: usize,
-    /// Выходные данные (последний результат или итоговый JSON).
+    /// Output data (last result or final JSON).
     pub output: serde_json::Value,
-    /// Результаты всех шагов (индекс шага → JSON).
+    /// Results of all steps (step index → JSON).
     pub step_results: std::collections::HashMap<usize, serde_json::Value>,
-    /// Время выполнения в миллисекундах.
+    /// Execution time in milliseconds.
     pub execution_time_ms: u64,
 }

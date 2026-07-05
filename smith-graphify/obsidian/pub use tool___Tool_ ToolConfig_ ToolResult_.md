@@ -1,11 +1,11 @@
 ---
 id: crates_smith_core_src_lib_rs_import_pub_use_tool_tool_toolconfig_toolresult
 type: Module
-source: ./crates/smith-core/src/lib.rs
-community: 21
-community_label: lib (21)
+source: .\crates\smith-core\src\lib.rs
+community: 36
+community_label: lib
 ---
 
 ## Connections
 
-- [[lib_0]] (imports)
+- [[lib_1]] (imports)

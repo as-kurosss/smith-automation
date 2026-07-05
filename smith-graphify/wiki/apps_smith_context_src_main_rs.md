@@ -2,8 +2,8 @@
 
 - **ID:** `apps_smith_context_src_main_rs`
 - **Type:** File
-- **File:** `./apps/smith-context/src/main.rs`
-- **Community:** 0 (TreeNode)
+- **File:** `.\apps\smith-context\src\main.rs`
+- **Community:** 2 (TreeNode)
 
 ## Relationships
 

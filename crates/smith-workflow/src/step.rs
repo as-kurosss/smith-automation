@@ -1,66 +1,58 @@
 // crates/smith-workflow/src/step.rs
 use serde_json::Value;
+pub use smith_core::RetryPolicy;
 use tracing::warn;
 
 use crate::workflow::Workflow;
 
-/// Политика повторных попыток для RPA-шага.
-#[derive(Debug, Clone, Default)]
-pub struct RetryPolicy {
-    /// Максимальное количество повторов (0 — без повторов).
-    pub max_retries: u32,
-    /// Задержка между повторами в миллисекундах.
-    pub delay_ms: u64,
-}
-
-/// Варианты шагов workflow.
+/// Workflow step variants.
 #[derive(Debug, Clone)]
 pub enum StepKind {
-    /// Детерминированный RPA-шаг. Никакого LLM.
-    /// name — имя инструмента (например "windows.click").
+    /// Deterministic RPA step. No LLM involved.
+    /// name — tool name (e.g. "windows.click").
     Rpa {
         name: &'static str,
         args: Value,
         retry: RetryPolicy,
     },
-    /// Agent получает prompt и сам решает,
-    /// какие RPA-инструменты вызывать и в каком порядке.
+    /// Agent receives a prompt and decides,
+    /// which RPA tools to call and in what order.
     Agent {
         prompt: String,
-        /// Имёна тулов, доступных агенту (подмножество всех зарегистрированных).
+        /// Tool names available to the agent (subset of all registered tools).
         tools: Vec<String>,
-        /// Лимит вызовов инструментов за один шаг.
+        /// Limit of tool calls per step.
         max_steps: usize,
     },
-    /// Agent генерирует данные/решение без вызова инструментов.
+    /// Agent generates data/solution without calling tools.
     Think {
         prompt: String,
         output_schema: Value,
     },
-    /// Agent выбирает один вариант из списка.
+    /// Agent selects one option from a list.
     Decide {
         prompt: String,
         options: Vec<String>,
     },
-    /// Вложенный workflow.
+    /// Nested workflow.
     Workflow(Workflow),
 }
 
-/// Шаг workflow.
+/// Workflow step.
 ///
-/// Создаётся через конструкторы:
-/// - `Step::rpa("name")` — RPA-шаг
-/// - `Step::agent("prompt")` — свободный агент с тулами
-/// - `Step::agent_think("prompt")` — LLM генерирует данные
-/// - `Step::agent_decide("prompt")` — LLM выбирает вариант
-/// - `Step::workflow(sub)` — вложенный workflow
+/// Created via constructors:
+/// - `Step::rpa("name")` — RPA step
+/// - `Step::agent("prompt")` — free agent with tools
+/// - `Step::agent_think("prompt")` — LLM generates data
+/// - `Step::agent_decide("prompt")` — LLM selects an option
+/// - `Step::workflow(sub)` — nested workflow
 #[derive(Debug, Clone)]
 pub struct Step {
     pub(crate) kind: StepKind,
 }
 
 impl Step {
-    /// Создаёт RPA-шаг.
+    /// Creates an RPA step.
     pub fn rpa(name: &'static str) -> Self {
         Self {
             kind: StepKind::Rpa {
@@ -71,7 +63,7 @@ impl Step {
         }
     }
 
-    /// Задаёт аргументы для RPA-шага.
+    /// Sets arguments for the RPA step.
     pub fn args(mut self, args: Value) -> Self {
         self.kind = match self.kind {
             StepKind::Rpa {
@@ -87,7 +79,7 @@ impl Step {
         self
     }
 
-    /// Задаёт политику повторов для RPA-шага.
+    /// Sets the retry policy for the RPA step.
     pub fn retry(mut self, policy: RetryPolicy) -> Self {
         self.kind = match self.kind {
             StepKind::Rpa {
@@ -107,7 +99,7 @@ impl Step {
         self
     }
 
-    /// Создаёт Agent-шаг (LLM с инструментами).
+    /// Creates an Agent step (LLM with tools).
     pub fn agent(prompt: impl Into<String>) -> Self {
         Self {
             kind: StepKind::Agent {
@@ -118,7 +110,7 @@ impl Step {
         }
     }
 
-    /// Задаёт список тулов, доступных агенту.
+    /// Sets the list of tools available to the agent.
     pub fn tools(mut self, tool_names: Vec<&'static str>) -> Self {
         self.kind = match self.kind {
             StepKind::Agent {
@@ -138,7 +130,7 @@ impl Step {
         self
     }
 
-    /// Задаёт максимальное количество шагов агента.
+    /// Sets the maximum number of agent steps.
     pub fn max_steps(mut self, max: usize) -> Self {
         self.kind = match self.kind {
             StepKind::Agent {
@@ -158,7 +150,7 @@ impl Step {
         self
     }
 
-    /// Создаёт Think-шаг (LLM генерирует данные).
+    /// Creates a Think step (LLM generates data).
     pub fn agent_think(prompt: impl Into<String>) -> Self {
         Self {
             kind: StepKind::Think {
@@ -168,7 +160,7 @@ impl Step {
         }
     }
 
-    /// Задаёт JSON Schema для Think-шага.
+    /// Sets JSON Schema for the Think step.
     pub fn schema(mut self, schema: Value) -> Self {
         self.kind = match self.kind {
             StepKind::Think {
@@ -186,7 +178,7 @@ impl Step {
         self
     }
 
-    /// Создаёт Decide-шаг (LLM выбирает вариант).
+    /// Creates a Decide step (LLM selects an option).
     pub fn agent_decide(prompt: impl Into<String>) -> Self {
         Self {
             kind: StepKind::Decide {
@@ -196,7 +188,7 @@ impl Step {
         }
     }
 
-    /// Добавляет контекст к промпту Decide-шага.
+    /// Adds context to the Decide step prompt.
     pub fn context(self, context: &str) -> Self {
         match self.kind {
             StepKind::Decide { prompt, options } => Self {
@@ -212,7 +204,7 @@ impl Step {
         }
     }
 
-    /// Задаёт варианты для Decide-шага.
+    /// Sets options for the Decide step.
     pub fn options(mut self, opts: &[&str]) -> Self {
         self.kind = match self.kind {
             StepKind::Decide { prompt, options: _ } => StepKind::Decide {
@@ -224,14 +216,14 @@ impl Step {
         self
     }
 
-    /// Создаёт шаг-вложенный-workflow.
+    /// Creates a nested workflow step.
     pub fn workflow(workflow: Workflow) -> Self {
         Self {
             kind: StepKind::Workflow(workflow),
         }
     }
 
-    /// Возвращает имя вида шага для логирования.
+    /// Returns the step kind name for logging.
     pub fn kind_name(&self) -> &'static str {
         match &self.kind {
             StepKind::Rpa { .. } => "RPA",

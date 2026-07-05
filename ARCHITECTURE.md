@@ -5,28 +5,28 @@
 ```
 smith-automation/
 ├── crates/
-│   ├── smith-core/          # Кросс-платформенное ядро
+│   ├── smith-core/          # Cross-platform core
 │   │   ├── src/
-│   │   │   ├── lib.rs       # Публичный API (flat re-exports)
-│   │   │   ├── tool.rs      # Trait Tool, типы ToolConfig/ToolResult
+│   │   │   ├── lib.rs       # Public API (flat re-exports)
+│   │   │   ├── tool.rs      # Trait Tool, ToolConfig/ToolResult types
 │   │   │   ├── context.rs   # ExecutionContext, ContextValue
 │   │   │   ├── registry.rs  # ToolRegistry
 │   │   │   └── error.rs     # SmithError, SmithResult
 │   │   └── Cargo.toml
 │   ├── smith-windows/       # Windows UI automation
 │   │   ├── src/
-│   │   │   ├── lib.rs       # Реэкспорт под cfg(windows)
-│   │   │   ├── tools/mod.rs # Модуль инструментов
-│   │   │   ├── tools/       # Реализации инструментов
+│   │   │   ├── lib.rs       # Re-export under cfg(windows)
+│   │   │   ├── tools/mod.rs # Tool module
+│   │   │   ├── tools/       # Tool implementations
 │   │   │   ├── selector.rs  # ElementSelector
 │   │   │   └── element.rs   # SafeUIElement
 │   │   └── Cargo.toml
 │   └── smith-daemon/        # HTTP daemon
 │       ├── src/
-│       │   └── main.rs      # axum-сервер smithd
+│       │   └── main.rs      # axum server for smithd
 │       └── Cargo.toml
 ├── apps/
-│   └── smith-context/       # Утилита сбора контекста (отдельная)
+│   └── smith-context/       # Context gathering utility (separate)
 ├── docs/
 │   ├── adr/                 # ADR
 │   └── templates/
@@ -36,21 +36,21 @@ smith-automation/
 
 ### smith-core
 
-Ядро не имеет платформенных зависимостей. Содержит:
-- **Tool trait** — интерфейс для всех инструментов автоматизации.
-- **ExecutionContext** — scoped-хранилище переменных, через которое инструменты обмениваются данными.
-- **ContextValue** — типобезопасное представление произвольных значений (String, Number, Boolean, List, Bytes, Custom).
-- **SmithError** — иерархия ошибок с `thiserror`.
+The core has no platform dependencies. Contains:
+- **Tool trait** — interface for all automation tools.
+- **ExecutionContext** — scoped variable storage through which tools exchange data.
+- **ContextValue** — type-safe representation of arbitrary values (String, Number, Boolean, List, Bytes, Custom).
+- **SmithError** — error hierarchy with `thiserror`.
 
 ### smith-windows
 
-Реализация инструментов для Windows через UIAutomation API. Весь платформенный код изолирован за `#[cfg(windows)]`, что позволяет компилировать крейт на любой платформе.
+Implementation of Windows tools via UIAutomation API. All platform-specific code is isolated behind `#[cfg(windows)]`, allowing the crate to compile on any platform.
 
 ## Tool trait and ToolRegistry
 
 ### Tool trait
 
-Базовый интерфейс для всех инструментов:
+Base interface for all tools:
 
 ```rust
 #[async_trait]
@@ -63,38 +63,38 @@ pub trait Tool: Send + Sync {
 }
 ```
 
-- **Send + Sync** — инструменты исполняются в многопоточном Tokio runtime.
-- **Stateless** — инструмент не хранит состояние выполнения, только конфигурацию.
-- **CancellationToken** — поддержка graceful shutdown и timeout.
-- **ToolConfig/ToolResult** — тип `serde_json::Value` (гибкий транспорт).
+- **Send + Sync** — tools execute in a multi-threaded Tokio runtime.
+- **Stateless** — the tool does not store execution state, only configuration.
+- **CancellationToken** — support for graceful shutdown and timeout.
+- **ToolConfig/ToolResult** — type `serde_json::Value` (flexible transport).
 
 ### ToolRegistry
 
-Реализован в `crates/smith-core/src/registry.rs`. Инструменты регистрируются статически (`HashMap<&str, Box<dyn Tool>>`). Предоставляет:
+Implemented in `crates/smith-core/src/registry.rs`. Tools are registered statically (`HashMap<&str, Box<dyn Tool>>`). Provides:
 
-- Регистрацию инструментов по имени (`register`).
-- Поиск инструмента (`get`).
-- Централизованный `execute` с единой обработкой ошибок.
-- Список доступных инструментов (`list_tools`).
+- Registration of tools by name (`register`).
+- Tool lookup (`get`).
+- Centralized `execute` with unified error handling.
+- List of available tools (`list_tools`).
 
-Динамическая загрузка через библиотеки отложена (см. ADR-0001).
+Dynamic loading via libraries is deferred (see ADR-0001).
 
 ## ExecutionContext and scoped variables
 
-`ExecutionContext` — это стек областей видимости (`Vec<HashMap<String, ContextValue>>`).
+`ExecutionContext` is a stack of scopes (`Vec<HashMap<String, ContextValue>>`).
 
 ```
-Global scope (index 0)   ← создаётся при new()
+Global scope (index 0)   ← created with new()
   └─ Local scope 1       ← push_scope()
       └─ Local scope 2   ← push_scope()
 ```
 
-**Операции:**
-- `set(key, value)` — запись в верхнюю (текущую) область.
-- `get(key)` — поиск от верхней области к глобальной (LIFO). Возвращает первое найденное значение.
-- `push_scope()` / `pop_scope()` — управление областями для изоляции вложенных вызовов.
+**Operations:**
+- `set(key, value)` — write to the top (current) scope.
+- `get(key)` — search from top scope to global (LIFO). Returns the first found value.
+- `push_scope()` / `pop_scope()` — manage scopes for isolating nested calls.
 
-**ContextValue** — алгебраический тип для типобезопасного хранения:
+**ContextValue** — an algebraic type for type-safe storage:
 
 ```rust
 pub enum ContextValue {
@@ -104,19 +104,19 @@ pub enum ContextValue {
 }
 ```
 
-Методы `try_as_string()`, `try_as_number()`, `try_as_boolean()`, `try_as_custom::<T>()` возвращают `Result` для безопасного извлечения.
+Methods `try_as_string()`, `try_as_number()`, `try_as_boolean()`, `try_as_custom::<T>()` return `Result` for safe extraction.
 
 ## ElementSelector approach for UI automation
 
-Элементы UI идентифицируются и извлекаются через UIAutomation API. `SafeUIElement` — потокобезопасная обёртка над `UIElement`:
+UI elements are identified and retrieved via the UIAutomation API. `SafeUIElement` is a thread-safe wrapper over `UIElement`:
 
-1. **Поиск** — элементы находятся через дерево UIA (по AutomationId, Name, ControlType, условиям).
-2. **PID-привязка** — поиск может быть ограничен конкретным процессом (PID) для изоляции.
-3. **SafeUIElement** — `Arc<UIElement>` с `unsafe impl Send + Sync` (UI Automation COM-объекты free-threaded).
-4. **spawn_blocking** — все мутирующие операции (клики, ввод) выполняются в выделенном потоке, чтобы не блокировать async runtime.
+1. **Search** — elements are found via the UIA tree (by AutomationId, Name, ControlType, conditions).
+2. **PID binding** — search can be limited to a specific process (PID) for isolation.
+3. **SafeUIElement** — `Arc<UIElement>` with `unsafe impl Send + Sync` (UI Automation COM objects are free-threaded).
+4. **spawn_blocking** — all mutating operations (clicks, input) execute in a dedicated thread to avoid blocking the async runtime.
 
 ```rust
-// Извлечение из контекста и выполнение
+// Extract from context and execute
 let wrapper = value.try_as_custom::<SafeUIElement>()?;
 let element_clone = wrapper.clone();
 tokio::task::spawn_blocking(move || {
@@ -126,9 +126,9 @@ tokio::task::spawn_blocking(move || {
 
 ## cfg(windows) strategy for cross-platform code
 
-Платформенная изоляция реализована на двух уровнях:
+Platform isolation is implemented at two levels:
 
-### 1. Модульный уровень (в lib.rs)
+### 1. Module level (in lib.rs)
 
 ```rust
 // smith-windows/src/lib.rs
@@ -138,29 +138,29 @@ pub mod element;
 pub use element::SafeUIElement;
 ```
 
-На не-Windows платформах эти модули и типы не существуют — код не компилируется.
+On non-Windows platforms, these modules and types do not exist — the code does not compile.
 
-### 2. Зависимости (в Cargo.toml)
+### 2. Dependencies (in Cargo.toml)
 
 ```toml
 [target.'cfg(windows)'.dependencies]
 uiautomation = "0.25.0"
 ```
 
-Библиотека `uiautomation` (и транзитивные зависимости через `windows`) загружаются только при сборке под Windows.
+The `uiautomation` library (and transitive dependencies via `windows`) are only loaded when building for Windows.
 
 ### smith-daemon
 
-HTTP-сервер `smithd` (`crates/smith-daemon`) предоставляет удалённый доступ к инструментам:
+The HTTP server `smithd` (`crates/smith-daemon`) provides remote access to tools:
 
-- Запускается на Windows и регистрирует все `smith-windows` инструменты.
-- Слушает на настраиваемом host/port (`--host`, `--port`, по умолчанию `127.0.0.1:8742`).
+- Runs on Windows and registers all `smith-windows` tools.
+- Listens on a configurable host/port (`--host`, `--port`, default `127.0.0.1:8742`).
 - Endpoints: `POST /execute`, `GET /tools`, `GET /health`, `POST /reset`.
-- Позволяет управлять Windows UI из WSL или другого клиента по HTTP.
+- Allows controlling Windows UI from WSL or another HTTP client.
 
-### 3. Планы на будущее
+### 3. Future plans
 
-- `smith-core` остаётся полностью платформонезависимым.
-- Для Linux: крейт `smith-linux` (X11/Wayland через AT-SPI).
-- Для macOS: крейт `smith-macos` (Accessibility API).
-- Выбор backend'а через feature flags в `smith-core` или через динамический registry.
+- `smith-core` remains fully platform-independent.
+- For Linux: a `smith-linux` crate (X11/Wayland via AT-SPI).
+- For macOS: a `smith-macos` crate (Accessibility API).
+- Backend selection via feature flags in `smith-core` or through dynamic registry.

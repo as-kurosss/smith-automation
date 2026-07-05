@@ -1,11 +1,11 @@
 ---
-id: crates_smith_windows_src_selector_rs_import_uiautomation_core_uiautomation
+id: apps_selector_capture_src_capture_rs_import_uiautomation_core_uiautomation
 type: Module
-source: ./crates/smith-windows/src/selector.rs
-community: 10
-community_label: selector
+source: .\apps\selector-capture\src\capture.rs
+community: 12
+community_label: read_node()
 ---
 
 ## Connections
 
-- [[selector]] (imports)
+- [[capture]] (imports)

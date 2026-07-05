@@ -1,6 +1,6 @@
 # smith-automation
 
-**Smith** — Rust-библиотека для программной автоматизации UI на Windows.
+**Smith** — A Rust library for programmatic UI automation on Windows.
 
 ```rust
 use smith_core::{ExecutionContext, ToolRegistry};
@@ -17,30 +17,43 @@ let result = registry
 
 ## Goals
 
-- Type-safe, async-first API для UI automation на Rust
-- Windows UI Automation (UIA) — основной движок
-- Cancellation, timeouts, scoped-переменные
-- Plugin-архитектура через трейт `Tool`
+- Type-safe, async-first API for UI automation in Rust
+- Windows UI Automation (UIA) — primary engine
+- Cancellation, timeouts, scoped variables
+- Plugin architecture via the `Tool` trait
 
 ## Workspace
 
 ```text
 crates/
-├── smith-core/         # Ядро: Tool, ExecutionContext, SmithError
-└── smith-windows/      # Инструменты: Click, Find, InputText, Process, SetText
+├── smith-core/         # Core: Tool, ExecutionContext, SmithError
+├── smith-windows/      # Windows UI Automation tools
+├── smith-workflow/     # Workflow engine (linear steps)
+├── smith-rpa/          # Type-safe Step constructors
+├── smith-ai/           # Rig-based LLM agent
+└── smith-graph/        # FlowGraph execution engine
+apps/
+├── smith-examples/     # Example applications
+└── selector-capture/   # UI selector capture utility
 ```
 
-| Crate | Описание |
-|-------|----------|
-| **smith-core** | Трейт `Tool`, `ExecutionContext` со scoped-переменными, `SmithError` |
-| **smith-windows** | Инструменты UI Automation (`ClickTool`, `FindTool`, `InputTextTool`, `ProcessTool`, `SetTextTool`) |
+| Crate | Description |
+|-------|-------------|
+| **smith-core** | `Tool` trait, `ExecutionContext` with scoped variables, `SmithError` |
+| **smith-windows** | UI Automation tools (`ClickTool`, `FindTool`, `InputTextTool`, `ProcessTool`, `SetTextTool`, `WaitTool`) |
+| **smith-workflow** | Workflow engine with linear RPA/AI step execution |
+| **smith-rpa** | Type-safe Step constructors by domain (windows) |
+| **smith-ai** | Rig-based LLM agent wrapper (`SmithAgent`) |
+| **smith-graph** | FlowGraph — graph execution engine with error handling and routing |
+| **smith-examples** | Example apps: pure RPA, AI agent, FlowGraph, combined workflow |
+| **selector-capture** | UI element selector capture utility |
 
 ## Build
 
 ```bash
-cargo build                    # всё
-cargo build -p smith-core      # только ядро
-cargo build -p smith-windows   # Windows-инструменты
+cargo build                    # everything
+cargo build -p smith-core      # core only
+cargo build -p smith-windows   # Windows tools
 ```
 
 ## Development

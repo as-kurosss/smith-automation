@@ -1,19 +1,18 @@
 ---
-id: crates_smith_core_src_registry_rs_toolregistry_new
+id: crates_smith_core_src_context_rs_executioncontext_new
 type: Method
-source: ./crates/smith-core/src/registry.rs
-community: 2
-community_label: ToolRegistry
+source: .\crates\smith-core\src\context.rs
+community: 14
+community_label: test_set_and_get_variable()
 ---
 
 ## Connections
 
-- [[ToolRegistry]] (defines)
-- [[_register__]] (calls)
-- [[_default___1]] (calls)
-- [[test_new_creates_empty_registry__]] (calls)
-- [[test_register_and_get_tool__]] (calls)
-- [[test_get_unknown_tool__]] (calls)
-- [[test_execute_success__]] (calls)
-- [[test_execute_unknown_tool__]] (calls)
-- [[test_list_tools__]] (calls)
+- [[ExecutionContext]] (defines)
+- [[_push_scope__]] (calls)
+- [[_default___0]] (calls)
+- [[test_new_creates_empty_scope__]] (calls)
+- [[test_set_and_get_variable__]] (calls)
+- [[test_get_returns_none_for_missing_key__]] (calls)
+- [[test_push_scope_isolation__]] (calls)
+- [[test_pop_scope_does_not_remove_global__]] (calls)

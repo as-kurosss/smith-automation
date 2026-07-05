@@ -1,7 +1,7 @@
 // crates/smith-workflow/src/executor.rs
 
 use serde_json::Value;
-use smith_core::{ExecutionContext, ToolRegistry};
+use smith_core::{AiHandler, ExecutionContext, ToolRegistry};
 use tokio_util::sync::CancellationToken;
 use tracing::{info, warn};
 
@@ -10,50 +10,17 @@ use crate::error::{AgentResult, WorkflowError};
 use crate::step::{Step, StepKind};
 use crate::workflow::Workflow;
 
-/// Исполнитель workflow.
+/// Workflow executor.
 ///
-/// Не зависит от AI — выполняет RPA-шаги через `ToolRegistry`,
-/// а Agent/Think/Decide шаги делегирует внешнему `AiHandler`.
+/// Does not depend on AI — executes RPA steps via `ToolRegistry`,
+/// and delegates Agent/Think/Decide steps to an external `AiHandler`.
 pub struct WorkflowExecutor<'a> {
     registry: &'a ToolRegistry,
     ai_handler: Option<&'a dyn AiHandler>,
 }
 
-/// Трейт для обработки AI-шагов.
-/// Позволяет не зависеть от конкретной реализации SmithAgent.
-#[async_trait::async_trait]
-pub trait AiHandler: Send + Sync {
-    /// Выполнить prompt с инструментами.
-    async fn agent_run(
-        &self,
-        prompt: &str,
-        tools: &[String],
-        max_steps: usize,
-        ctx: &mut WorkflowContext,
-        token: &CancellationToken,
-    ) -> Result<Value, WorkflowError>;
-
-    /// Выполнить think (LLM без инструментов).
-    async fn think(
-        &self,
-        prompt: &str,
-        schema: &Value,
-        ctx: &mut WorkflowContext,
-        token: &CancellationToken,
-    ) -> Result<Value, WorkflowError>;
-
-    /// Выполнить decide (LLM выбирает опцию).
-    async fn decide(
-        &self,
-        prompt: &str,
-        options: &[String],
-        ctx: &mut WorkflowContext,
-        token: &CancellationToken,
-    ) -> Result<String, WorkflowError>;
-}
-
 impl<'a> WorkflowExecutor<'a> {
-    /// Создаёт новый исполнитель.
+    /// Creates a new executor.
     pub fn new(registry: &'a ToolRegistry, ai_handler: Option<&'a dyn AiHandler>) -> Self {
         Self {
             registry,
@@ -61,9 +28,9 @@ impl<'a> WorkflowExecutor<'a> {
         }
     }
 
-    /// Создаёт исполнитель только для RPA-шагов (без AI).
+    /// Creates an executor for RPA-only steps (without AI).
     ///
-    /// Удобно, когда workflow состоит только из `Step::rpa(...)`.
+    /// Convenient when the workflow consists only of `Step::rpa(...)`.
     #[must_use]
     pub fn new_rpa(registry: &'a ToolRegistry) -> Self {
         Self {
@@ -72,7 +39,7 @@ impl<'a> WorkflowExecutor<'a> {
         }
     }
 
-    /// Выполняет workflow целиком.
+    /// Executes the entire workflow.
     #[async_recursion::async_recursion]
     pub async fn execute(
         &self,
@@ -117,7 +84,7 @@ impl<'a> WorkflowExecutor<'a> {
             }
         }
 
-        // Возвращаем ExecutionContext обратно
+        // Return ExecutionContext back
         std::mem::swap(ctx, &mut wf_ctx.inner);
 
         let elapsed = wf_ctx.elapsed_ms();
@@ -135,7 +102,7 @@ impl<'a> WorkflowExecutor<'a> {
         })
     }
 
-    /// Выполняет один шаг, имея доступ к choices для conditional routing.
+    /// Executes a single step with access to choices for conditional routing.
     #[allow(clippy::needless_pass_by_value)]
     async fn execute_step(
         &self,
@@ -157,8 +124,9 @@ impl<'a> WorkflowExecutor<'a> {
                 ctx.agent_count += 1;
                 let handler = self.ai_handler.ok_or(WorkflowError::AgentNotConfigured)?;
                 handler
-                    .agent_run(prompt, tools, *max_steps, ctx, token)
+                    .agent_run(prompt, tools, *max_steps, &mut ctx.inner, token)
                     .await
+                    .map_err(|e| WorkflowError::AgentError(e.to_string()))
             }
             StepKind::Think {
                 prompt,
@@ -166,14 +134,20 @@ impl<'a> WorkflowExecutor<'a> {
             } => {
                 ctx.agent_count += 1;
                 let handler = self.ai_handler.ok_or(WorkflowError::AgentNotConfigured)?;
-                handler.think(prompt, output_schema, ctx, token).await
+                handler
+                    .think(prompt, output_schema, &mut ctx.inner, token)
+                    .await
+                    .map_err(|e| WorkflowError::AgentError(e.to_string()))
             }
             StepKind::Decide { prompt, options } => {
                 ctx.agent_count += 1;
                 let handler = self.ai_handler.ok_or(WorkflowError::AgentNotConfigured)?;
-                let choice = handler.decide(prompt, options, ctx, token).await?;
+                let choice = handler
+                    .decide(prompt, options, &mut ctx.inner, token)
+                    .await
+                    .map_err(|e| WorkflowError::AgentError(e.to_string()))?;
 
-                // Проверяем conditional routing
+                // Check conditional routing
                 if let Some(sub) = choices.get(&ctx.current_step).and_then(|c| c.get(&choice)) {
                     let mut sub_ctx = ExecutionContext::new();
                     let sub_result =
@@ -198,19 +172,18 @@ impl<'a> WorkflowExecutor<'a> {
         }
     }
 
-    /// Выполняет RPA-шаг через ToolRegistry с retry.
+    /// Executes an RPA step via ToolRegistry with retry.
     async fn execute_rpa(
         &self,
         name: &str,
         args: &Value,
-        retry: &crate::step::RetryPolicy,
+        retry: &smith_core::RetryPolicy,
         ctx: &mut WorkflowContext,
         token: &CancellationToken,
     ) -> Result<Value, WorkflowError> {
         let max_retries = retry.max_retries;
 
-        // Retry attempts with sleep between them
-        for attempt in 0..max_retries {
+        for attempt in 0..=max_retries {
             if token.is_cancelled() {
                 return Err(WorkflowError::Cancelled);
             }
@@ -222,6 +195,16 @@ impl<'a> WorkflowExecutor<'a> {
             {
                 Ok(result) => return Ok(result),
                 Err(e) => {
+                    if attempt == max_retries {
+                        return Err(WorkflowError::StepError {
+                            step_idx: ctx.current_step,
+                            source: Box::new(crate::error::StepErrorContext {
+                                tool: name.to_string(),
+                                args: args.clone(),
+                                inner: e,
+                            }),
+                        });
+                    }
                     warn!(
                         "RPA tool '{name}' failed (attempt {}/{max_retries}): {e}",
                         attempt + 1,
@@ -232,22 +215,7 @@ impl<'a> WorkflowExecutor<'a> {
             }
         }
 
-        // Last attempt — no retry, propagate final error
-        if token.is_cancelled() {
-            return Err(WorkflowError::Cancelled);
-        }
-
-        self.registry
-            .execute(name, args.clone(), &mut ctx.inner, token.clone())
-            .await
-            .map_err(|e| WorkflowError::StepError {
-                step_idx: ctx.current_step,
-                source: Box::new(crate::error::StepErrorContext {
-                    tool: name.to_string(),
-                    args: args.clone(),
-                    inner: e,
-                }),
-            })
+        unreachable!()
     }
 }
 
@@ -292,10 +260,10 @@ mod tests {
             _prompt: &str,
             _tools: &[String],
             _max_steps: usize,
-            ctx: &mut WorkflowContext,
+            ctx: &mut ExecutionContext,
             _token: &CancellationToken,
-        ) -> Result<Value, WorkflowError> {
-            ctx.inner.set("ai_ran", ContextValue::Boolean(true));
+        ) -> SmithResult<Value> {
+            ctx.set("ai_ran", ContextValue::Boolean(true));
             Ok(serde_json::json!({ "result": "ai_ok" }))
         }
 
@@ -303,10 +271,10 @@ mod tests {
             &self,
             _prompt: &str,
             _schema: &Value,
-            ctx: &mut WorkflowContext,
+            ctx: &mut ExecutionContext,
             _token: &CancellationToken,
-        ) -> Result<Value, WorkflowError> {
-            ctx.inner.set("think_ran", ContextValue::Boolean(true));
+        ) -> SmithResult<Value> {
+            ctx.set("think_ran", ContextValue::Boolean(true));
             Ok(serde_json::json!({ "analysis": "done" }))
         }
 
@@ -314,10 +282,10 @@ mod tests {
             &self,
             _prompt: &str,
             options: &[String],
-            ctx: &mut WorkflowContext,
+            ctx: &mut ExecutionContext,
             _token: &CancellationToken,
-        ) -> Result<String, WorkflowError> {
-            ctx.inner.set("decide_ran", ContextValue::Boolean(true));
+        ) -> SmithResult<String> {
+            ctx.set("decide_ran", ContextValue::Boolean(true));
             Ok(options.first().cloned().unwrap_or_default())
         }
     }

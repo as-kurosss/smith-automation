@@ -2,9 +2,9 @@
 
 - **ID:** `crates_smith_windows_src_tools_input_text_rs_inputtexttool`
 - **Type:** Struct
-- **File:** `./crates/smith-windows/src/tools/input_text.rs`
-- **Location:** L15
-- **Community:** 13 (InputTextTool)
+- **File:** `.\crates\smith-windows\src\tools\input_text.rs`
+- **Location:** L12
+- **Community:** 32 (InputTextTool)
 
 ## Relationships
 

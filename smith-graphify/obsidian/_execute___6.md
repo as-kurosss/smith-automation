@@ -1,11 +1,12 @@
 ---
-id: crates_smith_windows_src_tools_click_rs_clicktool_execute
+id: crates_smith_windows_src_tools_input_text_rs_inputtexttool_execute
 type: Method
-source: ./crates/smith-windows/src/tools/click.rs
-community: 16
-community_label: ClickTool
+source: .\crates\smith-windows\src\tools\input_text.rs
+community: 32
+community_label: InputTextTool
 ---
 
 ## Connections
 
-- [[ClickTool]] (defines)
+- [[InputTextTool]] (defines)
+- [[_new___9]] (calls)

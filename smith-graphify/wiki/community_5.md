@@ -1,33 +1,43 @@
-# Community 5: test_new_creates_empty_registry()
+# Community 5: resolve_element_from_config()
 
-**Members:** 12
+**Members:** 16
 
 ## Nodes
 
-- **registry** (`crates_smith_core_src_registry_rs`, File, degree: 18)
-- **async_trait::async_trait** (`crates_smith_core_src_registry_rs_import_async_trait_async_trait`, Module, degree: 1)
-- **crate::context::ContextValue** (`crates_smith_core_src_registry_rs_import_crate_context_contextvalue`, Module, degree: 1)
-- **crate::context::ExecutionContext** (`crates_smith_core_src_registry_rs_import_crate_context_executioncontext`, Module, degree: 1)
-- **crate::error::{SmithError, SmithResult}** (`crates_smith_core_src_registry_rs_import_crate_error_smitherror_smithresult`, Module, degree: 1)
-- **crate::tool::{Tool, ToolConfig, ToolResult}** (`crates_smith_core_src_registry_rs_import_crate_tool_tool_toolconfig_toolresult`, Module, degree: 1)
-- **serde_json::json** (`crates_smith_core_src_registry_rs_import_serde_json_json`, Module, degree: 1)
-- **std::collections::HashMap** (`crates_smith_core_src_registry_rs_import_std_collections_hashmap`, Module, degree: 1)
-- **super::*** (`crates_smith_core_src_registry_rs_import_super`, Module, degree: 1)
-- **tokio_util::sync::CancellationToken** (`crates_smith_core_src_registry_rs_import_tokio_util_sync_cancellationtoken`, Module, degree: 1)
-- **test_default_is_empty()** (`crates_smith_core_src_registry_rs_test_default_is_empty`, Function, degree: 2)
-- **test_new_creates_empty_registry()** (`crates_smith_core_src_registry_rs_test_new_creates_empty_registry`, Function, degree: 2)
+- **mod** (`crates_smith_windows_src_tools_mod_rs`, File, degree: 15)
+- **apply_delay_after()** (`crates_smith_windows_src_tools_mod_rs_apply_delay_after`, Function, degree: 1)
+- **apply_delay_before()** (`crates_smith_windows_src_tools_mod_rs_apply_delay_before`, Function, degree: 1)
+- **crate::element::SafeUIElement** (`crates_smith_windows_src_tools_mod_rs_import_crate_element_safeuielement`, Module, degree: 1)
+- **crate::selector::ElementSelector** (`crates_smith_windows_src_tools_mod_rs_import_crate_selector_elementselector`, Module, degree: 1)
+- **pub(crate) use self::helpers::{
+    apply_delay_after, apply_delay_before, resolve_element_from_config,
+}** (`crates_smith_windows_src_tools_mod_rs_import_pub_crate_use_self_helpers_apply_delay_after_apply_delay_before_resolve_element_from_config`, Module, degree: 1)
+- **pub use click::ClickTool** (`crates_smith_windows_src_tools_mod_rs_import_pub_use_click_clicktool`, Module, degree: 1)
+- **pub use find::FindTool** (`crates_smith_windows_src_tools_mod_rs_import_pub_use_find_findtool`, Module, degree: 1)
+- **pub use input_text::InputTextTool** (`crates_smith_windows_src_tools_mod_rs_import_pub_use_input_text_inputtexttool`, Module, degree: 1)
+- **pub use process::ProcessTool** (`crates_smith_windows_src_tools_mod_rs_import_pub_use_process_processtool`, Module, degree: 1)
+- **pub use set_text::SetTextTool** (`crates_smith_windows_src_tools_mod_rs_import_pub_use_set_text_settexttool`, Module, degree: 1)
+- **pub use wait::WaitTool** (`crates_smith_windows_src_tools_mod_rs_import_pub_use_wait_waittool`, Module, degree: 1)
+- **serde_json::Value** (`crates_smith_windows_src_tools_mod_rs_import_serde_json_value`, Module, degree: 1)
+- **smith_core::{ExecutionContext, SmithError, SmithResult}** (`crates_smith_windows_src_tools_mod_rs_import_smith_core_executioncontext_smitherror_smithresult`, Module, degree: 1)
+- **super::{ExecutionContext, SmithError, SmithResult, Value}** (`crates_smith_windows_src_tools_mod_rs_import_super_executioncontext_smitherror_smithresult_value`, Module, degree: 1)
+- **resolve_element_from_config()** (`crates_smith_windows_src_tools_mod_rs_resolve_element_from_config`, Function, degree: 1)
 
 ## Relationships
 
-- crates_smith_core_src_registry_rs → crates_smith_core_src_registry_rs_import_std_collections_hashmap (imports)
-- crates_smith_core_src_registry_rs → crates_smith_core_src_registry_rs_import_tokio_util_sync_cancellationtoken (imports)
-- crates_smith_core_src_registry_rs → crates_smith_core_src_registry_rs_import_crate_context_executioncontext (imports)
-- crates_smith_core_src_registry_rs → crates_smith_core_src_registry_rs_import_crate_error_smitherror_smithresult (imports)
-- crates_smith_core_src_registry_rs → crates_smith_core_src_registry_rs_import_crate_tool_tool_toolconfig_toolresult (imports)
-- crates_smith_core_src_registry_rs → crates_smith_core_src_registry_rs_import_super (imports)
-- crates_smith_core_src_registry_rs → crates_smith_core_src_registry_rs_import_async_trait_async_trait (imports)
-- crates_smith_core_src_registry_rs → crates_smith_core_src_registry_rs_import_serde_json_json (imports)
-- crates_smith_core_src_registry_rs → crates_smith_core_src_registry_rs_import_crate_context_contextvalue (imports)
-- crates_smith_core_src_registry_rs → crates_smith_core_src_registry_rs_test_new_creates_empty_registry (defines)
-- crates_smith_core_src_registry_rs → crates_smith_core_src_registry_rs_test_default_is_empty (defines)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_pub_use_click_clicktool (imports)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_pub_use_find_findtool (imports)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_pub_use_input_text_inputtexttool (imports)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_pub_use_process_processtool (imports)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_pub_use_set_text_settexttool (imports)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_pub_use_wait_waittool (imports)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_serde_json_value (imports)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_smith_core_executioncontext_smitherror_smithresult (imports)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_pub_crate_use_self_helpers_apply_delay_after_apply_delay_before_resolve_element_from_config (imports)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_super_executioncontext_smitherror_smithresult_value (imports)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_crate_element_safeuielement (imports)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_crate_selector_elementselector (imports)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_apply_delay_before (defines)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_apply_delay_after (defines)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_resolve_element_from_config (defines)
 

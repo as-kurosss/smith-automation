@@ -1,9 +1,9 @@
-//! # Пример 1: Чистый RPA
+//! # Example 1: Pure RPA
 //!
-//! Все шаги детерминированы — никакого AI.
-//! Workflow: открыть Блокнот → найти поле Edit → напечатать текст → закрыть.
+//! All steps are deterministic — no AI involved.
+//! Workflow: open Notepad → find Edit field → type text → close.
 //!
-//! ## Запуск
+//! ## Run
 //! ```bash
 //! cargo run --example rpa_notepad
 //! ```
@@ -17,20 +17,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     use smith_workflow::prelude::*;
     use tokio_util::sync::CancellationToken;
 
-    // -- Регистрируем Windows-инструменты --
+    // -- Register Windows tools --
     let mut registry = ToolRegistry::new();
     registry.register(FindTool::new());
     registry.register(SetTextTool::new());
     registry.register(ProcessTool::new());
 
-    // -- Строим workflow из RPA-шагов --
+    // -- Build workflow from RPA steps --
     let workflow = Workflow::new("rpa_notepad")
-        // 1. Запустить notepad.exe
+        // 1. Start notepad.exe
         .step(Step::rpa("windows.process").args(json!({
             "action": "start",
             "command": "notepad.exe",
         })))
-        // 2. Найти поле ввода (Edit) — с retry, т.к. окно может открываться не мгновенно
+        // 2. Find Edit field — with retry since the window may not open instantly
         .step(
             Step::rpa("windows.find")
                 .args(json!({
@@ -43,25 +43,25 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     delay_ms: 500,
                 }),
         )
-        // 3. Напечатать текст через ValuePattern (быстрее, чем input_text)
+        // 3. Set text via ValuePattern (faster than input_text)
         .step(Step::rpa("windows.set_text").args(json!({
             "element_key": "notepad_edit",
             "text": "Hello from smith RPA!",
         })))
-        // 4. Пауза 3 секунды — чтобы увидеть результат
+        // 4. Pause 3 seconds — to see the result
         .step(Step::rpa("windows.process").args(json!({
             "action": "sleep",
             "duration_ms": 3000,
         })))
-        // 5. Закрыть Блокнот (force kill — для демо)
+        // 5. Close Notepad (force kill — for demo)
         .step(Step::rpa("windows.process").args(json!({
             "action": "stop",
             "name": "notepad.exe",
         })))
         .build();
 
-    // -- Исполняем workflow --
-    let executor = WorkflowExecutor::new(&registry, None::<&dyn smith_workflow::AiHandler>);
+    // -- Execute workflow --
+    let executor = WorkflowExecutor::new(&registry, None::<&dyn smith_core::AiHandler>);
     let mut ctx = ExecutionContext::new();
     let token = CancellationToken::new();
 

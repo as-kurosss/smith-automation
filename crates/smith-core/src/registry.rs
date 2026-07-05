@@ -7,13 +7,13 @@ use crate::context::ExecutionContext;
 use crate::error::{SmithError, SmithResult};
 use crate::tool::{Tool, ToolConfig, ToolResult};
 
-/// Реестр инструментов для централизованного управления и выполнения.
+/// Tool registry for centralized management and execution.
 pub struct ToolRegistry {
     tools: HashMap<&'static str, Box<dyn Tool>>,
 }
 
 impl ToolRegistry {
-    /// Создаёт пустой реестр.
+    /// Creates an empty registry.
     #[must_use]
     pub fn new() -> Self {
         Self {
@@ -21,24 +21,24 @@ impl ToolRegistry {
         }
     }
 
-    /// Регистрирует новый инструмент по имени, возвращаемому `Tool::name()`.
+    /// Registers a new tool by the name returned by `Tool::name()`.
     pub fn register<T: Tool + 'static>(&mut self, tool: T) {
         let name = tool.name();
         self.tools.insert(name, Box::new(tool));
     }
 
-    /// Возвращает ссылку на зарегистрированный инструмент по имени, если он существует.
+    /// Returns a reference to a registered tool by name, if it exists.
     #[must_use]
     pub fn get(&self, name: &str) -> Option<&dyn Tool> {
         self.tools.get(name).map(AsRef::as_ref)
     }
 
-    /// Выполняет инструмент по имени с переданными параметрами.
+    /// Executes a tool by name with the given parameters.
     ///
     /// # Errors
     ///
-    /// Возвращает `SmithError::InvalidParams`, если инструмент не найден,
-    /// или ошибку выполнения инструмента.
+    /// Returns `SmithError::InvalidParams` if the tool is not found,
+    /// or the tool execution error.
     pub async fn execute(
         &self,
         name: &str,
@@ -52,7 +52,7 @@ impl ToolRegistry {
         tool.execute(config, ctx, token).await
     }
 
-    /// Возвращает список имён всех зарегистрированных инструментов.
+    /// Returns the list of names of all registered tools.
     #[must_use]
     pub fn list_tools(&self) -> Vec<&'static str> {
         self.tools.keys().copied().collect()

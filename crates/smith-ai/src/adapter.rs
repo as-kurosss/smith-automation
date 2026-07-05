@@ -1,8 +1,8 @@
 // crates/smith-ai/src/adapter.rs
-//! Адаптер: `smith_core::Tool` → `rig::tool::ToolDyn`.
+//! Adapter: `smith_core::Tool` → `rig::tool::ToolDyn`.
 //!
-//! Позволяет использовать любые smith-core инструменты в Rig-агенте
-//! через dyn-безопасный трейт `ToolDyn`.
+//! Allows using any smith-core tools inside a Rig agent
+//! via the dyn-safe `ToolDyn` trait.
 
 use std::future::Future;
 use std::pin::Pin;
@@ -14,7 +14,7 @@ use smith_core::{ExecutionContext, Tool as SmithTool, ToolConfig};
 use tokio::sync::Mutex;
 use tokio_util::sync::CancellationToken;
 
-/// Адаптер, оборачивающий `smith_core::Tool` в `rig::tool::ToolDyn`.
+/// Adapter wrapping a `smith_core::Tool` into `rig::tool::ToolDyn`.
 pub struct ToolAdapter {
     inner: Arc<dyn SmithTool>,
     ctx: Arc<Mutex<ExecutionContext>>,
@@ -22,7 +22,7 @@ pub struct ToolAdapter {
 }
 
 impl ToolAdapter {
-    /// Создаёт новый адаптер.
+    /// Creates a new adapter.
     pub fn new(
         tool: impl SmithTool + 'static,
         ctx: Arc<Mutex<ExecutionContext>>,
@@ -35,7 +35,7 @@ impl ToolAdapter {
         }
     }
 
-    /// Создаёт адаптер из Arc<dyn SmithTool>.
+    /// Creates an adapter from Arc<dyn SmithTool>.
     pub fn from_arc(
         tool: Arc<dyn SmithTool>,
         ctx: Arc<Mutex<ExecutionContext>>,

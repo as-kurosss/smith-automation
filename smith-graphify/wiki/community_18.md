@@ -1,23 +1,31 @@
-# Community 18: find
+# Community 18: test_platform_error_display()
 
-**Members:** 7
+**Members:** 11
 
 ## Nodes
 
-- **find** (`crates_smith_windows_src_tools_find_rs`, File, degree: 7)
-- **async_trait::async_trait** (`crates_smith_windows_src_tools_find_rs_import_async_trait_async_trait`, Module, degree: 1)
-- **crate::element::SafeUIElement** (`crates_smith_windows_src_tools_find_rs_import_crate_element_safeuielement`, Module, degree: 1)
-- **crate::selector::ElementSelector** (`crates_smith_windows_src_tools_find_rs_import_crate_selector_elementselector`, Module, degree: 1)
-- **serde_json::{Value, json}** (`crates_smith_windows_src_tools_find_rs_import_serde_json_value_json`, Module, degree: 1)
-- **smith_core::{ExecutionContext, SmithError, SmithResult, Tool, ToolConfig, ToolResult}** (`crates_smith_windows_src_tools_find_rs_import_smith_core_executioncontext_smitherror_smithresult_tool_toolconfig_toolresult`, Module, degree: 1)
-- **tokio_util::sync::CancellationToken** (`crates_smith_windows_src_tools_find_rs_import_tokio_util_sync_cancellationtoken`, Module, degree: 1)
+- **error** (`crates_smith_core_src_error_rs`, File, degree: 10)
+- **std::error::Error** (`crates_smith_core_src_error_rs_import_std_error_error`, Module, degree: 1)
+- **super::*** (`crates_smith_core_src_error_rs_import_super`, Module, degree: 1)
+- **thiserror::Error** (`crates_smith_core_src_error_rs_import_thiserror_error`, Module, degree: 1)
+- **SmithError** (`crates_smith_core_src_error_rs_smitherror`, Enum, degree: 1)
+- **test_cancelled_display()** (`crates_smith_core_src_error_rs_test_cancelled_display`, Function, degree: 1)
+- **test_context_error_display()** (`crates_smith_core_src_error_rs_test_context_error_display`, Function, degree: 1)
+- **test_conversion_from_anyhow_error()** (`crates_smith_core_src_error_rs_test_conversion_from_anyhow_error`, Function, degree: 1)
+- **test_element_not_found_display()** (`crates_smith_core_src_error_rs_test_element_not_found_display`, Function, degree: 1)
+- **test_invalid_params_display()** (`crates_smith_core_src_error_rs_test_invalid_params_display`, Function, degree: 1)
+- **test_platform_error_display()** (`crates_smith_core_src_error_rs_test_platform_error_display`, Function, degree: 1)
 
 ## Relationships
 
-- crates_smith_windows_src_tools_find_rs → crates_smith_windows_src_tools_find_rs_import_async_trait_async_trait (imports)
-- crates_smith_windows_src_tools_find_rs → crates_smith_windows_src_tools_find_rs_import_serde_json_value_json (imports)
-- crates_smith_windows_src_tools_find_rs → crates_smith_windows_src_tools_find_rs_import_smith_core_executioncontext_smitherror_smithresult_tool_toolconfig_toolresult (imports)
-- crates_smith_windows_src_tools_find_rs → crates_smith_windows_src_tools_find_rs_import_tokio_util_sync_cancellationtoken (imports)
-- crates_smith_windows_src_tools_find_rs → crates_smith_windows_src_tools_find_rs_import_crate_element_safeuielement (imports)
-- crates_smith_windows_src_tools_find_rs → crates_smith_windows_src_tools_find_rs_import_crate_selector_elementselector (imports)
+- crates_smith_core_src_error_rs → crates_smith_core_src_error_rs_import_std_error_error (imports)
+- crates_smith_core_src_error_rs → crates_smith_core_src_error_rs_import_thiserror_error (imports)
+- crates_smith_core_src_error_rs → crates_smith_core_src_error_rs_smitherror (defines)
+- crates_smith_core_src_error_rs → crates_smith_core_src_error_rs_import_super (imports)
+- crates_smith_core_src_error_rs → crates_smith_core_src_error_rs_test_invalid_params_display (defines)
+- crates_smith_core_src_error_rs → crates_smith_core_src_error_rs_test_element_not_found_display (defines)
+- crates_smith_core_src_error_rs → crates_smith_core_src_error_rs_test_cancelled_display (defines)
+- crates_smith_core_src_error_rs → crates_smith_core_src_error_rs_test_context_error_display (defines)
+- crates_smith_core_src_error_rs → crates_smith_core_src_error_rs_test_platform_error_display (defines)
+- crates_smith_core_src_error_rs → crates_smith_core_src_error_rs_test_conversion_from_anyhow_error (defines)
 

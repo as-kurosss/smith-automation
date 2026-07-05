@@ -2,13 +2,13 @@
 resolver = "2"
 members = [
     "apps/selector-capture",
-    "apps/smith-context",
     "apps/smith-examples",
     "crates/smith-core",
     "crates/smith-windows",
     "crates/smith-workflow",
     "crates/smith-rpa",
     "crates/smith-ai",
+    "crates/smith-graph",
 ]
 
 [workspace.dependencies]

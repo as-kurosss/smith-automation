@@ -1,11 +1,11 @@
 ---
-id: crates_smith_windows_src_tools_find_rs_import_crate_selector_elementselector
+id: crates_smith_windows_src_tools_mod_rs_import_crate_selector_elementselector
 type: Module
-source: ./crates/smith-windows/src/tools/find.rs
-community: 18
-community_label: find
+source: .\crates\smith-windows\src\tools\mod.rs
+community: 5
+community_label: resolve_element_from_config()
 ---
 
 ## Connections
 
-- [[find]] (imports)
+- [[mod_1]] (imports)

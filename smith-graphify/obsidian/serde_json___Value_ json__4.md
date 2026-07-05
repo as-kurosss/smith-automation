@@ -1,11 +1,11 @@
 ---
-id: crates_smith_windows_src_tools_click_rs_import_serde_json_value_json
+id: crates_smith_windows_src_tools_set_text_rs_import_serde_json_value_json
 type: Module
-source: ./crates/smith-windows/src/tools/click.rs
-community: 20
-community_label: click
+source: .\crates\smith-windows\src\tools\set_text.rs
+community: 48
+community_label: set_text
 ---
 
 ## Connections
 
-- [[click]] (imports)
+- [[set_text]] (imports)

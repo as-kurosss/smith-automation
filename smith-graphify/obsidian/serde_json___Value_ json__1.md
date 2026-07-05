@@ -1,11 +1,11 @@
 ---
-id: crates_smith_windows_src_tools_process_rs_import_serde_json_value_json
+id: crates_smith_windows_src_tools_find_rs_import_serde_json_value_json
 type: Module
-source: ./crates/smith-windows/src/tools/process.rs
-community: 24
-community_label: process
+source: .\crates\smith-windows\src\tools\find.rs
+community: 39
+community_label: find
 ---
 
 ## Connections
 
-- [[process]] (imports)
+- [[find]] (imports)

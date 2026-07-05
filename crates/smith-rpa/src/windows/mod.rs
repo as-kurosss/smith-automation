@@ -1,27 +1,27 @@
 // crates/smith-rpa/src/windows/mod.rs
-//! Step-конструкторы для Windows UI Automation инструментов.
+//! Step constructors for Windows UI Automation tools.
 //!
-//! Каждая функция возвращает готовый `Step` для использования в workflow:
+//! Each function returns a ready-to-use `Step` for use in a workflow:
 //!
 //! ```ignore
 //! use smith_rpa::windows;
 //!
 //! let workflow = Workflow::new("demo")
-//!     .step(windows::find("name=Блокнот", "found_element"))
+//!     .step(windows::find("name=Notepad", "found_element"))
 //!     .step(windows::click())
-//!     .step(windows::input_text("Привет"))
+//!     .step(windows::input_text("Hello"))
 //!     .build();
 //! ```
 
 use serde_json::json;
 use smith_workflow::Step;
 
-/// Создаёт Step для поиска UI-элемента.
+/// Creates a Step for finding a UI element.
 ///
-/// Параметр `selector` — упрощённый селектор: `"name=Значение"` или
-/// `"className=Edit"`. Для сложных случаев используйте `Step::rpa("windows.find").args(...)`.
+/// The `selector` parameter is a simplified selector: `"name=Value"` or
+/// `"className=Edit"`. For complex cases use `Step::rpa("windows.find").args(...)`.
 ///
-/// `output_key` — ключ, под которым найденный элемент будет сохранён в контексте.
+/// `output_key` — the key under which the found element will be saved in the context.
 #[must_use]
 pub fn find(selector: &str, output_key: &str) -> Step {
     Step::rpa("windows.find").args(json!({
@@ -30,31 +30,31 @@ pub fn find(selector: &str, output_key: &str) -> Step {
     }))
 }
 
-/// Создаёт Step для клика по UI-элементу.
+/// Creates a Step for clicking a UI element.
 ///
-/// Ожидает, что элемент ранее сохранён в контексте под ключом `"found"`.
+/// Expects the element to have been previously saved in the context under the `"found"` key.
 #[must_use]
 pub fn click() -> Step {
     Step::rpa("windows.click").args(json!({ "element_key": "found" }))
 }
 
-/// Создаёт Step для ввода текста.
+/// Creates a Step for inputting text.
 ///
-/// Если `element_key` не указан, текст вводится в активное окно.
+/// If `element_key` is not specified, text is typed into the active window.
 #[must_use]
 pub fn input_text(text: &str) -> Step {
     Step::rpa("windows.input_text").args(json!({ "text": text }))
 }
 
-/// Создаёт Step для установки текста через ValuePattern.
+/// Creates a Step for setting text via ValuePattern.
 ///
-/// Быстрее `input_text`, но не имитирует реальный ввод с клавиатуры.
+/// Faster than `input_text`, but does not simulate real keyboard input.
 #[must_use]
 pub fn set_text(text: &str) -> Step {
     Step::rpa("windows.set_text").args(json!({ "text": text }))
 }
 
-/// Создаёт Step для запуска процесса.
+/// Creates a Step for starting a process.
 #[must_use]
 pub fn process_start(command: &str) -> Step {
     Step::rpa("windows.process").args(json!({
@@ -63,7 +63,7 @@ pub fn process_start(command: &str) -> Step {
     }))
 }
 
-/// Создаёт Step для запуска процесса с аргументами.
+/// Creates a Step for starting a process with arguments.
 #[must_use]
 pub fn process_start_with_args(command: &str, args: &[&str]) -> Step {
     Step::rpa("windows.process").args(json!({
@@ -79,7 +79,7 @@ mod tests {
 
     #[test]
     fn test_find_creates_step_with_output_key() {
-        let step = find("name=Блокнот", "found_element");
+        let step = find("name=Notepad", "found_element");
         assert_eq!(step.kind_name(), "RPA");
     }
 

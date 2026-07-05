@@ -17,7 +17,7 @@ Element must be stored first via `windows.find` or a selector-based tool.
 | `Err(SmithError::ContextError)` | key not found in context |
 | `Err(SmithError::PlatformError)` | COM click failed or spawn_blocking join failed |
 
-On `Err`: context state is **not modified** (idempotent per Канон 10.2).
+On `Err`: context state is **not modified** (idempotent per Canon 10.2).
 
 **⚠️ Boundaries:**
 - `element_key` missing → `InvalidParams`
@@ -25,7 +25,7 @@ On `Err`: context state is **not modified** (idempotent per Канон 10.2).
 - Value under key is not `SafeUIElement` → `InvalidParams` (type mismatch)
 - `CancellationToken` cancelled before click → `Cancelled`
 - Element no longer valid (window closed) → `PlatformError` from UIA
-- All UI Automation calls happen inside `spawn_blocking` (Канон 5.3)
+- All UI Automation calls happen inside `spawn_blocking` (Canon 5.3)
 - Currently only performs left click — no double-click or right-click support
 
 **📌 Usage:**

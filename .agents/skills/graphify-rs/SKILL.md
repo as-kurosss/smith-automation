@@ -3,102 +3,102 @@ name: graphify-rs
 description: Use this skill when working with the smith-automation codebase to analyze architecture, find dependencies between modules, locate implementations, understand component relationships, or answer questions about project structure via the graphify-rs knowledge graph. Trigger this skill whenever the user asks about architecture, module dependencies, how components connect, where something is implemented, what uses a particular type or trait, or wants to query the project knowledge graph.
 ---
 
-# graphify-rs: Knowledge Graph Skill (работает в связке с ast-index)
+# graphify-rs: Knowledge Graph Skill (works alongside ast-index)
 
-## Описание
+## Description
 
-`graphify-rs` — это CLI-инструмент для построения и анализа графа знаний кодовой базы. Он анализирует AST кода, документацию и файлы проекта, строит граф узлов (модули, функции, типы, файлы) и связей между ними, а затем позволяет отвечать на вопросы по архитектуре проекта через семантический поиск по графу.
+graphify-rs is a CLI tool for building and analyzing a knowledge graph of a codebase. It analyzes the code's AST, documentation, and project files, builds a graph of nodes (modules, functions, types, files) and edges between them, and then allows answering questions about the project architecture through semantic graph search.
 
-Проект также использует **ast-index** для быстрого структурного поиска. Инструменты дополняют друг друга.
+The project also uses **ast-index** for fast structural search. The two tools complement each other.
 
-## Когда использовать graphify-rs vs ast-index
+## When to use graphify-rs vs ast-index
 
-### graphify-rs (архитектура и связи)
-- Понять архитектуру проекта, связи между модулями, сообщества
-- Найти, какие компоненты зависят от определённого модуля/типа/функции
-- Получить общее представление о структуре кода, поток данных между крейтами
-- Вопросы: "как устроен X?", "что делает Y?", "как связаны A и B?"
+### graphify-rs (architecture and relationships)
+- Understand project architecture, relationships between modules, communities
+- Find which components depend on a specific module/type/function
+- Get a high-level view of code structure and data flow between crates
+- Questions: "how is X structured?", "what does Y do?", "how are A and B connected?"
 
-### ast-index (быстрый структурный поиск) — используй ПЕРЕД graphify-rs если:
-- Найти определение символа/функции/типа (`ast-index symbol`, `ast-index class`)
-- Найти все использования типа/трейта (`ast-index usages`, `ast-index implementations`)
-- Кто вызывает функцию (`ast-index callers`, `ast-index call-tree`)
-- Структура файла перед чтением (`ast-index outline`)
-- Поиск файла (`ast-index file`)
+### ast-index (fast structural search) — use BEFORE graphify-rs when:
+- Find a symbol/function/type definition (st-index symbol, st-index class)
+- Find all usages of a type/trait (st-index usages, st-index implementations)
+- Who calls a function (st-index callers, st-index call-tree)
+- File structure before reading (st-index outline)
+- File search (st-index file)
 
-### Иерархия:
-1. **ast-index** — первым делом для поиска символов, файлов, использований
-2. **graphify-rs** — если нужна архитектурная картина или ответ не найден через ast-index
-3. **grep** — только если оба вернули пусто или нужен regex/поиск по строкам
+### Hierarchy:
+1. **ast-index** — first for symbol, file, and usage search
+2. **graphify-rs** — if architectural insight is needed or answer not found via ast-index
+3. **grep** — only if both returned nothing or regex/string pattern search is needed
 
-## Как использовать
+## How to use
 
-### 1. Убедись, что граф актуален
+### 1. Ensure the graph is up to date
 
-Перед использованием проверь, что граф сгенерирован:
+Before using, check that the graph is generated:
 
-```bash
+`ash
 ls -la ./smith-graphify/graph.json
-```
+`
 
-Если проект значительно изменился (добавлены новые крейты, файлы, инструменты), перестрой граф:
+If the project has changed significantly (new crates, files, tools added), rebuild the graph:
 
-```bash
+`ash
 graphify-rs build --no-llm --output ./smith-graphify
-```
+`
 
-### 2. Выполни запрос к графу
+### 2. Query the graph
 
-```bash
-graphify-rs query --graph ./smith-graphify/graph.json "<твой вопрос>"
-```
+`ash
+graphify-rs query --graph ./smith-graphify/graph.json "<your question>"
+`
 
-### 3. Slash-команда
+### 3. Slash command
 
-Если пользователь вызывает навык через `/graphify-rs <запрос>`, выполни:
+If the user invokes the skill via /graphify-rs <query>, execute:
 
-```bash
-graphify-rs query --graph ./smith-graphify/graph.json "$ARGUMENTS"
-```
+`ash
+graphify-rs query --graph ./smith-graphify/graph.json "\"
+`
 
-### 4. Примеры вопросов
+### 4. Example questions
 
-```bash
-# Общие вопросы по архитектуре
-graphify-rs query --graph ./smith-graphify/graph.json "какие крейты есть в проекте и как они связаны?"
-graphify-rs query --graph ./smith-graphify/graph.json "что такое ToolRegistry и с чем он связан?"
+`ash
+# General architecture questions
+graphify-rs query --graph ./smith-graphify/graph.json "what crates exist in the project and how are they connected?"
+graphify-rs query --graph ./smith-graphify/graph.json "what is ToolRegistry and what is it connected to?"
 
-# Поиск конкретных компонентов
-graphify-rs query --graph ./smith-graphify/graph.json "какие инструменты Windows реализованы?"
-graphify-rs query --graph ./smith-graphify/graph.json "как работает ExecutionContext и его методы?"
+# Finding specific components
+graphify-rs query --graph ./smith-graphify/graph.json "which Windows tools are implemented?"
+graphify-rs query --graph ./smith-graphify/graph.json "how does ExecutionContext and its methods work?"
 
-# Понимание зависимостей
-graphify-rs query --graph ./smith-graphify/graph.json "какие модули зависят от smith-core?"
-graphify-rs query --graph ./smith-graphify/graph.json "что использует SafeUIElement?"
+# Understanding dependencies
+graphify-rs query --graph ./smith-graphify/graph.json "which modules depend on smith-core?"
+graphify-rs query --graph ./smith-graphify/graph.json "what does SafeUIElement use?"
 
-# Анализ новых компонентов
-graphify-rs query --graph ./smith-graphify/graph.json "как устроен smith-daemon и его API?"
-graphify-rs query --graph ./smith-graphify/graph.json "как ProcessTool запускает и останавливает процессы?"
+# Analyzing new components
+graphify-rs query --graph ./smith-graphify/graph.json "how is smith-daemon and its API structured?"
+graphify-rs query --graph ./smith-graphify/graph.json "how does ProcessTool start and stop processes?"
 
-# Поиск по конкретным файлам
-graphify-rs query --graph ./smith-graphify/graph.json "какие функции определены в selector.rs?"
-```
+# Searching by specific files
+graphify-rs query --graph ./smith-graphify/graph.json "what functions are defined in selector.rs?"
+`
 
-## Артефакты графа
+## Graph artifacts
 
-После сборки графа доступны следующие файлы в `smith-graphify/`:
+After building the graph, the following files are available in smith-graphify/:
 
-| Файл | Описание |
-|------|----------|
-| `graph.json` | Граф в формате JSON (узлы, рёбра, сообщества) |
-| `GRAPH_REPORT.md` | Аналитический отчёт с метриками, связями, сообществами |
-| `graph.html` | Интерактивная визуализация графа |
-| `graph.svg` | Статическая визуализация графа |
-| `wiki/` | Wiki-страницы сообществ и ключевых сущностей |
-| `obsidian/` | Obsidian-совместимые markdown-страницы |
+| File | Description |
+|------|-------------|
+| graph.json | Graph in JSON format (nodes, edges, communities) |
+| GRAPH_REPORT.md | Analytical report with metrics, connections, communities |
+| graph.html | Interactive graph visualization |
+| graph.svg | Static graph visualization |
+| wiki/ | Wiki pages for communities and key entities |
+| obsidian/ | Obsidian-compatible markdown pages |
 
-## Примечания
+## Notes
 
-- Запросы к графу не модифицируют файлы проекта — это read-only операция
-- Если граф устарел (не отражает последние изменения), перестрой его перед запросом
-- Для простых вопросов (файловая структура, имена функций) достаточно обычного поиска по коду — используй граф для сложных архитектурных вопросов и поиска связей
+- Graph queries do not modify project files — they are read-only operations
+- If the graph is stale (does not reflect recent changes), rebuild it before querying
+- For simple questions (file structure, function names), regular code search is sufficient — use the graph for complex architectural questions and relationship discovery

@@ -5,9 +5,9 @@
 **❌ Negative:** Invalid input → `SmithError::InvalidParams`; timeout → `SmithError::Timeout`
 
 **🔍 Mandatory checks:**
-- [ ] On `Err`, state unchanged (idempotency per Канон 10.2)
+- [ ] On `Err`, state unchanged (idempotency per Canon 10.2)
 - [ ] No duplicate events/logs
-- [ ] No `unwrap()`, `panic!`, or blocking in async (Канон 4.5)
+- [ ] No `unwrap()`, `panic!`, or blocking in async (Canon 4.5)
 - [ ] `CancellationToken` checked before and during operation
 - [ ] `#[must_use]` on all non-mutating public methods
 

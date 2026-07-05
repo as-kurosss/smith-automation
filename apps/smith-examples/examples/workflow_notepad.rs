@@ -1,9 +1,9 @@
-//! # Пример 3: Объединённый workflow (RPA + AI)
+//! # Example 3: Combined workflow (RPA + AI)
 //!
-//! Детерминированные RPA-шаги (открыть, найти поле, напечатать, закрыть)
-//! перемежаются AI-шагом (агент анализирует происходящее).
+//! Deterministic RPA steps (open, find field, type, close)
+//! interleaved with an AI step (agent analyzes what is happening).
 //!
-//! ## Запуск
+//! ## Run
 //! ```bash
 //! $env:OPENAI_API_KEY = "sk-..."
 //! cargo run --example workflow_notepad
@@ -16,19 +16,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     use smith_core::{ExecutionContext, ToolRegistry};
     use smith_windows::tools::{FindTool, ProcessTool, SetTextTool};
     use smith_workflow::prelude::*;
-    use smith_workflow::{AiHandler, WorkflowExecutor};
+    use smith_core::AiHandler;
+    use smith_workflow::WorkflowExecutor;
     use tokio_util::sync::CancellationToken;
 
-    // -- API ключ --
+    // -- API key --
     let api_key = std::env::var("OPENAI_API_KEY").expect("OPENAI_API_KEY must be set");
 
-    // -- Регистрируем RPA-инструменты --
+    // -- Register RPA tools --
     let mut registry = ToolRegistry::new();
     registry.register(FindTool::new());
     registry.register(SetTextTool::new());
     registry.register(ProcessTool::new());
 
-    // -- Создаём AI-агента (без инструментов — Think не вызывает тулы) --
+    // -- Create AI agent (no tools — Think doesn't call tools) --
     let provider = smith_ai::ProviderConfig::openai(api_key)
         .with_model("mimo-v2.5")
         .with_base_url("https://opencode.ai/zen/go/v1");
@@ -36,14 +37,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .system_prompt("You are a helpful assistant analyzing automation workflows.")
         .build()?;
 
-    // -- Строим гибридный workflow --
+    // -- Build hybrid workflow --
     let workflow = Workflow::new("notepad_combined")
-        // RPA: открыть Блокнот
+        // RPA: open Notepad
         .step(Step::rpa("windows.process").args(json!({
             "action": "start",
             "command": "notepad.exe",
         })))
-        // RPA: найти поле ввода (с retry на случай, если окно ещё не готово)
+        // RPA: find Edit field (with retry in case window isn't ready yet)
         .step(
             Step::rpa("windows.find")
                 .args(json!({
@@ -56,24 +57,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     delay_ms: 500,
                 }),
         )
-        // RPA: напечатать текст
+        // RPA: type text
         .step(Step::rpa("windows.set_text").args(json!({
             "element_key": "notepad_edit",
             "text": "Hello from combined RPA + AI workflow!",
         })))
-        // AI: проанализировать и summarise
+        // AI: analyze and summarize
         .step(Step::agent_think(
             "Analyze what this Notepad automation workflow just did. \
              Describe its purpose in one short sentence.",
         ))
-        // RPA: закрыть Блокнот
+        // RPA: close Notepad
         .step(Step::rpa("windows.process").args(json!({
             "action": "stop",
             "name": "notepad.exe",
         })))
         .build();
 
-    // -- Исполняем --
+    // -- Execute --
     let executor = WorkflowExecutor::new(&registry, Some(&ai_agent as &dyn AiHandler));
     let mut ctx = ExecutionContext::new();
     let token = CancellationToken::new();
@@ -86,7 +87,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("   time_ms:  {}ms", result.execution_time_ms);
     println!("   output:   {}", result.output);
 
-    // Печатаем результат AI-анализа (шаг 3, 0-indexed)
+    // Print AI analysis result (step 3, 0-indexed)
     if let Some(think_result) = result.step_results.get(&3) {
         let think_text = think_result
             .as_str()

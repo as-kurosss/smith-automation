@@ -1,13 +1,13 @@
 ---
 id: crates_smith_windows_src_selector_rs_elementselector_find_from_desktop
 type: Method
-source: ./crates/smith-windows/src/selector.rs
-community: 3
-community_label: parse_control_type()
+source: .\crates\smith-windows\src\selector.rs
+community: 17
+community_label: ElementSelector
 ---
 
 ## Connections
 
 - [[ElementSelector]] (defines)
-- [[_new___2]] (calls)
+- [[_new___6]] (calls)
 - [[_find_first__]] (calls)

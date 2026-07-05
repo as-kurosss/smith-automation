@@ -1,19 +1,27 @@
-# Community 23: ProcessTool
+# Community 23: SeriesRecording
 
-**Members:** 5
+**Members:** 9
 
 ## Nodes
 
-- **ProcessTool** (`crates_smith_windows_src_tools_process_rs_processtool`, Struct, degree: 7)
-- **.default()** (`crates_smith_windows_src_tools_process_rs_processtool_default`, Method, degree: 2)
-- **.description()** (`crates_smith_windows_src_tools_process_rs_processtool_description`, Method, degree: 1)
-- **.name()** (`crates_smith_windows_src_tools_process_rs_processtool_name`, Method, degree: 1)
-- **.schema()** (`crates_smith_windows_src_tools_process_rs_processtool_schema`, Method, degree: 1)
+- **types** (`apps_selector_capture_src_types_rs`, File, degree: 8)
+- **Action** (`apps_selector_capture_src_types_rs_action`, Enum, degree: 1)
+- **BestSelector** (`apps_selector_capture_src_types_rs_bestselector`, Struct, degree: 1)
+- **Capture** (`apps_selector_capture_src_types_rs_capture`, Struct, degree: 1)
+- **CapturedElement** (`apps_selector_capture_src_types_rs_capturedelement`, Struct, degree: 1)
+- **CaptureOutput** (`apps_selector_capture_src_types_rs_captureoutput`, Struct, degree: 1)
+- **serde::{Deserialize, Serialize}** (`apps_selector_capture_src_types_rs_import_serde_deserialize_serialize`, Module, degree: 1)
+- **PathNode** (`apps_selector_capture_src_types_rs_pathnode`, Struct, degree: 1)
+- **SeriesRecording** (`apps_selector_capture_src_types_rs_seriesrecording`, Struct, degree: 1)
 
 ## Relationships
 
-- crates_smith_windows_src_tools_process_rs_processtool → crates_smith_windows_src_tools_process_rs_processtool_default (defines)
-- crates_smith_windows_src_tools_process_rs_processtool → crates_smith_windows_src_tools_process_rs_processtool_name (defines)
-- crates_smith_windows_src_tools_process_rs_processtool → crates_smith_windows_src_tools_process_rs_processtool_description (defines)
-- crates_smith_windows_src_tools_process_rs_processtool → crates_smith_windows_src_tools_process_rs_processtool_schema (defines)
+- apps_selector_capture_src_types_rs → apps_selector_capture_src_types_rs_import_serde_deserialize_serialize (imports)
+- apps_selector_capture_src_types_rs → apps_selector_capture_src_types_rs_pathnode (defines)
+- apps_selector_capture_src_types_rs → apps_selector_capture_src_types_rs_bestselector (defines)
+- apps_selector_capture_src_types_rs → apps_selector_capture_src_types_rs_capture (defines)
+- apps_selector_capture_src_types_rs → apps_selector_capture_src_types_rs_captureoutput (defines)
+- apps_selector_capture_src_types_rs → apps_selector_capture_src_types_rs_capturedelement (defines)
+- apps_selector_capture_src_types_rs → apps_selector_capture_src_types_rs_action (defines)
+- apps_selector_capture_src_types_rs → apps_selector_capture_src_types_rs_seriesrecording (defines)
 

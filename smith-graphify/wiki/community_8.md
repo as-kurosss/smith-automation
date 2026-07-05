@@ -1,25 +1,42 @@
-# Community 8: lib
+# Community 8: test_decide_step_kind_name()
 
-**Members:** 8
+**Members:** 15
 
 ## Nodes
 
-- **lib** (`crates_smith_windows_src_lib_rs`, File, degree: 7)
-- **pub use element::SafeUIElement** (`crates_smith_windows_src_lib_rs_import_pub_use_element_safeuielement`, Module, degree: 1)
-- **pub use selector::ElementSelector** (`crates_smith_windows_src_lib_rs_import_pub_use_selector_elementselector`, Module, degree: 1)
-- **pub use tools::ClickTool** (`crates_smith_windows_src_lib_rs_import_pub_use_tools_clicktool`, Module, degree: 1)
-- **pub use tools::FindTool** (`crates_smith_windows_src_lib_rs_import_pub_use_tools_findtool`, Module, degree: 1)
-- **pub use tools::InputTextTool** (`crates_smith_windows_src_lib_rs_import_pub_use_tools_inputtexttool`, Module, degree: 1)
-- **pub use tools::ProcessTool** (`crates_smith_windows_src_lib_rs_import_pub_use_tools_processtool`, Module, degree: 1)
-- **pub use tools::SetTextTool** (`crates_smith_windows_src_lib_rs_import_pub_use_tools_settexttool`, Module, degree: 1)
+- **Step** (`crates_smith_workflow_src_step_rs_step`, Struct, degree: 14)
+- **.agent()** (`crates_smith_workflow_src_step_rs_step_agent`, Method, degree: 3)
+- **.agent_decide()** (`crates_smith_workflow_src_step_rs_step_agent_decide`, Method, degree: 3)
+- **.context()** (`crates_smith_workflow_src_step_rs_step_context`, Method, degree: 1)
+- **.kind_name()** (`crates_smith_workflow_src_step_rs_step_kind_name`, Method, degree: 1)
+- **.max_steps()** (`crates_smith_workflow_src_step_rs_step_max_steps`, Method, degree: 1)
+- **.options()** (`crates_smith_workflow_src_step_rs_step_options`, Method, degree: 3)
+- **.retry()** (`crates_smith_workflow_src_step_rs_step_retry`, Method, degree: 1)
+- **.schema()** (`crates_smith_workflow_src_step_rs_step_schema`, Method, degree: 1)
+- **.tools()** (`crates_smith_workflow_src_step_rs_step_tools`, Method, degree: 2)
+- **.workflow()** (`crates_smith_workflow_src_step_rs_step_workflow`, Method, degree: 1)
+- **test_agent_step_kind_name()** (`crates_smith_workflow_src_step_rs_test_agent_step_kind_name`, Function, degree: 2)
+- **test_agent_tools_sets_tools()** (`crates_smith_workflow_src_step_rs_test_agent_tools_sets_tools`, Function, degree: 3)
+- **test_decide_options_are_set()** (`crates_smith_workflow_src_step_rs_test_decide_options_are_set`, Function, degree: 3)
+- **test_decide_step_kind_name()** (`crates_smith_workflow_src_step_rs_test_decide_step_kind_name`, Function, degree: 3)
 
 ## Relationships
 
-- crates_smith_windows_src_lib_rs → crates_smith_windows_src_lib_rs_import_pub_use_element_safeuielement (imports)
-- crates_smith_windows_src_lib_rs → crates_smith_windows_src_lib_rs_import_pub_use_selector_elementselector (imports)
-- crates_smith_windows_src_lib_rs → crates_smith_windows_src_lib_rs_import_pub_use_tools_clicktool (imports)
-- crates_smith_windows_src_lib_rs → crates_smith_windows_src_lib_rs_import_pub_use_tools_findtool (imports)
-- crates_smith_windows_src_lib_rs → crates_smith_windows_src_lib_rs_import_pub_use_tools_inputtexttool (imports)
-- crates_smith_windows_src_lib_rs → crates_smith_windows_src_lib_rs_import_pub_use_tools_processtool (imports)
-- crates_smith_windows_src_lib_rs → crates_smith_windows_src_lib_rs_import_pub_use_tools_settexttool (imports)
+- crates_smith_workflow_src_step_rs_step → crates_smith_workflow_src_step_rs_step_retry (defines)
+- crates_smith_workflow_src_step_rs_step → crates_smith_workflow_src_step_rs_step_agent (defines)
+- crates_smith_workflow_src_step_rs_step → crates_smith_workflow_src_step_rs_step_tools (defines)
+- crates_smith_workflow_src_step_rs_step → crates_smith_workflow_src_step_rs_step_max_steps (defines)
+- crates_smith_workflow_src_step_rs_step → crates_smith_workflow_src_step_rs_step_schema (defines)
+- crates_smith_workflow_src_step_rs_step → crates_smith_workflow_src_step_rs_step_agent_decide (defines)
+- crates_smith_workflow_src_step_rs_step → crates_smith_workflow_src_step_rs_step_context (defines)
+- crates_smith_workflow_src_step_rs_step → crates_smith_workflow_src_step_rs_step_options (defines)
+- crates_smith_workflow_src_step_rs_step → crates_smith_workflow_src_step_rs_step_workflow (defines)
+- crates_smith_workflow_src_step_rs_step → crates_smith_workflow_src_step_rs_step_kind_name (defines)
+- crates_smith_workflow_src_step_rs_test_agent_step_kind_name → crates_smith_workflow_src_step_rs_step_agent (calls)
+- crates_smith_workflow_src_step_rs_test_decide_step_kind_name → crates_smith_workflow_src_step_rs_step_options (calls)
+- crates_smith_workflow_src_step_rs_test_decide_step_kind_name → crates_smith_workflow_src_step_rs_step_agent_decide (calls)
+- crates_smith_workflow_src_step_rs_test_agent_tools_sets_tools → crates_smith_workflow_src_step_rs_step_tools (calls)
+- crates_smith_workflow_src_step_rs_test_agent_tools_sets_tools → crates_smith_workflow_src_step_rs_step_agent (calls)
+- crates_smith_workflow_src_step_rs_test_decide_options_are_set → crates_smith_workflow_src_step_rs_step_options (calls)
+- crates_smith_workflow_src_step_rs_test_decide_options_are_set → crates_smith_workflow_src_step_rs_step_agent_decide (calls)
 

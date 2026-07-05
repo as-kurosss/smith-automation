@@ -1,0 +1,32 @@
+# executor
+
+- **ID:** `crates_smith_workflow_src_executor_rs`
+- **Type:** File
+- **File:** `.\crates\smith-workflow\src\executor.rs`
+- **Community:** 10 (WorkflowExecutor)
+
+## Relationships
+
+- crates_smith_workflow_src_executor_rs → crates_smith_workflow_src_executor_rs_import_serde_json_value (imports, Extracted)
+- crates_smith_workflow_src_executor_rs → crates_smith_workflow_src_executor_rs_import_smith_core_aihandler_executioncontext_toolregistry (imports, Extracted)
+- crates_smith_workflow_src_executor_rs → crates_smith_workflow_src_executor_rs_import_tokio_util_sync_cancellationtoken (imports, Extracted)
+- crates_smith_workflow_src_executor_rs → crates_smith_workflow_src_executor_rs_import_tracing_info_warn (imports, Extracted)
+- crates_smith_workflow_src_executor_rs → crates_smith_workflow_src_executor_rs_import_crate_context_workflowcontext (imports, Extracted)
+- crates_smith_workflow_src_executor_rs → crates_smith_workflow_src_executor_rs_import_crate_error_agentresult_workflowerror (imports, Extracted)
+- crates_smith_workflow_src_executor_rs → crates_smith_workflow_src_executor_rs_import_crate_step_step_stepkind (imports, Extracted)
+- crates_smith_workflow_src_executor_rs → crates_smith_workflow_src_executor_rs_import_crate_workflow_workflow (imports, Extracted)
+- crates_smith_workflow_src_executor_rs → crates_smith_workflow_src_executor_rs_workflowexecutor (defines, Extracted)
+- crates_smith_workflow_src_executor_rs → crates_smith_workflow_src_executor_rs_import_super (imports, Extracted)
+- crates_smith_workflow_src_executor_rs → crates_smith_workflow_src_executor_rs_import_async_trait_async_trait (imports, Extracted)
+- crates_smith_workflow_src_executor_rs → crates_smith_workflow_src_executor_rs_import_smith_core_contextvalue_smithresult_tool_toolconfig_toolresult (imports, Extracted)
+- crates_smith_workflow_src_executor_rs → crates_smith_workflow_src_executor_rs_mocktool (defines, Extracted)
+- crates_smith_workflow_src_executor_rs → crates_smith_workflow_src_executor_rs_mockai (defines, Extracted)
+- crates_smith_workflow_src_executor_rs → crates_smith_workflow_src_executor_rs_make_registry (defines, Extracted)
+- crates_smith_workflow_src_executor_rs → crates_smith_workflow_src_executor_rs_test_execute_empty_workflow (defines, Extracted)
+- crates_smith_workflow_src_executor_rs → crates_smith_workflow_src_executor_rs_test_execute_one_rpa_step (defines, Extracted)
+- crates_smith_workflow_src_executor_rs → crates_smith_workflow_src_executor_rs_test_execute_agent_step (defines, Extracted)
+- crates_smith_workflow_src_executor_rs → crates_smith_workflow_src_executor_rs_test_execute_cancellation (defines, Extracted)
+- crates_smith_workflow_src_executor_rs → crates_smith_workflow_src_executor_rs_test_execute_agent_not_configured (defines, Extracted)
+- crates_smith_workflow_src_executor_rs → crates_smith_workflow_src_executor_rs_test_execute_think_step (defines, Extracted)
+- crates_smith_workflow_src_executor_rs → crates_smith_workflow_src_executor_rs_test_execute_decide_step (defines, Extracted)
+

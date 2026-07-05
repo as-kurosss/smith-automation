@@ -1,11 +1,11 @@
 ---
-id: crates_smith_core_src_error_rs_import_super
+id: crates_smith_ai_src_agent_rs_import_super
 type: Module
-source: ./crates/smith-core/src/error.rs
-community: 6
-community_label: test_platform_error_display()
+source: .\crates\smith-ai\src\agent.rs
+community: 0
+community_label: test_think_returns_plain_text()
 ---
 
 ## Connections
 
-- [[error]] (imports)
+- [[agent]] (imports)

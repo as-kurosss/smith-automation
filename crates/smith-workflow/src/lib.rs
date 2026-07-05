@@ -7,7 +7,7 @@ pub mod workflow;
 
 pub use context::WorkflowContext;
 pub use error::{AgentResult, StepErrorContext, WorkflowError};
-pub use executor::{AiHandler, WorkflowExecutor};
+pub use executor::WorkflowExecutor;
 pub use step::{RetryPolicy, Step, StepKind};
 pub use workflow::Workflow;
 

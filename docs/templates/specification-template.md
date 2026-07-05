@@ -7,7 +7,7 @@
 
 **📤 Output:**
 - `result` (type) | side effect | example
-- On error: `SmithError` variant | what DOES NOT change (Канон 10.2)
+- On error: `SmithError` variant | what DOES NOT change (Canon 10.2)
 
 **⚠️ Boundaries:**
 - What if input is empty / `0` / `NaN` / max?
@@ -16,7 +16,7 @@
 
 **✅ Success criteria:**
 - [ ] All scenarios from "Boundaries" handled without panics
-- [ ] State doesn't break on error (idempotency per Канон 10.2)
+- [ ] State doesn't break on error (idempotency per Canon 10.2)
 - [ ] Log/metric records result or failure cause
 - [ ] `#[must_use]` on constructors and query methods
 - [ ] `unsafe impl Send + Sync` only with /// Safety doc

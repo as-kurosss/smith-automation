@@ -6,34 +6,34 @@ use tokio_util::sync::CancellationToken;
 use crate::context::ExecutionContext;
 use crate::error::SmithResult;
 
-/// Универсальный транспорт для параметров инструмента.
+/// Universal transport for tool parameters.
 pub type ToolConfig = Value;
 
-/// Результат выполнения инструмента.
+/// Tool execution result.
 pub type ToolResult = Value;
 
-/// Базовый трейт для всех инструментов автоматизации.
+/// Base trait for all automation tools.
 ///
-/// # Требования
-/// - `Send + Sync`: Инструменты могут выполняться в multi-thread runtime Tokio.
-/// - Stateless: Сам инструмент не хранит состояние исполнения, только конфигурацию.
+/// # Requirements
+/// - `Send + Sync`: Tools may be executed in Tokio's multi-thread runtime.
+/// - Stateless: The tool itself does not store execution state, only configuration.
 #[async_trait]
 pub trait Tool: Send + Sync {
-    /// Уникальное имя инструмента (например, `windows.click`).
+    /// Unique tool name (e.g., `windows.click`).
     fn name(&self) -> &'static str;
 
-    /// Описание для документации и LLM-агентов.
+    /// Description for documentation and LLM agents.
     fn description(&self) -> &'static str;
 
-    /// JSON Schema для валидации `ToolConfig`.
+    /// JSON Schema for `ToolConfig` validation.
     fn schema(&self) -> Value;
 
-    /// Асинхронное выполнение инструмента.
+    /// Asynchronous tool execution.
     ///
     /// # Arguments
-    /// * `config` - Параметры вызова (валидируются через schema)
-    /// * `ctx` - Контекст выполнения (чтение/запись переменных)
-    /// * `token` - Токен отмены для graceful shutdown
+    /// * `config` - Call parameters (validated via schema)
+    /// * `ctx` - Execution context (read/write variables)
+    /// * `token` - Cancellation token for graceful shutdown
     async fn execute(
         &self,
         config: ToolConfig,

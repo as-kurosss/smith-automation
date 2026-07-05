@@ -1,12 +1,12 @@
 ---
-id: crates_smith_windows_src_tools_input_text_rs_inputtexttool_name
+id: crates_smith_windows_src_tools_find_rs_findtool_name
 type: Method
-source: ./crates/smith-windows/src/tools/input_text.rs
-community: 13
-community_label: InputTextTool
+source: .\crates\smith-windows\src\tools\find.rs
+community: 41
+community_label: FindTool
 ---
 
 ## Connections
 
-- [[InputTextTool]] (defines)
+- [[FindTool]] (defines)
 - [[_execute___5]] (calls)

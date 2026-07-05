@@ -1,8 +1,8 @@
 ---
 id: apps_smith_context_src_main_rs_build_tree
 type: Function
-source: ./apps/smith-context/src/main.rs
-community: 0
+source: .\apps\smith-context\src\main.rs
+community: 2
 community_label: TreeNode
 ---
 

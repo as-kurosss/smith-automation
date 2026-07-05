@@ -1,5 +1,5 @@
 // crates/smith-ai/src/agent.rs
-//! SmithAgent — обёртка над Rig Agent.
+//! SmithAgent — wrapper over Rig Agent.
 
 use async_trait::async_trait;
 use futures::future::BoxFuture;
@@ -12,7 +12,7 @@ use rig::providers::anthropic;
 use rig::providers::openai;
 use rig::tool::ToolDyn;
 use serde_json::Value;
-use smith_workflow::{AiHandler, WorkflowContext, WorkflowError};
+use smith_core::{AiHandler, ExecutionContext, SmithError, SmithResult};
 use tokio_util::sync::CancellationToken;
 use tracing::{info, warn};
 
@@ -21,7 +21,7 @@ use crate::provider::ProviderConfig;
 // ---- Type-erased agent ----
 
 trait AgentLike: Send + Sync {
-    fn prompt<'a>(&'a self, prompt: &'a str) -> BoxFuture<'a, Result<String, WorkflowError>>;
+    fn prompt<'a>(&'a self, prompt: &'a str) -> BoxFuture<'a, Result<String, SmithError>>;
 }
 
 impl<M, P> AgentLike for Agent<M, P>
@@ -29,24 +29,24 @@ where
     M: CompletionModel + Send + Sync + 'static,
     P: PromptHook<M> + Send + Sync + 'static,
 {
-    fn prompt<'a>(&'a self, prompt: &'a str) -> BoxFuture<'a, Result<String, WorkflowError>> {
+    fn prompt<'a>(&'a self, prompt: &'a str) -> BoxFuture<'a, Result<String, SmithError>> {
         Box::pin(async move {
             Prompt::prompt(self, prompt)
                 .await
-                .map_err(|e| WorkflowError::AgentError(format!("Rig agent error: {e}")))
+                .map_err(|e| SmithError::Other(anyhow::anyhow!("Rig agent error: {e}")))
         })
     }
 }
 
 // ---- Public API ----
 
-/// SmithAgent — обёртка над Rig Agent.
+/// SmithAgent — wrapper over Rig Agent.
 pub struct SmithAgent {
     inner: Box<dyn AgentLike>,
 }
 
 impl SmithAgent {
-    /// Создаёт builder.
+    /// Creates a builder.
     pub fn builder(provider: ProviderConfig) -> SmithAgentBuilder {
         SmithAgentBuilder {
             provider,
@@ -55,13 +55,13 @@ impl SmithAgent {
         }
     }
 
-    /// Выполняет prompt в свободном режиме (без workflow).
-    pub async fn prompt(&self, prompt: &str) -> Result<String, WorkflowError> {
+    /// Executes a prompt in free mode (without workflow).
+    pub async fn prompt(&self, prompt: &str) -> Result<String, SmithError> {
         self.inner.prompt(prompt).await
     }
 }
 
-/// Builder для SmithAgent.
+/// Builder for SmithAgent.
 pub struct SmithAgentBuilder {
     provider: ProviderConfig,
     tools: Vec<Box<dyn ToolDyn>>,
@@ -69,24 +69,24 @@ pub struct SmithAgentBuilder {
 }
 
 impl SmithAgentBuilder {
-    /// Добавляет инструменты.
+    /// Adds tools.
     pub fn with_tools(mut self, tools: Vec<Box<dyn ToolDyn>>) -> Self {
         self.tools.extend(tools);
         self
     }
 
-    /// Задаёт system prompt.
+    /// Sets the system prompt.
     pub fn system_prompt(mut self, prompt: &str) -> Self {
         self.system_prompt = Some(prompt.to_string());
         self
     }
 
-    /// Собирает SmithAgent.
+    /// Builds the SmithAgent.
     ///
     /// # Errors
     ///
-    /// Возвращает `WorkflowError`, если не удалось создать Rig Agent.
-    pub fn build(self) -> Result<SmithAgent, WorkflowError> {
+    /// Returns `SmithError` if the Rig Agent could not be created.
+    pub fn build(self) -> Result<SmithAgent, SmithError> {
         let preamble = self.system_prompt.unwrap_or_default();
 
         let SmithAgentBuilder {
@@ -106,7 +106,7 @@ impl SmithAgentBuilder {
                     builder = builder.base_url(url);
                 }
                 let client = builder.build().map_err(|e| {
-                    WorkflowError::AgentError(format!("Failed to create OpenAI client: {e}"))
+                    SmithError::Other(anyhow::anyhow!("Failed to create OpenAI client: {e}"))
                 })?;
 
                 Box::new(
@@ -129,7 +129,7 @@ impl SmithAgentBuilder {
                     builder = builder.base_url(url);
                 }
                 let client = builder.build().map_err(|e| {
-                    WorkflowError::AgentError(format!("Failed to create Anthropic client: {e}"))
+                    SmithError::Other(anyhow::anyhow!("Failed to create Anthropic client: {e}"))
                 })?;
 
                 Box::new(
@@ -156,11 +156,11 @@ impl AiHandler for SmithAgent {
         prompt: &str,
         tools: &[String],
         _max_steps: usize,
-        ctx: &mut WorkflowContext,
+        ctx: &mut ExecutionContext,
         token: &CancellationToken,
-    ) -> Result<Value, WorkflowError> {
+    ) -> SmithResult<Value> {
         if token.is_cancelled() {
-            return Err(WorkflowError::Cancelled);
+            return Err(smith_core::SmithError::Cancelled);
         }
 
         if !tools.is_empty() {
@@ -171,9 +171,11 @@ impl AiHandler for SmithAgent {
         }
 
         info!("Agent step: {prompt}");
-        let result = self.prompt(prompt).await?;
+        let result = self.prompt(prompt).await.map_err(|e| {
+            smith_core::SmithError::Other(anyhow::anyhow!("Agent prompt failed: {e}"))
+        })?;
 
-        ctx.inner.set(
+        ctx.set(
             "last_agent_result",
             smith_core::ContextValue::String(result.clone()),
         );
@@ -195,11 +197,11 @@ impl AiHandler for SmithAgent {
         &self,
         prompt: &str,
         schema: &Value,
-        ctx: &mut WorkflowContext,
+        ctx: &mut ExecutionContext,
         token: &CancellationToken,
-    ) -> Result<Value, WorkflowError> {
+    ) -> SmithResult<Value> {
         if token.is_cancelled() {
-            return Err(WorkflowError::Cancelled);
+            return Err(smith_core::SmithError::Cancelled);
         }
 
         let full_prompt = if schema.is_object() || schema.is_array() {
@@ -212,9 +214,11 @@ impl AiHandler for SmithAgent {
         };
 
         info!("Think step: {prompt}");
-        let result = self.prompt(&full_prompt).await?;
+        let result = self.prompt(&full_prompt).await.map_err(|e| {
+            smith_core::SmithError::Other(anyhow::anyhow!("Think prompt failed: {e}"))
+        })?;
 
-        ctx.inner.set(
+        ctx.set(
             "last_think_result",
             smith_core::ContextValue::String(result.clone()),
         );
@@ -234,30 +238,32 @@ impl AiHandler for SmithAgent {
         &self,
         prompt: &str,
         options: &[String],
-        ctx: &mut WorkflowContext,
+        ctx: &mut ExecutionContext,
         token: &CancellationToken,
-    ) -> Result<String, WorkflowError> {
+    ) -> SmithResult<String> {
         if token.is_cancelled() {
-            return Err(WorkflowError::Cancelled);
+            return Err(smith_core::SmithError::Cancelled);
         }
 
         if options.is_empty() {
-            return Err(WorkflowError::ValidationError(
+            return Err(smith_core::SmithError::InvalidParams(
                 "Decide step must have at least one option".into(),
             ));
         }
 
         let options_str = options.join("\", \"");
         let full_prompt = format!(
-            "{prompt}\n\nВыбери один вариант из: [\"{options_str}\"]\nОтветь только названием варианта, без пояснений."
+            "{prompt}\n\nChoose one option from: [\"{options_str}\"]\nRespond only with the option name, no explanations."
         );
 
         info!("Decide step: {prompt}");
-        let result = self.prompt(&full_prompt).await?;
+        let result = self.prompt(&full_prompt).await.map_err(|e| {
+            smith_core::SmithError::Other(anyhow::anyhow!("Decide prompt failed: {e}"))
+        })?;
 
         let trimmed = result.trim().trim_matches('"').to_string();
         if options.iter().any(|o| o == &trimmed) {
-            ctx.inner.set(
+            ctx.set(
                 "last_decision",
                 smith_core::ContextValue::String(trimmed.clone()),
             );
@@ -267,7 +273,7 @@ impl AiHandler for SmithAgent {
                 "LLM returned invalid option '{}', expected one of {:?}",
                 trimmed, options
             );
-            Err(WorkflowError::AgentError(format!(
+            Err(smith_core::SmithError::InvalidParams(format!(
                 "LLM returned invalid option '{trimmed}', expected one of {options:?}"
             )))
         }
@@ -284,7 +290,7 @@ mod tests {
     }
 
     impl AgentLike for MockAgent {
-        fn prompt<'a>(&'a self, _prompt: &'a str) -> BoxFuture<'a, Result<String, WorkflowError>> {
+        fn prompt<'a>(&'a self, _prompt: &'a str) -> BoxFuture<'a, Result<String, SmithError>> {
             let response = self.response.clone();
             Box::pin(async move { Ok(response) })
         }
@@ -301,7 +307,7 @@ mod tests {
     #[tokio::test]
     async fn test_agent_run_returns_plain_text() {
         let agent = make_agent("just some text");
-        let mut ctx = WorkflowContext::new();
+        let mut ctx = ExecutionContext::new();
         let token = CancellationToken::new();
 
         let result = agent
@@ -310,13 +316,13 @@ mod tests {
             .unwrap();
 
         assert_eq!(result, Value::String("just some text".into()));
-        assert!(ctx.inner.get("last_agent_result").is_some());
+        assert!(ctx.get("last_agent_result").is_some());
     }
 
     #[tokio::test]
     async fn test_agent_run_parses_json() {
         let agent = make_agent(r#"{"key": "value"}"#);
-        let mut ctx = WorkflowContext::new();
+        let mut ctx = ExecutionContext::new();
         let token = CancellationToken::new();
 
         let result = agent
@@ -330,7 +336,7 @@ mod tests {
     #[tokio::test]
     async fn test_think_returns_plain_text() {
         let agent = make_agent("analysis result");
-        let mut ctx = WorkflowContext::new();
+        let mut ctx = ExecutionContext::new();
         let token = CancellationToken::new();
 
         let result = agent
@@ -339,13 +345,13 @@ mod tests {
             .unwrap();
 
         assert_eq!(result, Value::String("analysis result".into()));
-        assert!(ctx.inner.get("last_think_result").is_some());
+        assert!(ctx.get("last_think_result").is_some());
     }
 
     #[tokio::test]
     async fn test_think_parses_json() {
         let agent = make_agent(r#"{"decision": "ok"}"#);
-        let mut ctx = WorkflowContext::new();
+        let mut ctx = ExecutionContext::new();
         let token = CancellationToken::new();
 
         let result = agent
@@ -359,7 +365,7 @@ mod tests {
     #[tokio::test]
     async fn test_decide_cancelled() {
         let agent = make_agent("");
-        let mut ctx = WorkflowContext::new();
+        let mut ctx = ExecutionContext::new();
         let cancelled = CancellationToken::new();
         cancelled.cancel();
 
@@ -367,24 +373,24 @@ mod tests {
             .decide("choose", &["a".into(), "b".into()], &mut ctx, &cancelled)
             .await;
 
-        assert!(matches!(result, Err(WorkflowError::Cancelled)));
+        assert!(matches!(result, Err(smith_core::SmithError::Cancelled)));
     }
 
     #[tokio::test]
     async fn test_decide_empty_options() {
         let agent = make_agent("");
-        let mut ctx = WorkflowContext::new();
+        let mut ctx = ExecutionContext::new();
         let token = CancellationToken::new();
 
         let result = agent.decide("choose", &[], &mut ctx, &token).await;
 
-        assert!(matches!(result, Err(WorkflowError::ValidationError(_))));
+        assert!(matches!(result, Err(smith_core::SmithError::InvalidParams(_))));
     }
 
     #[tokio::test]
     async fn test_decide_valid_choice() {
         let agent = make_agent("option_b");
-        let mut ctx = WorkflowContext::new();
+        let mut ctx = ExecutionContext::new();
         let token = CancellationToken::new();
 
         let result = agent
@@ -398,13 +404,13 @@ mod tests {
             .unwrap();
 
         assert_eq!(result, "option_b");
-        assert!(ctx.inner.get("last_decision").is_some());
+        assert!(ctx.get("last_decision").is_some());
     }
 
     #[tokio::test]
     async fn test_decide_invalid_choice() {
         let agent = make_agent("option_c");
-        let mut ctx = WorkflowContext::new();
+        let mut ctx = ExecutionContext::new();
         let token = CancellationToken::new();
 
         let result = agent
@@ -416,13 +422,13 @@ mod tests {
             )
             .await;
 
-        assert!(matches!(result, Err(WorkflowError::AgentError(_))));
+        assert!(matches!(result, Err(smith_core::SmithError::InvalidParams(_))));
     }
 
     #[tokio::test]
     async fn test_decide_trims_quotes() {
         let agent = make_agent(r#""option_a""#);
-        let mut ctx = WorkflowContext::new();
+        let mut ctx = ExecutionContext::new();
         let token = CancellationToken::new();
 
         let result = agent

@@ -1,0 +1,13 @@
+[package]
+name = "smith-graph"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+smith-core = { path = "../smith-core" }
+async-trait = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }
+tokio-util = { workspace = true }
+tracing = { workspace = true }

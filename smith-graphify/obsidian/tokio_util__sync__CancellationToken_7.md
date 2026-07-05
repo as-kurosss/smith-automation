@@ -1,11 +1,11 @@
 ---
-id: crates_smith_windows_src_tools_click_rs_import_tokio_util_sync_cancellationtoken
+id: crates_smith_windows_src_tools_find_rs_import_tokio_util_sync_cancellationtoken
 type: Module
-source: ./crates/smith-windows/src/tools/click.rs
-community: 20
-community_label: click
+source: .\crates\smith-windows\src\tools\find.rs
+community: 39
+community_label: find
 ---
 
 ## Connections
 
-- [[click]] (imports)
+- [[find]] (imports)

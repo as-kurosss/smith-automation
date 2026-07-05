@@ -21,7 +21,7 @@
 | `Err(SmithError::InvalidParams)` | unknown action / missing field / unallowed command |
 | `Err(SmithError::PlatformError)` | taskkill or spawn failed |
 
-On `Err`: process is **not started** (idempotent per Канон 10.2).
+On `Err`: process is **not started** (idempotent per Canon 10.2).
 
 **⚠️ Boundaries:**
 - Unknown `action` → `InvalidParams`

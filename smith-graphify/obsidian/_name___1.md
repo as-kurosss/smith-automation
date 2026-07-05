@@ -1,11 +1,12 @@
 ---
-id: crates_smith_windows_src_selector_rs_elementselector_name
+id: crates_smith_core_src_registry_rs_testtool_name
 type: Method
-source: ./crates/smith-windows/src/selector.rs
-community: 3
-community_label: parse_control_type()
+source: .\crates\smith-core\src\registry.rs
+community: 44
+community_label: TestTool
 ---
 
 ## Connections
 
-- [[ElementSelector]] (defines)
+- [[TestTool]] (defines)
+- [[_register__]] (calls)

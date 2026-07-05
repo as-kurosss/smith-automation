@@ -1,22 +1,22 @@
 ---
 id: crates_smith_core_src_registry_rs
 type: File
-source: ./crates/smith-core/src/registry.rs
-community: 5
-community_label: test_new_creates_empty_registry()
+source: .\crates\smith-core\src\registry.rs
+community: 15
+community_label: test_default_is_empty()
 ---
 
 ## Connections
 
 - [[std__collections__HashMap_1]] (imports)
-- [[tokio_util__sync__CancellationToken_2]] (imports)
+- [[tokio_util__sync__CancellationToken_3]] (imports)
 - [[crate__context__ExecutionContext_1]] (imports)
 - [[crate__error___SmithError_ SmithResult__1]] (imports)
 - [[crate__tool___Tool_ ToolConfig_ ToolResult_]] (imports)
 - [[ToolRegistry]] (defines)
-- [[super____2]] (imports)
-- [[async_trait__async_trait_1]] (imports)
-- [[serde_json__json]] (imports)
+- [[super____4]] (imports)
+- [[async_trait__async_trait_2]] (imports)
+- [[serde_json__json_0]] (imports)
 - [[crate__context__ContextValue]] (imports)
 - [[TestTool]] (defines)
 - [[test_new_creates_empty_registry__]] (defines)

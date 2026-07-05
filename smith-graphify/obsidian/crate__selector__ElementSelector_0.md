@@ -1,11 +1,11 @@
 ---
-id: crates_smith_windows_src_tools_set_text_rs_import_crate_selector_elementselector
+id: crates_smith_windows_src_tools_find_rs_import_crate_selector_elementselector
 type: Module
-source: ./crates/smith-windows/src/tools/set_text.rs
-community: 9
-community_label: set_text
+source: .\crates\smith-windows\src\tools\find.rs
+community: 39
+community_label: find
 ---
 
 ## Connections
 
-- [[set_text]] (imports)
+- [[find]] (imports)

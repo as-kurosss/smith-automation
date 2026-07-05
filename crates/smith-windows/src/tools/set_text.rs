@@ -4,15 +4,15 @@ use serde_json::{Value, json};
 use smith_core::{ExecutionContext, SmithError, SmithResult, Tool, ToolConfig, ToolResult};
 use tokio_util::sync::CancellationToken;
 
-/// Инструмент для установки текста через UI Automation `ValuePattern`.
+/// Tool for setting text via UI Automation `ValuePattern`.
 ///
-/// В отличие от `InputTextTool`, этот инструмент напрямую устанавливает
-/// значение текстового поля через `ValuePattern::set_value()`, что
-/// работает быстрее, но не имитирует реальный ввод с клавиатуры.
+/// Unlike `InputTextTool`, this tool directly sets the
+/// text field value via `ValuePattern::set_value()`, which
+/// works faster but does not simulate real keyboard input.
 pub struct SetTextTool;
 
 impl SetTextTool {
-    /// Создаёт новый экземпляр `SetTextTool`.
+    /// Creates a new `SetTextTool` instance.
     #[must_use]
     pub fn new() -> Self {
         Self
@@ -62,6 +62,16 @@ impl Tool for SetTextTool {
                 "class_name": {
                     "type": "string",
                     "description": "Window class name"
+                },
+                "delay_before_ms": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Delay before execution in milliseconds"
+                },
+                "delay_after_ms": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Delay after execution in milliseconds"
                 }
             },
             "required": ["text"],
@@ -81,7 +91,10 @@ impl Tool for SetTextTool {
         ctx: &mut ExecutionContext,
         token: CancellationToken,
     ) -> SmithResult<ToolResult> {
-        // 1. Валидация параметров
+        // 0. Optional delay before execution
+        crate::tools::apply_delay_before(&config).await;
+
+        // 1. Parameter validation
         let text = config
             .get("text")
             .and_then(|v| v.as_str())
@@ -92,14 +105,14 @@ impl Tool for SetTextTool {
             return Err(SmithError::Cancelled);
         }
 
-        // 2. Получаем элемент
+        // 2. Get element
         let element = crate::tools::resolve_element_from_config(&config, ctx)
             .await?
             .ok_or_else(|| {
                 SmithError::InvalidParams("Missing 'element_key' or selector fields".into())
             })?;
 
-        // 3. Устанавливаем текст через ValuePattern в блокирующем потоке
+        // 3. Set text via ValuePattern in blocking thread
         tokio::task::spawn_blocking(move || {
             let pattern = element
                 .inner()
@@ -121,6 +134,9 @@ impl Tool for SetTextTool {
             message: "Set text blocking task join failed".into(),
             source: Box::new(e),
         })??;
+
+        // 4. Optional delay after execution
+        crate::tools::apply_delay_after(&config).await;
 
         Ok(json!({ "status": "text_set" }))
     }

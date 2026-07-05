@@ -2,9 +2,9 @@
 
 - **ID:** `apps_smith_context_src_main_rs_collect_files`
 - **Type:** Function
-- **File:** `./apps/smith-context/src/main.rs`
+- **File:** `.\apps\smith-context\src\main.rs`
 - **Location:** L224
-- **Community:** 0 (TreeNode)
+- **Community:** 51 (is_binary_extension())
 
 ## Relationships
 

@@ -2,8 +2,8 @@
 
 - **ID:** `crates_smith_windows_src_tools_mod_rs`
 - **Type:** File
-- **File:** `./crates/smith-windows/src/tools/mod.rs`
-- **Community:** 19 (mod)
+- **File:** `.\crates\smith-windows\src\tools\mod.rs`
+- **Community:** 5 (resolve_element_from_config())
 
 ## Relationships
 
@@ -12,4 +12,14 @@
 - crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_pub_use_input_text_inputtexttool (imports, Extracted)
 - crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_pub_use_process_processtool (imports, Extracted)
 - crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_pub_use_set_text_settexttool (imports, Extracted)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_pub_use_wait_waittool (imports, Extracted)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_serde_json_value (imports, Extracted)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_smith_core_executioncontext_smitherror_smithresult (imports, Extracted)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_pub_crate_use_self_helpers_apply_delay_after_apply_delay_before_resolve_element_from_config (imports, Extracted)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_super_executioncontext_smitherror_smithresult_value (imports, Extracted)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_crate_element_safeuielement (imports, Extracted)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_crate_selector_elementselector (imports, Extracted)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_apply_delay_before (defines, Extracted)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_apply_delay_after (defines, Extracted)
+- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_resolve_element_from_config (defines, Extracted)
 

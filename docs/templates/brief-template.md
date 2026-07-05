@@ -23,10 +23,10 @@
 
 **✅ Mandatory plan elements:**
 - [Describe mandatory elements, e.g.]:
-  - Validation BEFORE any backend/COM call (Канон 10.1)
+  - Validation BEFORE any backend/COM call (Canon 10.1)
   - Error type: `SmithError` (thiserror) with exact variant names from contract
   - Signature with explicit config struct `[Module]Config { timeout: Duration, cancellation: CancellationToken }`
-  - COM / blocking WinAPI calls isolated via `tokio::task::spawn_blocking` (Канон 5.3)
+  - COM / blocking WinAPI calls isolated via `tokio::task::spawn_blocking` (Canon 5.3)
   - `#[must_use]` on constructors and pure query methods
   - `#[derive(Debug, Clone)]` for data types; `unsafe impl Send + Sync` only with safety comment
   - Tests: `#[cfg(test)] mod tests` inside `src/[crate]/[module].rs` + `tests/integration/`

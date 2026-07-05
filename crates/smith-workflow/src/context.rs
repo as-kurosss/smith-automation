@@ -4,29 +4,29 @@ use std::collections::HashMap;
 use serde_json::Value;
 use smith_core::ExecutionContext;
 
-/// Контекст выполнения workflow.
+/// Workflow execution context.
 ///
-/// Оборачивает `smith_core::ExecutionContext` и добавляет:
-/// - Результаты выполненных шагов (step_results)
-/// - Текущий индекс шага
-/// - Время начала выполнения
+/// Wraps `smith_core::ExecutionContext` and adds:
+/// - Results of completed steps (step_results)
+/// - Current step index
+/// - Execution start time
 pub struct WorkflowContext {
-    /// Внутренний контекст smith-core (переменные, scope).
+    /// Inner smith-core context (variables, scope).
     pub inner: ExecutionContext,
-    /// Результаты выполненных шагов: step_index → result JSON.
+    /// Results of completed steps: step_index → result JSON.
     pub step_results: HashMap<usize, Value>,
-    /// Текущий индекс выполняемого шага.
+    /// Current step index.
     pub current_step: usize,
-    /// Timestamp начала выполнения workflow (ms since epoch).
+    /// Workflow start timestamp (ms since epoch).
     pub started_at: u64,
-    /// Количество RPA-шагов выполнено.
+    /// Number of RPA steps completed.
     pub rpa_count: usize,
-    /// Количество Agent-шагов выполнено.
+    /// Number of Agent steps completed.
     pub agent_count: usize,
 }
 
 impl WorkflowContext {
-    /// Создаёт новый контекст.
+    /// Creates a new context.
     pub fn new() -> Self {
         Self {
             inner: ExecutionContext::new(),
@@ -38,18 +38,18 @@ impl WorkflowContext {
         }
     }
 
-    /// Сохраняет результат шага.
+    /// Saves the step result.
     pub fn set_step_result(&mut self, index: usize, result: Value) {
         self.step_results.insert(index, result);
     }
 
-    /// Получает сохранённый результат шага.
+    /// Gets the saved step result.
     #[must_use]
     pub fn get_step_result(&self, index: usize) -> Option<&Value> {
         self.step_results.get(&index)
     }
 
-    /// Возвращает elapsed time в миллисекундах.
+    /// Returns elapsed time in milliseconds.
     #[must_use]
     pub fn elapsed_ms(&self) -> u64 {
         Self::now() - self.started_at

@@ -2,11 +2,12 @@
 
 - **ID:** `crates_smith_core_src_error_rs`
 - **Type:** File
-- **File:** `./crates/smith-core/src/error.rs`
-- **Community:** 6 (test_platform_error_display())
+- **File:** `.\crates\smith-core\src\error.rs`
+- **Community:** 18 (test_platform_error_display())
 
 ## Relationships
 
+- crates_smith_core_src_error_rs → crates_smith_core_src_error_rs_import_std_error_error (imports, Extracted)
 - crates_smith_core_src_error_rs → crates_smith_core_src_error_rs_import_thiserror_error (imports, Extracted)
 - crates_smith_core_src_error_rs → crates_smith_core_src_error_rs_smitherror (defines, Extracted)
 - crates_smith_core_src_error_rs → crates_smith_core_src_error_rs_import_super (imports, Extracted)

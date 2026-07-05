@@ -8,6 +8,7 @@ smith-core = { path = "../../crates/smith-core" }
 smith-windows = { path = "../../crates/smith-windows" }
 smith-workflow = { path = "../../crates/smith-workflow" }
 smith-ai = { path = "../../crates/smith-ai" }
+smith-graph = { path = "../../crates/smith-graph" }
 tokio = { workspace = true }
 tokio-util = { workspace = true }
 serde_json = { workspace = true }

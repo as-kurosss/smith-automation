@@ -1,11 +1,11 @@
 ---
-id: crates_smith_core_src_registry_rs_import_super
+id: crates_smith_core_src_context_rs_import_super
 type: Module
-source: ./crates/smith-core/src/registry.rs
-community: 5
-community_label: test_new_creates_empty_registry()
+source: .\crates\smith-core\src\context.rs
+community: 19
+community_label: test_context_value_try_as_string()
 ---
 
 ## Connections
 
-- [[registry]] (imports)
+- [[context_0]] (imports)

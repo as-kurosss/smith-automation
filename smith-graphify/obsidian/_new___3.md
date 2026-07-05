@@ -1,13 +1,16 @@
 ---
-id: crates_smith_windows_src_tools_set_text_rs_settexttool_new
+id: crates_smith_graph_src_executor_rs_graphexecutor_a_new
 type: Method
-source: ./crates/smith-windows/src/tools/set_text.rs
-community: 12
-community_label: SetTextTool
+source: .\crates\smith-graph\src\executor.rs
+community: 16
+community_label: test_execute_single_rpa()
 ---
 
 ## Connections
 
-- [[SetTextTool]] (defines)
-- [[_default___3]] (calls)
-- [[_execute___2]] (calls)
+- [[_execute_node__]] (calls)
+- [[make_registry___0]] (calls)
+- [[test_execute_single_rpa__]] (calls)
+- [[test_execute_linear_rpa_then_agent__]] (calls)
+- [[test_execute_router_choice__]] (calls)
+- [[test_execute_cancelled__]] (calls)

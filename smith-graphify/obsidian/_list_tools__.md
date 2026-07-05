@@ -1,8 +1,8 @@
 ---
 id: crates_smith_core_src_registry_rs_toolregistry_list_tools
 type: Method
-source: ./crates/smith-core/src/registry.rs
-community: 2
+source: .\crates\smith-core\src\registry.rs
+community: 53
 community_label: ToolRegistry
 ---
 

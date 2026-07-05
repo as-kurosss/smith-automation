@@ -2,8 +2,8 @@
 
 - **ID:** `crates_smith_core_src_tool_rs`
 - **Type:** File
-- **File:** `./crates/smith-core/src/tool.rs`
-- **Community:** 17 (Tool)
+- **File:** `.\crates\smith-core\src\tool.rs`
+- **Community:** 30 (Tool)
 
 ## Relationships
 

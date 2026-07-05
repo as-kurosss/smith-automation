@@ -1,11 +1,11 @@
 ---
-id: crates_smith_core_src_context_rs_import_super
+id: crates_smith_ai_src_provider_rs_import_super
 type: Module
-source: ./crates/smith-core/src/context.rs
-community: 4
-community_label: test_new_creates_empty_scope()
+source: .\crates\smith-ai\src\provider.rs
+community: 21
+community_label: test_with_model_override()
 ---
 
 ## Connections
 
-- [[context]] (imports)
+- [[provider]] (imports)

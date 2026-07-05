@@ -1,15 +1,14 @@
 ---
-id: crates_smith_windows_src_tools_process_rs_processtool_new
+id: crates_smith_graph_src_graph_rs_flowgraphbuilder_new
 type: Method
-source: ./crates/smith-windows/src/tools/process.rs
-community: 22
-community_label: action_stop()
+source: .\crates\smith-graph\src\graph.rs
+community: 3
+community_label: test_build_single_node()
 ---
 
 ## Connections
 
-- [[ProcessTool]] (defines)
-- [[_default___4]] (calls)
-- [[action_start__]] (calls)
-- [[action_stop__]] (calls)
-- [[action_list__]] (calls)
+- [[FlowGraphBuilder]] (defines)
+- [[_builder___1]] (calls)
+- [[_single__]] (calls)
+- [[_find_incoming__]] (calls)

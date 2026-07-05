@@ -2,9 +2,9 @@
 
 - **ID:** `crates_smith_core_src_context_rs_test_push_scope_isolation`
 - **Type:** Function
-- **File:** `./crates/smith-core/src/context.rs`
-- **Location:** L152
-- **Community:** 7 (test_set_and_get_variable())
+- **File:** `.\crates\smith-core\src\context.rs`
+- **Location:** L168
+- **Community:** 14 (test_set_and_get_variable())
 
 ## Relationships
 

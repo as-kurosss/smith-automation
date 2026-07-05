@@ -1,11 +1,11 @@
 ---
-id: crates_smith_daemon_src_main_rs_import_serde_deserialize_serialize
+id: apps_selector_capture_src_types_rs_import_serde_deserialize_serialize
 type: Module
-source: ./crates/smith-daemon/src/main.rs
-community: 1
-community_label: tools_handler()
+source: .\apps\selector-capture\src\types.rs
+community: 23
+community_label: SeriesRecording
 ---
 
 ## Connections
 
-- [[main_0]] (imports)
+- [[types]] (imports)

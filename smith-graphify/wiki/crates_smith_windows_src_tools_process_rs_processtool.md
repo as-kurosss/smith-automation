@@ -2,9 +2,9 @@
 
 - **ID:** `crates_smith_windows_src_tools_process_rs_processtool`
 - **Type:** Struct
-- **File:** `./crates/smith-windows/src/tools/process.rs`
-- **Location:** L13
-- **Community:** 23 (ProcessTool)
+- **File:** `.\crates\smith-windows\src\tools\process.rs`
+- **Location:** L43
+- **Community:** 56 (ProcessTool)
 
 ## Relationships
 

@@ -10,5 +10,5 @@ pub mod tools;
 pub use {
     element::SafeUIElement,
     selector::ElementSelector,
-    tools::{ClickTool, FindTool, InputTextTool, ProcessTool, SetTextTool},
+    tools::{ClickTool, FindTool, InputTextTool, ProcessTool, SetTextTool, WaitTool},
 };

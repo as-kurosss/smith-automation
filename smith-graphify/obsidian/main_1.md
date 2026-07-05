@@ -1,8 +1,8 @@
 ---
 id: apps_smith_context_src_main_rs
 type: File
-source: ./apps/smith-context/src/main.rs
-community: 0
+source: .\apps\smith-context\src\main.rs
+community: 2
 community_label: TreeNode
 ---
 
@@ -16,7 +16,7 @@ community_label: TreeNode
 - [[std__fmt__Write]] (imports)
 - [[std__path___Path_ PathBuf_]] (imports)
 - [[walkdir__WalkDir]] (imports)
-- [[Cli]] (defines)
+- [[Cli_1]] (defines)
 - [[GraphifyArtifacts]] (defines)
 - [[FileEntry]] (defines)
 - [[ProjectStats]] (defines)

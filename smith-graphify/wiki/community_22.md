@@ -1,21 +1,34 @@
-# Community 22: action_stop()
+# Community 22: WorkflowContext
 
-**Members:** 5
+**Members:** 11
 
 ## Nodes
 
-- **action_list()** (`crates_smith_windows_src_tools_process_rs_action_list`, Function, degree: 3)
-- **action_start()** (`crates_smith_windows_src_tools_process_rs_action_start`, Function, degree: 3)
-- **action_stop()** (`crates_smith_windows_src_tools_process_rs_action_stop`, Function, degree: 3)
-- **.execute()** (`crates_smith_windows_src_tools_process_rs_processtool_execute`, Method, degree: 4)
-- **.new()** (`crates_smith_windows_src_tools_process_rs_processtool_new`, Method, degree: 5)
+- **context** (`crates_smith_workflow_src_context_rs`, File, degree: 4)
+- **serde_json::Value** (`crates_smith_workflow_src_context_rs_import_serde_json_value`, Module, degree: 1)
+- **smith_core::ExecutionContext** (`crates_smith_workflow_src_context_rs_import_smith_core_executioncontext`, Module, degree: 1)
+- **std::collections::HashMap** (`crates_smith_workflow_src_context_rs_import_std_collections_hashmap`, Module, degree: 1)
+- **WorkflowContext** (`crates_smith_workflow_src_context_rs_workflowcontext`, Struct, degree: 7)
+- **.default()** (`crates_smith_workflow_src_context_rs_workflowcontext_default`, Method, degree: 2)
+- **.elapsed_ms()** (`crates_smith_workflow_src_context_rs_workflowcontext_elapsed_ms`, Method, degree: 2)
+- **.get_step_result()** (`crates_smith_workflow_src_context_rs_workflowcontext_get_step_result`, Method, degree: 1)
+- **.new()** (`crates_smith_workflow_src_context_rs_workflowcontext_new`, Method, degree: 3)
+- **.now()** (`crates_smith_workflow_src_context_rs_workflowcontext_now`, Method, degree: 3)
+- **.set_step_result()** (`crates_smith_workflow_src_context_rs_workflowcontext_set_step_result`, Method, degree: 1)
 
 ## Relationships
 
-- crates_smith_windows_src_tools_process_rs_processtool_execute → crates_smith_windows_src_tools_process_rs_action_start (calls)
-- crates_smith_windows_src_tools_process_rs_processtool_execute → crates_smith_windows_src_tools_process_rs_action_stop (calls)
-- crates_smith_windows_src_tools_process_rs_processtool_execute → crates_smith_windows_src_tools_process_rs_action_list (calls)
-- crates_smith_windows_src_tools_process_rs_action_start → crates_smith_windows_src_tools_process_rs_processtool_new (calls)
-- crates_smith_windows_src_tools_process_rs_action_stop → crates_smith_windows_src_tools_process_rs_processtool_new (calls)
-- crates_smith_windows_src_tools_process_rs_action_list → crates_smith_windows_src_tools_process_rs_processtool_new (calls)
+- crates_smith_workflow_src_context_rs → crates_smith_workflow_src_context_rs_import_std_collections_hashmap (imports)
+- crates_smith_workflow_src_context_rs → crates_smith_workflow_src_context_rs_import_serde_json_value (imports)
+- crates_smith_workflow_src_context_rs → crates_smith_workflow_src_context_rs_import_smith_core_executioncontext (imports)
+- crates_smith_workflow_src_context_rs → crates_smith_workflow_src_context_rs_workflowcontext (defines)
+- crates_smith_workflow_src_context_rs_workflowcontext → crates_smith_workflow_src_context_rs_workflowcontext_new (defines)
+- crates_smith_workflow_src_context_rs_workflowcontext → crates_smith_workflow_src_context_rs_workflowcontext_set_step_result (defines)
+- crates_smith_workflow_src_context_rs_workflowcontext → crates_smith_workflow_src_context_rs_workflowcontext_get_step_result (defines)
+- crates_smith_workflow_src_context_rs_workflowcontext → crates_smith_workflow_src_context_rs_workflowcontext_elapsed_ms (defines)
+- crates_smith_workflow_src_context_rs_workflowcontext → crates_smith_workflow_src_context_rs_workflowcontext_now (defines)
+- crates_smith_workflow_src_context_rs_workflowcontext → crates_smith_workflow_src_context_rs_workflowcontext_default (defines)
+- crates_smith_workflow_src_context_rs_workflowcontext_new → crates_smith_workflow_src_context_rs_workflowcontext_now (calls)
+- crates_smith_workflow_src_context_rs_workflowcontext_elapsed_ms → crates_smith_workflow_src_context_rs_workflowcontext_now (calls)
+- crates_smith_workflow_src_context_rs_workflowcontext_default → crates_smith_workflow_src_context_rs_workflowcontext_new (calls)
 

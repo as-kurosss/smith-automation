@@ -1,21 +1,31 @@
-# Community 19: mod
+# Community 19: test_context_value_try_as_string()
 
-**Members:** 6
+**Members:** 11
 
 ## Nodes
 
-- **mod** (`crates_smith_windows_src_tools_mod_rs`, File, degree: 5)
-- **pub use click::ClickTool** (`crates_smith_windows_src_tools_mod_rs_import_pub_use_click_clicktool`, Module, degree: 1)
-- **pub use find::FindTool** (`crates_smith_windows_src_tools_mod_rs_import_pub_use_find_findtool`, Module, degree: 1)
-- **pub use input_text::InputTextTool** (`crates_smith_windows_src_tools_mod_rs_import_pub_use_input_text_inputtexttool`, Module, degree: 1)
-- **pub use process::ProcessTool** (`crates_smith_windows_src_tools_mod_rs_import_pub_use_process_processtool`, Module, degree: 1)
-- **pub use set_text::SetTextTool** (`crates_smith_windows_src_tools_mod_rs_import_pub_use_set_text_settexttool`, Module, degree: 1)
+- **context** (`crates_smith_core_src_context_rs`, File, degree: 16)
+- **.try_as_number()** (`crates_smith_core_src_context_rs_contextvalue_try_as_number`, Method, degree: 2)
+- **crate::error::{SmithError, SmithResult}** (`crates_smith_core_src_context_rs_import_crate_error_smitherror_smithresult`, Module, degree: 1)
+- **std::any::Any** (`crates_smith_core_src_context_rs_import_std_any_any`, Module, degree: 1)
+- **std::collections::HashMap** (`crates_smith_core_src_context_rs_import_std_collections_hashmap`, Module, degree: 1)
+- **std::sync::Arc** (`crates_smith_core_src_context_rs_import_std_sync_arc`, Module, degree: 1)
+- **super::*** (`crates_smith_core_src_context_rs_import_super`, Module, degree: 1)
+- **test_context_value_null()** (`crates_smith_core_src_context_rs_test_context_value_null`, Function, degree: 1)
+- **test_context_value_try_as_boolean()** (`crates_smith_core_src_context_rs_test_context_value_try_as_boolean`, Function, degree: 1)
+- **test_context_value_try_as_number()** (`crates_smith_core_src_context_rs_test_context_value_try_as_number`, Function, degree: 2)
+- **test_context_value_try_as_string()** (`crates_smith_core_src_context_rs_test_context_value_try_as_string`, Function, degree: 1)
 
 ## Relationships
 
-- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_pub_use_click_clicktool (imports)
-- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_pub_use_find_findtool (imports)
-- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_pub_use_input_text_inputtexttool (imports)
-- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_pub_use_process_processtool (imports)
-- crates_smith_windows_src_tools_mod_rs → crates_smith_windows_src_tools_mod_rs_import_pub_use_set_text_settexttool (imports)
+- crates_smith_core_src_context_rs → crates_smith_core_src_context_rs_import_std_any_any (imports)
+- crates_smith_core_src_context_rs → crates_smith_core_src_context_rs_import_std_collections_hashmap (imports)
+- crates_smith_core_src_context_rs → crates_smith_core_src_context_rs_import_std_sync_arc (imports)
+- crates_smith_core_src_context_rs → crates_smith_core_src_context_rs_import_crate_error_smitherror_smithresult (imports)
+- crates_smith_core_src_context_rs → crates_smith_core_src_context_rs_import_super (imports)
+- crates_smith_core_src_context_rs → crates_smith_core_src_context_rs_test_context_value_try_as_string (defines)
+- crates_smith_core_src_context_rs → crates_smith_core_src_context_rs_test_context_value_try_as_number (defines)
+- crates_smith_core_src_context_rs → crates_smith_core_src_context_rs_test_context_value_try_as_boolean (defines)
+- crates_smith_core_src_context_rs → crates_smith_core_src_context_rs_test_context_value_null (defines)
+- crates_smith_core_src_context_rs_test_context_value_try_as_number → crates_smith_core_src_context_rs_contextvalue_try_as_number (calls)
 

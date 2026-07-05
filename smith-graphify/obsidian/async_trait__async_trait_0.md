@@ -1,11 +1,11 @@
 ---
-id: crates_smith_core_src_tool_rs_import_async_trait_async_trait
+id: crates_smith_ai_src_agent_rs_import_async_trait_async_trait
 type: Module
-source: ./crates/smith-core/src/tool.rs
-community: 17
-community_label: Tool
+source: .\crates\smith-ai\src\agent.rs
+community: 0
+community_label: test_think_returns_plain_text()
 ---
 
 ## Connections
 
-- [[tool]] (imports)
+- [[agent]] (imports)

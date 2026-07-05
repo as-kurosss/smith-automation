@@ -1,9 +1,9 @@
 ---
 id: apps_smith_context_src_main_rs_is_always_excluded_dir
 type: Function
-source: ./apps/smith-context/src/main.rs
-community: 0
-community_label: TreeNode
+source: .\apps\smith-context\src\main.rs
+community: 51
+community_label: is_binary_extension()
 ---
 
 ## Connections

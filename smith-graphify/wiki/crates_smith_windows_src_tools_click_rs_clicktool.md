@@ -2,9 +2,9 @@
 
 - **ID:** `crates_smith_windows_src_tools_click_rs_clicktool`
 - **Type:** Struct
-- **File:** `./crates/smith-windows/src/tools/click.rs`
+- **File:** `.\crates\smith-windows\src\tools\click.rs`
 - **Location:** L10
-- **Community:** 16 (ClickTool)
+- **Community:** 33 (ClickTool)
 
 ## Relationships
 

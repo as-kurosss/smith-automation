@@ -7,14 +7,14 @@ use tokio_util::sync::CancellationToken;
 use crate::element::SafeUIElement;
 use crate::selector::ElementSelector;
 
-/// Инструмент для поиска UI-элемента на рабочем столе Windows.
+/// Tool for finding a UI element on the Windows desktop.
 ///
-/// Принимает параметры селектора (name, `automation_id`, `control_type`, `class_name`, pid)
-/// и сохраняет найденный элемент в контексте под указанным ключом.
+/// Accepts selector parameters (name, `automation_id`, `control_type`, `class_name`, pid)
+/// and saves the found element in the context under the specified key.
 pub struct FindTool;
 
 impl FindTool {
-    /// Создаёт новый экземпляр `FindTool`.
+    /// Creates a new `FindTool` instance.
     #[must_use]
     pub fn new() -> Self {
         Self
@@ -64,6 +64,16 @@ impl Tool for FindTool {
                 "output_key": {
                     "type": "string",
                     "description": "Key to store the found element in execution context"
+                },
+                "delay_before_ms": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Delay before execution in milliseconds"
+                },
+                "delay_after_ms": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Delay after execution in milliseconds"
                 }
             },
             "required": ["output_key"]
@@ -76,18 +86,21 @@ impl Tool for FindTool {
         ctx: &mut ExecutionContext,
         token: CancellationToken,
     ) -> SmithResult<ToolResult> {
-        // 1. Валидация параметров (Канон 10.1)
+        // 0. Optional delay before execution
+        crate::tools::apply_delay_before(&config).await;
+
+        // 1. Parameter validation (Canon 10.1)
         let output_key = config
             .get("output_key")
             .and_then(|v| v.as_str())
             .ok_or_else(|| SmithError::InvalidParams("Missing 'output_key'".into()))?;
 
-        // 2. Проверка отмены (Канон 5.4)
+        // 2. Cancellation check (Canon 5.4)
         if token.is_cancelled() {
             return Err(SmithError::Cancelled);
         }
 
-        // 3. Строим селектор из конфига
+        // 3. Build selector from config
         let mut selector = ElementSelector::new();
 
         if let Some(name) = config.get("name").and_then(|v| v.as_str()) {
@@ -109,8 +122,8 @@ impl Tool for FindTool {
             selector = selector.pid(pid);
         }
 
-        // 4. Поиск в блокирующем потоке (COM-вызовы).
-        //    SafeUIElement создаётся внутри spawn_blocking, т.к. UIElement не является Send.
+        // 4. Search in blocking thread (COM calls).
+        //    SafeUIElement is created inside spawn_blocking because UIElement is not Send.
         let safe_element = tokio::task::spawn_blocking(move || {
             selector.find_from_desktop().map(SafeUIElement::new)
         })
@@ -120,11 +133,14 @@ impl Tool for FindTool {
             source: Box::new(e),
         })??;
 
-        // 5. Сохраняем результат в контекст
+        // 5. Save result to context
         ctx.set(
             output_key.to_string(),
             smith_core::ContextValue::Custom(std::sync::Arc::new(safe_element)),
         );
+
+        // 6. Optional delay after execution
+        crate::tools::apply_delay_after(&config).await;
 
         Ok(json!({ "status": "found" }))
     }

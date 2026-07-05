@@ -1,12 +1,12 @@
 ---
-id: crates_smith_windows_src_tools_input_text_rs_inputtexttool_default
+id: crates_smith_windows_src_tools_set_text_rs_settexttool_default
 type: Method
-source: ./crates/smith-windows/src/tools/input_text.rs
-community: 13
-community_label: InputTextTool
+source: .\crates\smith-windows\src\tools\set_text.rs
+community: 35
+community_label: SetTextTool
 ---
 
 ## Connections
 
-- [[InputTextTool]] (defines)
-- [[_new___6]] (calls)
+- [[SetTextTool]] (defines)
+- [[_new___11]] (calls)

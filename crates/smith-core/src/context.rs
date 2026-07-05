@@ -5,7 +5,7 @@ use std::sync::Arc;
 
 use crate::error::{SmithError, SmithResult};
 
-/// Алгебраический тип данных для хранения значений в контексте.
+/// Algebraic data type for storing values in context.
 #[derive(Debug, Clone)]
 pub enum ContextValue {
     String(String),
@@ -13,7 +13,7 @@ pub enum ContextValue {
     Boolean(bool),
     List(Vec<ContextValue>),
     Bytes(Vec<u8>),
-    /// Платформо-специфичные объекты (например, `UIElement` из `smith-windows`).
+    /// Platform-specific objects (e.g., `UIElement` from `smith-windows`).
     Custom(Arc<dyn Any + Send + Sync>),
     Null,
 }
@@ -35,11 +35,11 @@ impl PartialEq for ContextValue {
 }
 
 impl ContextValue {
-    /// Извлекает строковое значение.
+    /// Extracts a string value.
     ///
     /// # Errors
     ///
-    /// Возвращает `SmithError::InvalidParams`, если значение не является `String`.
+    /// Returns `SmithError::InvalidParams` if the value is not a `String`.
     pub fn try_as_string(&self) -> SmithResult<&str> {
         match self {
             ContextValue::String(s) => Ok(s.as_str()),
@@ -47,11 +47,11 @@ impl ContextValue {
         }
     }
 
-    /// Извлекает числовое значение.
+    /// Extracts a numeric value.
     ///
     /// # Errors
     ///
-    /// Возвращает `SmithError::InvalidParams`, если значение не является `Number`.
+    /// Returns `SmithError::InvalidParams` if the value is not a `Number`.
     pub fn try_as_number(&self) -> SmithResult<f64> {
         match self {
             ContextValue::Number(n) => Ok(*n),
@@ -59,11 +59,11 @@ impl ContextValue {
         }
     }
 
-    /// Извлекает булево значение.
+    /// Extracts a boolean value.
     ///
     /// # Errors
     ///
-    /// Возвращает `SmithError::InvalidParams`, если значение не является `Boolean`.
+    /// Returns `SmithError::InvalidParams` if the value is not a `Boolean`.
     pub fn try_as_boolean(&self) -> SmithResult<bool> {
         match self {
             ContextValue::Boolean(b) => Ok(*b),
@@ -71,12 +71,12 @@ impl ContextValue {
         }
     }
 
-    /// Извлекает кастомный тип через `Any`.
+    /// Extracts a custom type via `Any`.
     ///
     /// # Errors
     ///
-    /// Возвращает `SmithError::InvalidParams`, если значение не является `Custom`
-    /// или внутренний тип не совпадает с запрашиваемым `T`.
+    /// Returns `SmithError::InvalidParams` if the value is not `Custom`
+    /// or the inner type does not match the requested `T`.
     pub fn try_as_custom<T: 'static>(&self) -> SmithResult<&T> {
         match self {
             ContextValue::Custom(arc) => arc
@@ -87,13 +87,13 @@ impl ContextValue {
     }
 }
 
-/// Контекст выполнения со стеком скоупов для изоляции переменных.
+/// Execution context with a scope stack for variable isolation.
 pub struct ExecutionContext {
     scopes: Vec<HashMap<String, ContextValue>>,
 }
 
 impl ExecutionContext {
-    /// Создаёт новый контекст с глобальным скоупом.
+    /// Creates a new context with a global scope.
     #[must_use]
     pub fn new() -> Self {
         Self {
@@ -101,26 +101,26 @@ impl ExecutionContext {
         }
     }
 
-    /// Создаёт новый локальный скоуп (например, при входе в цикл или функцию).
+    /// Creates a new local scope (e.g., when entering a loop or function).
     pub fn push_scope(&mut self) {
         self.scopes.push(HashMap::new());
     }
 
-    /// Уничтожает текущий локальный скоуп, освобождая память от временных переменных.
+    /// Destroys the current local scope, freeing memory from temporary variables.
     pub fn pop_scope(&mut self) {
         if self.scopes.len() > 1 {
             self.scopes.pop();
         }
     }
 
-    /// Записывает переменную в текущий (самый верхний) скоуп.
+    /// Writes a variable to the current (topmost) scope.
     pub fn set(&mut self, key: impl Into<String>, value: ContextValue) {
         if let Some(scope) = self.scopes.last_mut() {
             scope.insert(key.into(), value);
         }
     }
 
-    /// Читает переменную, начиная поиск с локального скоупа к глобальному (LIFO).
+    /// Reads a variable, starting search from local scope to global (LIFO).
     #[must_use]
     pub fn get(&self, key: &str) -> Option<&ContextValue> {
         for scope in self.scopes.iter().rev() {

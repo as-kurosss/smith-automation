@@ -34,16 +34,16 @@ fn is_command_allowed(cmd: &str) -> bool {
     allowed.iter().any(|&a| a.eq_ignore_ascii_case(name))
 }
 
-/// Инструмент для управления процессами Windows.
+/// Tool for managing Windows processes.
 ///
-/// Поддерживает действия:
-/// - `start` — запуск нового процесса (не ждёт завершения)
-/// - `stop` — остановка процесса по PID или имени (не ждёт завершения taskkill)
-/// - `sleep` — пауза на `duration_ms` миллисекунд
+/// Supports actions:
+/// - `start` — launches a new process (does not wait for completion)
+/// - `stop` — stops a process by PID or name (does not wait for taskkill to finish)
+/// - `sleep` — pauses for `duration_ms` milliseconds
 pub struct ProcessTool;
 
 impl ProcessTool {
-    /// Создаёт новый экземпляр `ProcessTool`.
+    /// Creates a new `ProcessTool` instance.
     #[must_use]
     pub fn new() -> Self {
         Self
@@ -100,6 +100,16 @@ impl Tool for ProcessTool {
                     "type": "integer",
                     "minimum": 0,
                     "description": "Sleep duration in milliseconds (required for sleep)"
+                },
+                "delay_before_ms": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Delay before execution in milliseconds"
+                },
+                "delay_after_ms": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Delay after execution in milliseconds"
                 }
             },
             "required": ["action"]
@@ -112,6 +122,9 @@ impl Tool for ProcessTool {
         _ctx: &mut ExecutionContext,
         token: CancellationToken,
     ) -> SmithResult<ToolResult> {
+        // 0. Optional delay before execution
+        crate::tools::apply_delay_before(&config).await;
+
         let action = config
             .get("action")
             .and_then(|v| v.as_str())
@@ -121,7 +134,7 @@ impl Tool for ProcessTool {
             return Err(SmithError::Cancelled);
         }
 
-        match action {
+        let result = match action {
             "start" => self::action_start(&config),
             "stop" => {
                 let config = config.clone();
@@ -132,16 +145,23 @@ impl Tool for ProcessTool {
                         source: Box::new(e),
                     })?
             }
-            "sleep" => self::action_sleep(config).await,
+            "sleep" => self::action_sleep(config.clone()).await,
             other => Err(SmithError::InvalidParams(format!(
                 "Unknown action: {other}"
             ))),
+        };
+
+        // Optional delay after execution (only on success)
+        if result.is_ok() {
+            crate::tools::apply_delay_after(&config).await;
         }
+
+        result
     }
 }
 
 fn action_start(config: &Value) -> SmithResult<ToolResult> {
-    // Валидация: command обязателен
+    // Validation: command is required
     let cmd_str = config
         .get("command")
         .and_then(|v| v.as_str())

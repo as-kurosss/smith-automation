@@ -1,16 +1,16 @@
 ## 📐 Specification: smith-workflow | smith
 
-**🎯 Purpose:** Объединить детерминированные RPA-инструменты (домены `windows`, `browser`, и т.д.) с LLM-агентом (`ai`) в единый workflow engine (`agent`), где каждый шаг явно указывает, кто за него отвечает — детерминированный код или LLM.
+**🎯 Purpose:** Combine deterministic RPA tools (domains `windows`, `browser`, etc.) with an LLM agent (`ai`) into a single workflow engine (`agent`), where each step explicitly indicates who is responsible for it — deterministic code or LLM.
 
 ---
 
-**📦 Структура крейтов:**
+**📦 Crate structure:**
 
 ```
 smith/
 ├── crates/
-│   ├── smith-core/             # Tool trait, ToolRegistry, ExecutionContext (как есть)
-│   ├── smith-rpa/              # Библиотека RPA-инструментов по доменам
+│   ├── smith-core/             # Tool trait, ToolRegistry, ExecutionContext (as-is)
+│   ├── smith-rpa/              # RPA tool library by domain
 │   │   ├── src/
 │   │   │   ├── lib.rs
 │   │   │   ├── windows/        # Click, Find, InputText, SetText, Process
@@ -20,61 +20,61 @@ smith/
 │   │   │   │   ├── input_text.rs
 │   │   │   │   ├── set_text.rs
 │   │   │   │   └── process.rs
-│   │   │   ├── browser/        # (заглушка на будущее)
+│   │   │   ├── browser/        # (placeholder for future)
 │   │   │   │   └── mod.rs
-│   │   │   └── excel/          # (заглушка на будущее)
+│   │   │   └── excel/          # (placeholder for future)
 │   │   │       └── mod.rs
 │   │   └── Cargo.toml
-│   ├── smith-ai/               # Rig-based LLM агент
+│   ├── smith-ai/               # Rig-based LLM agent
 │   │   ├── src/
 │   │   │   ├── lib.rs
 │   │   │   ├── adapter.rs      # smith-core::Tool → rig::tool::Tool
-│   │   │   ├── agent.rs        # SmithAgent — обёртка над Rig Agent
-│   │   │   └── provider.rs     # Конфигурация провайдера (OpenAI, Anthropic...)
+│   │   │   ├── agent.rs        # SmithAgent — wrapper over Rig Agent
+│   │   │   └── provider.rs     # Provider configuration (OpenAI, Anthropic...)
 │   │   └── Cargo.toml
-│   └── smith-workflow/         # Workflow engine с шагами
+│   └── smith-workflow/         # Workflow engine with steps
 │       ├── src/
 │       │   ├── lib.rs
 │       │   ├── workflow.rs     # Workflow, Step
 │   │   ├── step.rs         # StepKind (Rpa, Agent, Think, Decide)
-│       │   ├── context.rs      # WorkflowContext — ExecutionContext + результаты шагов
+│       │   ├── context.rs      # WorkflowContext — ExecutionContext + step results
 │       │   ├── executor.rs     # WorkflowExecutor
 │       │   └── error.rs        # WorkflowError
 │       └── Cargo.toml
 ├── apps/
-│   ├── selector-capture/       # как есть
-│   ├── smith-context/          # как есть
-│   └── smith-cli/              # (новый) CLI для запуска workflow
+│   ├── selector-capture/       # as-is
+│   ├── smith-context/          # as-is
+│   └── smith-cli/              # (new) CLI for running workflow
 └── Cargo.toml                  # workspace manifest
 ```
 
-**📥 Вход каждого крейта:**
+**📥 Input of each crate:**
 
 ### smith-rpa
 
 ```
-// Точка входа — Session для каждого домена
+// Entry point — Session for each domain
 use smith_rpa::windows::WindowsSession;
 use smith_rpa::domain::{DomainRegistry, DomainTool};
 
 let session = WindowsSession::new()?;
 
-// 1. Автономный вызов (для детерминированных скриптов)
-session.find("name=Сохранить")?;
+// 1. Standalone call (for deterministic scripts)
+session.find("name=Save")?;
 session.click()?;
 
-// 2. Регистрация в ToolRegistry (для передачи в workflow / AI)
+// 2. Registration in ToolRegistry (for passing to workflow / AI)
 let registry = session.tool_registry();
-// registry содержит: windows.find, windows.click, windows.input_text, ...
+// registry contains: windows.find, windows.click, windows.input_text, ...
 
-// 3. Передача в AI-агент
+// 3. Passing to AI agent
 let tools: Vec<Box<dyn DomainTool>> = session.tools();
 ```
 
 ### smith-ai
 
 ```
-// Точка входа — SmithAgent, обёртка над Rig Agent
+// Entry point — SmithAgent, wrapper over Rig Agent
 use smith_ai::SmithAgent;
 use smith_ai::provider::OpenAi;
 
@@ -82,13 +82,13 @@ let provider = OpenAi::new(std::env::var("OPENAI_API_KEY")?);
 
 let agent = SmithAgent::builder(provider)
     .with_tools(session.tools())    // DomainTool → rig::tool::Tool
-    .system_prompt("Ты ассистент по Windows автоматизации")
+    .system_prompt("You are a Windows automation assistant")
     .build();
 
-// Свободный режим (без workflow):
-let result = agent.prompt("Открой Блокнот и напиши Привет").await?;
+// Free mode (without workflow):
+let result = agent.prompt("Open Notepad and write Hello").await?;
 
-// Режим с workflow:
+// Workflow mode:
 let result = agent.run_workflow(workflow).await?;
 ```
 
@@ -98,36 +98,36 @@ let result = agent.run_workflow(workflow).await?;
 use smith_workflow::{Workflow, Step};
 use smith_workflow::agent::Agent;
 
-// Workflow — последовательность шагов
+// Workflow — sequence of steps
 let workflow = Workflow::new("save_document")
-    // Шаг 1: Детерминированно открыть Блокнот
+    // Step 1: Deterministically open Notepad
     .step(Step::rpa("windows.process").args(json!({
         "action": "start",
         "path": "notepad.exe"
     })))
 
-    // Шаг 2: Подождать окно, найти поле ввода
+    // Step 2: Wait for window, find input field
     .step(Step::rpa("windows.find").args(json!({
         "class_name": "Edit"
     })))
 
-    // Шаг 3: Напечатать текст
+    // Step 3: Type text
     .step(Step::rpa("windows.input_text").args(json!({
         "text": "Hello, World!"
     })))
 
-    // Шаг 4: Agent решает, сохранять или нет
-    .step(Step::agent_decide("Нужно ли сохранять файл?")
-        .context("Пользователь хочет сохранить документ")
+    // Step 4: Agent decides whether to save
+    .step(Step::agent_decide("Should we save the file?")
+        .context("The user wants to save the document")
         .options(&["save", "cancel"]))
 
-    // Шаг 5: Если save — детерминированное сохранение
+    // Step 5: If save — deterministic save
     .step(Step::rpa("windows.send_keys").args(json!({
         "keys": "^s"
     })))
     .build();
 
-// Agent — исполнитель workflow
+// Agent — workflow executor
 let agent = Agent::new()
     .with_registry(session.tool_registry())
     .with_ai(ai_agent)
@@ -135,7 +135,7 @@ let agent = Agent::new()
     .await?;
 ```
 
-**📤 Выход:**
+**📤 Output:**
 
 ```
 AgentResult {
@@ -147,115 +147,115 @@ AgentResult {
 }
 ```
 
-На ошибке: `WorkflowError` с указанием шага, причины и текущего состояния контекста. Контекст не теряется — можно retry с того же шага.
+On error: `WorkflowError` with the step index, cause, and current context state. The context is not lost — you can retry from the same step.
 
 ---
 
-**⚠️ Границы:**
+**⚠️ Boundaries:**
 
-- **Step::rpa("nonexistent")** — ошибка на этапе `build()`, а не в рантайме. Workflow валидирует имена тулов при сборке.
-- **Step::agent_decide с пустым `options`** — паника на этапе сборки (логическая ошибка разработчика).
-- **CancellationToken отменён во время RPA-шага** — инструмент сам проверяет токен (уже реализовано в smith-core). Шаг помечается как `Cancelled`, состояние не теряется.
-- **LLM не вернул ответ** — `Step::agent_decide` / `Step::agent_think` возвращает `WorkflowError::AgentError` с raw ответом модели для диагностики.
-- **RPA-шаг упал (element not found)** — `WorkflowError::StepError { step_idx, source }`. Можно настроить `retry_policy` для шага.
-- **Что если тул из другого домена (browser) вызван без session?** — `runtimeRegistry` проверяет, зарегистрирован ли инструмент, иначе `ToolNotFound`.
-- **Вложенные workflow:** `Step::workflow(sub_workflow)` — запуск под-workflow как одного шага для композиции.
+- **Step::rpa("nonexistent")** — error at `build()` time, not at runtime. Workflow validates tool names during assembly.
+- **Step::agent_decide with empty `options`** — panics at build time (developer logic error).
+- **CancellationToken cancelled during RPA step** — the tool checks the token itself (already implemented in smith-core). The step is marked as `Cancelled`, state is not lost.
+- **LLM did not return a response** — `Step::agent_decide` / `Step::agent_think` returns `WorkflowError::AgentError` with the raw model response for diagnostics.
+- **RPA step failed (element not found)** — `WorkflowError::StepError { step_idx, source }`. A `retry_policy` can be configured for the step.
+- **What if a tool from another domain (browser) is called without a session?** — `runtimeRegistry` checks if the tool is registered, otherwise `ToolNotFound`.
+- **Nested workflows:** `Step::workflow(sub_workflow)` — running a sub-workflow as a single step for composition.
 
-**📦 StepKind — полная спецификация:**
+**📦 StepKind — full specification:**
 
 ```rust
 pub enum StepKind {
-    /// Детерминированный RPA-шаг. Никакого LLM.
-    /// name — имя инструмента (например "windows.click")
-    /// args — JSON с параметрами
+    /// Deterministic RPA step. No LLM.
+    /// name — tool name (e.g. "windows.click")
+    /// args — JSON with parameters
     Rpa {
         name: &'static str,
         args: Value,
         retry: RetryPolicy,
     },
 
-    /// Agent получает prompt и сам решает,
-    /// какие RPA-инструменты вызывать и в каком порядке.
+    /// Agent receives a prompt and decides for itself
+    /// which RPA tools to call and in what order.
     Agent {
         prompt: String,
-        tools: Vec<&'static str>,    // какие тулы доступны агенту
-        max_steps: usize,            // лимит вызовов инструментов
+        tools: Vec<&'static str>,    // which tools are available to the agent
+        max_steps: usize,            // limit on tool invocations
     },
 
-    /// Agent генерирует данные/решение без вызова инструментов.
-    /// Результат сохраняется в WorkflowContext.
+    /// Agent generates data/decision without calling tools.
+    /// Result is saved in WorkflowContext.
     Think {
         prompt: String,
-        output_schema: Value,        // JSON Schema ожидаемого ответа
+        output_schema: Value,        // JSON Schema of expected response
     },
 
-    /// Agent выбирает один вариант из списка.
-    /// Результат — выбранный option. Дальнейший ход workflow
-    /// зависит от выбора (conditional routing).
+    /// Agent selects one option from a list.
+    /// Result — the selected option. Further workflow execution
+    /// depends on the choice (conditional routing).
     Decide {
         prompt: String,
         options: Vec<&'static str>,
     },
 
-    /// Вложенный workflow
+    /// Nested workflow
     Workflow(Workflow),
 }
 ```
 
-**🔀 Conditional routing после Decide:**
+**🔀 Conditional routing after Decide:**
 
 ```rust
-// Decide возвращает выбранный option.
-// Workflow может ветвиться:
+// Decide returns the selected option.
+// Workflow can branch:
 
 let workflow = Workflow::new("process_document")
-    .step(Step::rpa("windows.find").args(json!({"name": "Документ"})))
-    .step(Step::agent_decide("Это счёт или договор?")
+    .step(Step::rpa("windows.find").args(json!({"name": "Document"})))
+    .step(Step::agent_decide("Is this an invoice or a contract?")
         .options(&["invoice", "contract"]))
     .on_choice("invoice", Workflow::new("handle_invoice")
         .step(Step::rpa("excel.read").args(json!({"range": "A1:F20"})))
-        .step(Step::agent_think("Извлеки сумму и дату")))
+        .step(Step::agent_think("Extract the amount and date")))
     .on_choice("contract", Workflow::new("handle_contract")
         .step(Step::rpa("excel.read").args(json!({"range": "A1:H50"})))
-        .step(Step::agent_think("Извлеки стороны и сроки")))
+        .step(Step::agent_think("Extract the parties and terms")))
     .build();
 ```
 
-**🤖 Что становится `domain::windows::click()`:**
+**🤖 What becomes `domain::windows::click()`:**
 
-В коде это не строковый вызов, а типобезопасный Builder для Step:
+In code, this is not a string call, but a type-safe Builder for Step:
 
 ```rust
-// Именно так будет выглядеть API для разработчика:
+// This is what the API will look like for the developer:
 
 use smith_workflow::prelude::*;
 use smith_rpa::windows;
 
-// Вариант А: Workflow из Step-ов
+// Option A: Workflow from Steps
 fn build_workflow() -> Workflow {
     Workflow::new("demo")
-        .step(windows::find("name=Блокнот"))
+        .step(windows::find("name=Notepad"))
         .step(windows::click())
-        .step(windows::input_text("Привет"))
-        // или `.step(agent_think("Проверь результат"))`
+        .step(windows::input_text("Hello"))
+        // or `.step(agent_think("Check the result"))`
         .build()
 }
 
-// Вариант Б: Workflow из Step-ов с явными именами
+// Option B: Workflow from Steps with explicit names
 fn build_workflow_verbose() -> Workflow {
     Workflow::new("demo")
-        .step(Step::rpa("windows.find").args(json!({"name": "Блокнот"})))
+        .step(Step::rpa("windows.find").args(json!({"name": "Notepad"})))
         .step(Step::rpa("windows.click").args(json!({"element_key": "found"})))
-        .step(Step::agent("Проверь, открылся ли Блокнот"))
+        .step(Step::agent("Check if Notepad opened"))
         .build()
 }
 ```
 
-**Вариант А (типобезопасный) — это и есть твоё `domain::windows::click()` в Rust.**
+**Option A (type-safe) — this is your `domain::windows::click()` in Rust.**
 
 ```rust
-// smith-rpa::windows — публичные функции-конструкторы Step-ов
-// Каждая функция знает свои параметры, возвращает готовый Step
+// smith-rpa::windows — public Step constructor functions
+// Each function knows its parameters, returns a ready Step
 
 pub fn find(selector: &str) -> Step {
     Step::rpa("windows.find").args(json!({"name": selector}))
@@ -272,44 +272,44 @@ pub fn input_text(text: &str) -> Step {
 
 ---
 
-**🔌 n8n как внешний оркестратор (future):**
+**🔌 n8n as external orchestrator (future):**
 
-n8n (Apache 2.0) может использоваться как внешний триггер для smith-workflow:
+n8n (Apache 2.0) can be used as an external trigger for smith-workflow:
 
 ```
 n8n:
   [Folder Watch] → POST localhost:8742/run/process_inbox
   [Schedule 09:00] → POST localhost:8742/run/daily_report
   [Webhook]       → POST localhost:8742/run/{workflow}
-  → [Telegram/Slack/Email] уведомление о результате
+  → [Telegram/Slack/Email] notification of result
 ```
 
-n8n только запускает workflow по триггеру и не управляет RPA-шагами. **Не разрабатывается сейчас**, только имеется в виду.
+n8n only triggers the workflow and does not manage RPA steps. **Not being developed now**, just kept in mind.
 
 ---
 
 **✅ Success criteria:**
 
-- [ ] `smith-core` остаётся без изменений — Tool trait, ExecutionContext, ToolRegistry как есть
-- [ ] `smith-rpa::windows` re-export все существующие инструменты из smith-windows под новым API
-- [ ] `smith-rpa::windows::click()` возвращает готовый `Step` (не выполняет ничего)
-- [ ] `smith-ai::SmithAgent::builder(provider).with_tools(tools)` собирает Rig-агента
-- [ ] `smith-workflow::Workflow` валидирует имена тулов при `build()`
-- [ ] `smith-workflow::Agent::run` выполняет workflow: RPA-шаги через ToolRegistry, Agent-шаги через SmithAgent
-- [ ] `Step::agent_decide` возвращает выбранный option; workflow поддерживает `on_choice` ветвление
-- [ ] `CancellationToken` пробрасывается во все шаги
-- [ ] На ошибке RPA-шага можно retry; на ошибке Agent-шага можно fallback
-- [ ] `cargo test`, `cargo clippy -- -D warnings` проходят
+- [ ] `smith-core` remains unchanged — Tool trait, ExecutionContext, ToolRegistry as-is
+- [ ] `smith-rpa::windows` re-exports all existing tools from smith-windows under the new API
+- [ ] `smith-rpa::windows::click()` returns a ready `Step` (does not execute anything)
+- [ ] `smith-ai::SmithAgent::builder(provider).with_tools(tools)` builds a Rig agent
+- [ ] `smith-workflow::Workflow` validates tool names during `build()`
+- [ ] `smith-workflow::Agent::run` executes workflow: RPA steps via ToolRegistry, Agent steps via SmithAgent
+- [ ] `Step::agent_decide` returns the selected option; workflow supports `on_choice` branching
+- [ ] `CancellationToken` is propagated to all steps
+- [ ] On RPA step error, retry is possible; on Agent step error, fallback is possible
+- [ ] `cargo test`, `cargo clippy -- -D warnings` pass
 
 ---
 
-## 🗓️ План реализации
+## 🗓️ Implementation plan
 
-- [ ] Создать `crates/smith-rpa/` — перенести smith-windows как модуль `windows`, добавить `domain.rs` (DomainTool trait + DomainRegistry)
-- [ ] Создать `crates/smith-ai/` — адаптер `smith-core::Tool` → `rig::tool::Tool`, обёртка `SmithAgent`
-- [ ] Создать `crates/smith-workflow/` — `Workflow`, `Step`, `StepKind`, `WorkflowExecutor`
-- [ ] Реализовать `Agent` — объединяет ToolRegistry + SmithAgent, исполняет workflow
-- [ ] Добавить `Step::workflow(sub_workflow)` для композиции
-- [ ] Добавить `on_choice` conditional routing для `Step::agent_decide`
-- [ ] Обновить `README.md` и `ARCHITECTURE.md`
+- [ ] Create `crates/smith-rpa/` — move smith-windows as `windows` module, add `domain.rs` (DomainTool trait + DomainRegistry)
+- [ ] Create `crates/smith-ai/` — adapter `smith-core::Tool` → `rig::tool::Tool`, `SmithAgent` wrapper
+- [ ] Create `crates/smith-workflow/` — `Workflow`, `Step`, `StepKind`, `WorkflowExecutor`
+- [ ] Implement `Agent` — combines ToolRegistry + SmithAgent, executes workflow
+- [ ] Add `Step::workflow(sub_workflow)` for composition
+- [ ] Add `on_choice` conditional routing for `Step::agent_decide`
+- [ ] Update `README.md` and `ARCHITECTURE.md`
 - [ ] Checks: `cargo test`, `cargo clippy -- -D warnings`

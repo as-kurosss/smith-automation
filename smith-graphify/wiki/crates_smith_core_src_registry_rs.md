@@ -2,8 +2,8 @@
 
 - **ID:** `crates_smith_core_src_registry_rs`
 - **Type:** File
-- **File:** `./crates/smith-core/src/registry.rs`
-- **Community:** 5 (test_new_creates_empty_registry())
+- **File:** `.\crates\smith-core\src\registry.rs`
+- **Community:** 15 (test_default_is_empty())
 
 ## Relationships
 

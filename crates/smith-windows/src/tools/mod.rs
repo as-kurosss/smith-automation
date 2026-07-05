@@ -9,6 +9,8 @@ pub mod input_text;
 pub mod process;
 #[cfg(windows)]
 pub mod set_text;
+#[cfg(windows)]
+pub mod wait;
 
 #[cfg(windows)]
 pub use click::ClickTool;
@@ -20,6 +22,8 @@ pub use input_text::InputTextTool;
 pub use process::ProcessTool;
 #[cfg(windows)]
 pub use set_text::SetTextTool;
+#[cfg(windows)]
+pub use wait::WaitTool;
 
 #[cfg(windows)]
 use serde_json::Value;
@@ -27,13 +31,33 @@ use serde_json::Value;
 use smith_core::{ExecutionContext, SmithError, SmithResult};
 
 #[cfg(windows)]
-pub(crate) use self::helpers::resolve_element_from_config;
+pub(crate) use self::helpers::{
+    apply_delay_after, apply_delay_before, resolve_element_from_config,
+};
 
 #[cfg(windows)]
 mod helpers {
     use super::{ExecutionContext, SmithError, SmithResult, Value};
     use crate::element::SafeUIElement;
     use crate::selector::ElementSelector;
+
+    /// Extracts `delay_before_ms` from the config and applies the delay if specified.
+    pub(crate) async fn apply_delay_before(config: &Value) {
+        if let Some(ms) = config.get("delay_before_ms").and_then(|v| v.as_u64())
+            && ms > 0
+        {
+            tokio::time::sleep(std::time::Duration::from_millis(ms)).await;
+        }
+    }
+
+    /// Extracts `delay_after_ms` from the config and applies the delay if specified.
+    pub(crate) async fn apply_delay_after(config: &Value) {
+        if let Some(ms) = config.get("delay_after_ms").and_then(|v| v.as_u64())
+            && ms > 0
+        {
+            tokio::time::sleep(std::time::Duration::from_millis(ms)).await;
+        }
+    }
 
     /// Resolves a UI element from tool config, trying in order:
     /// 1. Look up `element_key` in the execution context

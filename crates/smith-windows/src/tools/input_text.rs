@@ -4,15 +4,15 @@ use serde_json::{Value, json};
 use smith_core::{ExecutionContext, SmithError, SmithResult, Tool, ToolConfig, ToolResult};
 use tokio_util::sync::CancellationToken;
 
-/// Инструмент для ввода текста в UI-элемент Windows.
+/// Tool for inputting text into a Windows UI element.
 ///
-/// Если указан `element_key` или `selector`, сначала фокусирует элемент,
-/// затем вводит текст через UIA `send_keys`. Если элемент не указан,
-/// просто отправляет нажатия клавиш в активное окно.
+/// If `element_key` or `selector` is specified, first focuses the element,
+/// then types text via UIA `send_keys`. If no element is specified,
+/// simply sends keystrokes to the active window.
 pub struct InputTextTool;
 
 impl InputTextTool {
-    /// Создаёт новый экземпляр `InputTextTool`.
+    /// Creates a new `InputTextTool` instance.
     #[must_use]
     pub fn new() -> Self {
         Self
@@ -62,6 +62,16 @@ impl Tool for InputTextTool {
                 "class_name": {
                     "type": "string",
                     "description": "Window class name (if element_key not set)"
+                },
+                "delay_before_ms": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Delay before execution in milliseconds"
+                },
+                "delay_after_ms": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Delay after execution in milliseconds"
                 }
             },
             "required": ["text"]
@@ -74,7 +84,10 @@ impl Tool for InputTextTool {
         ctx: &mut ExecutionContext,
         token: CancellationToken,
     ) -> SmithResult<ToolResult> {
-        // 1. Валидация параметров
+        // 0. Optional delay before execution
+        crate::tools::apply_delay_before(&config).await;
+
+        // 1. Parameter validation
         let text = config
             .get("text")
             .and_then(|v| v.as_str())
@@ -85,13 +98,13 @@ impl Tool for InputTextTool {
             return Err(SmithError::Cancelled);
         }
 
-        // 2. Пытаемся получить элемент из контекста или найти по селектору
+        // 2. Try to get element from context or find by selector
         let maybe_element = crate::tools::resolve_element_from_config(&config, ctx).await?;
 
-        // 3. Ввод текста в блокирующем потоке
+        // 3. Input text in blocking thread
         tokio::task::spawn_blocking(move || {
             if let Some(element) = maybe_element {
-                // Фокусируем элемент, затем вводим текст
+                // Focus the element, then type text
                 element
                     .inner()
                     .set_focus()
@@ -99,8 +112,8 @@ impl Tool for InputTextTool {
                         message: "Set focus failed".into(),
                         source: Box::new(e),
                     })?;
-                // Небольшая пауза после set_focus, чтобы UI Automation успел
-                // обработать фокус и обновить состояние элемента перед send_keys.
+                // Small pause after set_focus to let UI Automation
+                // process the focus and update the element state before send_keys.
                 std::thread::sleep(std::time::Duration::from_millis(100));
                 element
                     .inner()
@@ -110,7 +123,7 @@ impl Tool for InputTextTool {
                         source: Box::new(e),
                     })?;
             } else {
-                // Просто вводим текст в активное окно через корневой элемент
+                // Simply type text into the active window via the root element
                 let automation = uiautomation::core::UIAutomation::new().map_err(|e| {
                     SmithError::PlatformError {
                         message: "UIAutomation init failed".into(),
@@ -137,6 +150,9 @@ impl Tool for InputTextTool {
             message: "Input text blocking task join failed".into(),
             source: Box::new(e),
         })??;
+
+        // 4. Optional delay after execution
+        crate::tools::apply_delay_after(&config).await;
 
         Ok(json!({ "status": "input_sent" }))
     }

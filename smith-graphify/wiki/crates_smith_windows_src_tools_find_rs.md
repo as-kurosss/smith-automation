@@ -2,8 +2,8 @@
 
 - **ID:** `crates_smith_windows_src_tools_find_rs`
 - **Type:** File
-- **File:** `./crates/smith-windows/src/tools/find.rs`
-- **Community:** 18 (find)
+- **File:** `.\crates\smith-windows\src\tools\find.rs`
+- **Community:** 39 (find)
 
 ## Relationships
 

@@ -1,11 +1,11 @@
 ---
-id: crates_smith_windows_src_tools_input_text_rs_import_tokio_util_sync_cancellationtoken
+id: crates_smith_windows_src_tools_click_rs_import_tokio_util_sync_cancellationtoken
 type: Module
-source: ./crates/smith-windows/src/tools/input_text.rs
-community: 11
-community_label: input_text
+source: .\crates\smith-windows\src\tools\click.rs
+community: 43
+community_label: click
 ---
 
 ## Connections
 
-- [[input_text]] (imports)
+- [[click]] (imports)

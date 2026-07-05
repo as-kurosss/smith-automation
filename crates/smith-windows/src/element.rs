@@ -2,20 +2,20 @@
 use std::sync::Arc;
 use uiautomation::UIElement;
 
-/// Потокобезопасная обертка над `UIElement`.
+/// Thread-safe wrapper over `UIElement`.
 ///
 /// # Safety
 ///
-/// `UIElement` внутри содержит `NonNull<c_void>` (COM-интерфейс), который
-/// не реализует `Send`. Однако объекты UI Automation являются
-/// free-threaded и могут безопасно передаваться между потоками.
-/// Все мутации (клики, ввод) выполняются через `spawn_blocking`,
-/// где COM-вызовы происходят в выделенном потоке.
+/// `UIElement` internally contains `NonNull<c_void>` (a COM interface), which
+/// does not implement `Send`. However, UI Automation objects are
+/// free-threaded and can be safely transferred between threads.
+/// All mutations (clicks, input) are performed via `spawn_blocking`,
+/// where COM calls happen on a dedicated thread.
 #[derive(Debug)]
 pub struct SafeUIElement(Arc<UIElement>);
 
 impl SafeUIElement {
-    /// Создаёт новую потокобезопасную обёртку.
+    /// Creates a new thread-safe wrapper.
     #[must_use]
     pub fn new(element: UIElement) -> Self {
         // SAFETY: UIElement is a free-threaded COM object despite lacking
@@ -25,7 +25,7 @@ impl SafeUIElement {
         Self(Arc::new(element))
     }
 
-    /// Возвращает ссылку на внутренний элемент.
+    /// Returns a reference to the inner element.
     #[must_use]
     pub fn inner(&self) -> &UIElement {
         &self.0

@@ -1,11 +1,13 @@
 ---
-id: crates_smith_windows_src_element_rs_safeuielement_new
+id: crates_smith_windows_src_tools_find_rs_findtool_new
 type: Method
-source: ./crates/smith-windows/src/element.rs
-community: 14
-community_label: SafeUIElement
+source: .\crates\smith-windows\src\tools\find.rs
+community: 41
+community_label: FindTool
 ---
 
 ## Connections
 
-- [[SafeUIElement]] (defines)
+- [[FindTool]] (defines)
+- [[_default___3]] (calls)
+- [[_execute___5]] (calls)

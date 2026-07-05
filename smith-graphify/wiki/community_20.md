@@ -1,21 +1,31 @@
-# Community 20: click
+# Community 20: lib (20)
 
-**Members:** 6
+**Members:** 11
 
 ## Nodes
 
-- **click** (`crates_smith_windows_src_tools_click_rs`, File, degree: 6)
-- **async_trait::async_trait** (`crates_smith_windows_src_tools_click_rs_import_async_trait_async_trait`, Module, degree: 1)
-- **crate::element::SafeUIElement** (`crates_smith_windows_src_tools_click_rs_import_crate_element_safeuielement`, Module, degree: 1)
-- **serde_json::{Value, json}** (`crates_smith_windows_src_tools_click_rs_import_serde_json_value_json`, Module, degree: 1)
-- **smith_core::{ExecutionContext, SmithError, SmithResult, Tool, ToolConfig, ToolResult}** (`crates_smith_windows_src_tools_click_rs_import_smith_core_executioncontext_smitherror_smithresult_tool_toolconfig_toolresult`, Module, degree: 1)
-- **tokio_util::sync::CancellationToken** (`crates_smith_windows_src_tools_click_rs_import_tokio_util_sync_cancellationtoken`, Module, degree: 1)
+- **lib** (`crates_smith_workflow_src_lib_rs`, File, degree: 10)
+- **pub use context::WorkflowContext** (`crates_smith_workflow_src_lib_rs_import_pub_use_context_workflowcontext`, Module, degree: 1)
+- **pub use crate::context::WorkflowContext** (`crates_smith_workflow_src_lib_rs_import_pub_use_crate_context_workflowcontext`, Module, degree: 1)
+- **pub use crate::error::WorkflowError** (`crates_smith_workflow_src_lib_rs_import_pub_use_crate_error_workflowerror`, Module, degree: 1)
+- **pub use crate::step::{RetryPolicy, Step, StepKind}** (`crates_smith_workflow_src_lib_rs_import_pub_use_crate_step_retrypolicy_step_stepkind`, Module, degree: 1)
+- **pub use crate::workflow::Workflow** (`crates_smith_workflow_src_lib_rs_import_pub_use_crate_workflow_workflow`, Module, degree: 1)
+- **pub use error::{AgentResult, StepErrorContext, WorkflowError}** (`crates_smith_workflow_src_lib_rs_import_pub_use_error_agentresult_steperrorcontext_workflowerror`, Module, degree: 1)
+- **pub use executor::WorkflowExecutor** (`crates_smith_workflow_src_lib_rs_import_pub_use_executor_workflowexecutor`, Module, degree: 1)
+- **pub use serde_json::json** (`crates_smith_workflow_src_lib_rs_import_pub_use_serde_json_json`, Module, degree: 1)
+- **pub use step::{RetryPolicy, Step, StepKind}** (`crates_smith_workflow_src_lib_rs_import_pub_use_step_retrypolicy_step_stepkind`, Module, degree: 1)
+- **pub use workflow::Workflow** (`crates_smith_workflow_src_lib_rs_import_pub_use_workflow_workflow`, Module, degree: 1)
 
 ## Relationships
 
-- crates_smith_windows_src_tools_click_rs → crates_smith_windows_src_tools_click_rs_import_async_trait_async_trait (imports)
-- crates_smith_windows_src_tools_click_rs → crates_smith_windows_src_tools_click_rs_import_serde_json_value_json (imports)
-- crates_smith_windows_src_tools_click_rs → crates_smith_windows_src_tools_click_rs_import_smith_core_executioncontext_smitherror_smithresult_tool_toolconfig_toolresult (imports)
-- crates_smith_windows_src_tools_click_rs → crates_smith_windows_src_tools_click_rs_import_tokio_util_sync_cancellationtoken (imports)
-- crates_smith_windows_src_tools_click_rs → crates_smith_windows_src_tools_click_rs_import_crate_element_safeuielement (imports)
+- crates_smith_workflow_src_lib_rs → crates_smith_workflow_src_lib_rs_import_pub_use_context_workflowcontext (imports)
+- crates_smith_workflow_src_lib_rs → crates_smith_workflow_src_lib_rs_import_pub_use_error_agentresult_steperrorcontext_workflowerror (imports)
+- crates_smith_workflow_src_lib_rs → crates_smith_workflow_src_lib_rs_import_pub_use_executor_workflowexecutor (imports)
+- crates_smith_workflow_src_lib_rs → crates_smith_workflow_src_lib_rs_import_pub_use_step_retrypolicy_step_stepkind (imports)
+- crates_smith_workflow_src_lib_rs → crates_smith_workflow_src_lib_rs_import_pub_use_workflow_workflow (imports)
+- crates_smith_workflow_src_lib_rs → crates_smith_workflow_src_lib_rs_import_pub_use_crate_context_workflowcontext (imports)
+- crates_smith_workflow_src_lib_rs → crates_smith_workflow_src_lib_rs_import_pub_use_crate_error_workflowerror (imports)
+- crates_smith_workflow_src_lib_rs → crates_smith_workflow_src_lib_rs_import_pub_use_crate_step_retrypolicy_step_stepkind (imports)
+- crates_smith_workflow_src_lib_rs → crates_smith_workflow_src_lib_rs_import_pub_use_crate_workflow_workflow (imports)
+- crates_smith_workflow_src_lib_rs → crates_smith_workflow_src_lib_rs_import_pub_use_serde_json_json (imports)
 

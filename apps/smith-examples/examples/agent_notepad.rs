@@ -1,9 +1,9 @@
-//! # Пример 2: Чистый AI-агент
+//! # Example 2: Pure AI Agent
 //!
-//! LLM (через Rig) получает инструменты и сам решает,
-//! в каком порядке их вызывать для открытия Блокнота, ввода текста и закрытия.
+//! LLM (via Rig) receives tools and decides on its own
+//! in what order to call them for opening Notepad, typing text, and closing.
 //!
-//! ## Запуск
+//! ## Run
 //! ```bash
 //! $env:OPENAI_API_KEY = "sk-..."
 //! cargo run --example agent_notepad
@@ -21,14 +21,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     use tokio::sync::Mutex;
     use tokio_util::sync::CancellationToken;
 
-    // -- API ключ --
+    // -- API key --
     let api_key = std::env::var("OPENAI_API_KEY").expect("OPENAI_API_KEY must be set");
 
-    // -- ExecutionContext, разделяемый между инструментами --
+    // -- ExecutionContext shared between tools --
     let ctx = Arc::new(Mutex::new(ExecutionContext::new()));
     let token = CancellationToken::new();
 
-    // -- Оборачиваем Windows-инструменты в Rig-совместимые адаптеры --
+    // -- Wrap Windows tools into Rig-compatible adapters --
     let tools: Vec<Box<dyn ToolDyn>> = vec![
         Box::new(ToolAdapter::new(
             FindTool::new(),
@@ -47,7 +47,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         )),
     ];
 
-    // -- Собираем агента --
+    // -- Build the agent --
     let provider = ProviderConfig::openai(api_key)
         .with_model("mimo-v2.5")
         .with_base_url("https://opencode.ai/zen/go/v1");
@@ -68,10 +68,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .with_tools(tools)
         .build()?;
 
-    // -- Запускаем (LLM сам планирует и вызывает инструменты) --
+    // -- Run (LLM plans and calls tools on its own) --
     let result = agent
         .prompt(
-            "Open Notepad, type 'Привет от AI-агента!' in the text field, \
+            "Open Notepad, type 'Hello from AI Agent!' in the text field, \
              then close Notepad.",
         )
         .await?;

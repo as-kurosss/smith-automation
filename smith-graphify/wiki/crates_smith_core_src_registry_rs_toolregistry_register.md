@@ -2,9 +2,9 @@
 
 - **ID:** `crates_smith_core_src_registry_rs_toolregistry_register`
 - **Type:** Method
-- **File:** `./crates/smith-core/src/registry.rs`
+- **File:** `.\crates\smith-core\src\registry.rs`
 - **Location:** L25
-- **Community:** 2 (ToolRegistry)
+- **Community:** 47 (test_register_and_get_tool())
 
 ## Relationships
 

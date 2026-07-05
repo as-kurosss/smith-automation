@@ -1,31 +1,31 @@
 // crates/smith-ai/src/provider.rs
-//! Конфигурация LLM-провайдера.
+//! LLM provider configuration.
 
-/// Конфигурация провайдера LLM.
+/// LLM provider configuration.
 #[derive(Clone)]
 pub enum ProviderConfig {
-    /// OpenAI (GPT-4o, o4-mini, GPT-4.1 и т.д.).
+    /// OpenAI (GPT-4o, o4-mini, GPT-4.1, etc.).
     OpenAi {
-        /// API ключ.
+        /// API key.
         api_key: String,
-        /// Модель (по умолчанию "gpt-4o", обычно заменяется под ваш прокси).
+        /// Model (default "gpt-4o", typically overridden for your proxy).
         model: String,
-        /// Базовый URL (для self-hosted / proxy).
+        /// Base URL (for self-hosted / proxy).
         base_url: Option<String>,
     },
     /// Anthropic (Claude).
     Anthropic {
-        /// API ключ.
+        /// API key.
         api_key: String,
-        /// Модель (по умолчанию "claude-sonnet-4-20250514").
+        /// Model (default "claude-sonnet-4-20250514").
         model: String,
-        /// Базовый URL (для self-hosted / proxy).
+        /// Base URL (for self-hosted / proxy).
         base_url: Option<String>,
     },
 }
 
 impl ProviderConfig {
-    /// Создаёт конфиг OpenAI.
+    /// Creates an OpenAI config.
     #[must_use]
     pub fn openai(api_key: impl Into<String>) -> Self {
         Self::OpenAi {
@@ -35,7 +35,7 @@ impl ProviderConfig {
         }
     }
 
-    /// Создаёт конфиг Anthropic.
+    /// Creates an Anthropic config.
     #[must_use]
     pub fn anthropic(api_key: impl Into<String>) -> Self {
         Self::Anthropic {
@@ -45,7 +45,7 @@ impl ProviderConfig {
         }
     }
 
-    /// Задаёт модель.
+    /// Sets the model.
     #[must_use]
     pub fn with_model(mut self, model: impl Into<String>) -> Self {
         match &mut self {
@@ -56,7 +56,7 @@ impl ProviderConfig {
         self
     }
 
-    /// Задаёт базовый URL.
+    /// Sets the base URL.
     #[must_use]
     pub fn with_base_url(mut self, url: impl Into<String>) -> Self {
         match &mut self {

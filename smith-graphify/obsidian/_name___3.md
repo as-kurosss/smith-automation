@@ -1,11 +1,11 @@
 ---
-id: crates_smith_windows_src_tools_process_rs_processtool_name
+id: crates_smith_windows_src_selector_rs_elementselector_name
 type: Method
-source: ./crates/smith-windows/src/tools/process.rs
-community: 23
-community_label: ProcessTool
+source: .\crates\smith-windows\src\selector.rs
+community: 17
+community_label: ElementSelector
 ---
 
 ## Connections
 
-- [[ProcessTool]] (defines)
+- [[ElementSelector]] (defines)

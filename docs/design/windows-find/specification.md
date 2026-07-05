@@ -21,7 +21,7 @@ At least one selector field should be set (otherwise `TrueCondition` matches eve
 | `Err(SmithError::ElementNotFound)` | no matching element |
 | `Err(SmithError::PlatformError)` | UIA COM init or condition creation failed |
 
-On `Err`: context is **not modified** (idempotent per Канон 10.2).
+On `Err`: context is **not modified** (idempotent per Canon 10.2).
 
 **⚠️ Boundaries:**
 - `output_key` missing → `InvalidParams`
@@ -29,7 +29,7 @@ On `Err`: context is **not modified** (idempotent per Канон 10.2).
 - `CancellationToken` cancelled before search → `Cancelled`
 - Empty selector (no fields set) → matches root element (TrueCondition)
 - Large UI tree → search is `TreeScope::Descendants` from desktop root; may be slow
-- `SafeUIElement` creation and COM calls happen inside `spawn_blocking` (Канон 5.3)
+- `SafeUIElement` creation and COM calls happen inside `spawn_blocking` (Canon 5.3)
 
 **📌 Usage pattern:**
 ```rust

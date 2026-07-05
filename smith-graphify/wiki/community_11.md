@@ -1,23 +1,43 @@
-# Community 11: input_text
+# Community 11: test_decide_valid_choice()
 
-**Members:** 7
+**Members:** 13
 
 ## Nodes
 
-- **input_text** (`crates_smith_windows_src_tools_input_text_rs`, File, degree: 7)
-- **async_trait::async_trait** (`crates_smith_windows_src_tools_input_text_rs_import_async_trait_async_trait`, Module, degree: 1)
-- **crate::element::SafeUIElement** (`crates_smith_windows_src_tools_input_text_rs_import_crate_element_safeuielement`, Module, degree: 1)
-- **crate::selector::ElementSelector** (`crates_smith_windows_src_tools_input_text_rs_import_crate_selector_elementselector`, Module, degree: 1)
-- **serde_json::{Value, json}** (`crates_smith_windows_src_tools_input_text_rs_import_serde_json_value_json`, Module, degree: 1)
-- **smith_core::{ExecutionContext, SmithError, SmithResult, Tool, ToolConfig, ToolResult}** (`crates_smith_windows_src_tools_input_text_rs_import_smith_core_executioncontext_smitherror_smithresult_tool_toolconfig_toolresult`, Module, degree: 1)
-- **tokio_util::sync::CancellationToken** (`crates_smith_windows_src_tools_input_text_rs_import_tokio_util_sync_cancellationtoken`, Module, degree: 1)
+- **.prompt()** (`crates_smith_ai_src_agent_rs_agent_m_p_prompt`, Method, degree: 2)
+- **make_agent()** (`crates_smith_ai_src_agent_rs_make_agent`, Function, degree: 10)
+- **.prompt()** (`crates_smith_ai_src_agent_rs_mockagent_prompt`, Method, degree: 8)
+- **.agent_run()** (`crates_smith_ai_src_agent_rs_smithagent_agent_run`, Method, degree: 4)
+- **.decide()** (`crates_smith_ai_src_agent_rs_smithagent_decide`, Method, degree: 7)
+- **.prompt()** (`crates_smith_ai_src_agent_rs_smithagent_prompt`, Method, degree: 3)
+- **test_agent_run_parses_json()** (`crates_smith_ai_src_agent_rs_test_agent_run_parses_json`, Function, degree: 3)
+- **test_agent_run_returns_plain_text()** (`crates_smith_ai_src_agent_rs_test_agent_run_returns_plain_text`, Function, degree: 3)
+- **test_decide_cancelled()** (`crates_smith_ai_src_agent_rs_test_decide_cancelled`, Function, degree: 3)
+- **test_decide_empty_options()** (`crates_smith_ai_src_agent_rs_test_decide_empty_options`, Function, degree: 3)
+- **test_decide_invalid_choice()** (`crates_smith_ai_src_agent_rs_test_decide_invalid_choice`, Function, degree: 3)
+- **test_decide_trims_quotes()** (`crates_smith_ai_src_agent_rs_test_decide_trims_quotes`, Function, degree: 3)
+- **test_decide_valid_choice()** (`crates_smith_ai_src_agent_rs_test_decide_valid_choice`, Function, degree: 3)
 
 ## Relationships
 
-- crates_smith_windows_src_tools_input_text_rs → crates_smith_windows_src_tools_input_text_rs_import_async_trait_async_trait (imports)
-- crates_smith_windows_src_tools_input_text_rs → crates_smith_windows_src_tools_input_text_rs_import_serde_json_value_json (imports)
-- crates_smith_windows_src_tools_input_text_rs → crates_smith_windows_src_tools_input_text_rs_import_smith_core_executioncontext_smitherror_smithresult_tool_toolconfig_toolresult (imports)
-- crates_smith_windows_src_tools_input_text_rs → crates_smith_windows_src_tools_input_text_rs_import_tokio_util_sync_cancellationtoken (imports)
-- crates_smith_windows_src_tools_input_text_rs → crates_smith_windows_src_tools_input_text_rs_import_crate_element_safeuielement (imports)
-- crates_smith_windows_src_tools_input_text_rs → crates_smith_windows_src_tools_input_text_rs_import_crate_selector_elementselector (imports)
+- crates_smith_ai_src_agent_rs_agent_m_p_prompt → crates_smith_ai_src_agent_rs_mockagent_prompt (calls)
+- crates_smith_ai_src_agent_rs_smithagent_prompt → crates_smith_ai_src_agent_rs_mockagent_prompt (calls)
+- crates_smith_ai_src_agent_rs_smithagent_agent_run → crates_smith_ai_src_agent_rs_mockagent_prompt (calls)
+- crates_smith_ai_src_agent_rs_smithagent_decide → crates_smith_ai_src_agent_rs_mockagent_prompt (calls)
+- crates_smith_ai_src_agent_rs_test_agent_run_returns_plain_text → crates_smith_ai_src_agent_rs_make_agent (calls)
+- crates_smith_ai_src_agent_rs_test_agent_run_returns_plain_text → crates_smith_ai_src_agent_rs_smithagent_agent_run (calls)
+- crates_smith_ai_src_agent_rs_test_agent_run_parses_json → crates_smith_ai_src_agent_rs_make_agent (calls)
+- crates_smith_ai_src_agent_rs_test_agent_run_parses_json → crates_smith_ai_src_agent_rs_smithagent_agent_run (calls)
+- crates_smith_ai_src_agent_rs_test_decide_cancelled → crates_smith_ai_src_agent_rs_make_agent (calls)
+- crates_smith_ai_src_agent_rs_test_decide_cancelled → crates_smith_ai_src_agent_rs_smithagent_decide (calls)
+- crates_smith_ai_src_agent_rs_test_decide_empty_options → crates_smith_ai_src_agent_rs_make_agent (calls)
+- crates_smith_ai_src_agent_rs_test_decide_empty_options → crates_smith_ai_src_agent_rs_smithagent_decide (calls)
+- crates_smith_ai_src_agent_rs_test_decide_valid_choice → crates_smith_ai_src_agent_rs_make_agent (calls)
+- crates_smith_ai_src_agent_rs_test_decide_valid_choice → crates_smith_ai_src_agent_rs_smithagent_decide (calls)
+- crates_smith_ai_src_agent_rs_test_decide_invalid_choice → crates_smith_ai_src_agent_rs_make_agent (calls)
+- crates_smith_ai_src_agent_rs_test_decide_invalid_choice → crates_smith_ai_src_agent_rs_smithagent_decide (calls)
+- crates_smith_ai_src_agent_rs_test_decide_trims_quotes → crates_smith_ai_src_agent_rs_make_agent (calls)
+- crates_smith_ai_src_agent_rs_test_decide_trims_quotes → crates_smith_ai_src_agent_rs_smithagent_decide (calls)
+- crates_smith_ai_src_agent_rs_agent_m_p_prompt → crates_smith_ai_src_agent_rs_mockagent_prompt (uses)
+- crates_smith_ai_src_agent_rs_smithagent_prompt → crates_smith_ai_src_agent_rs_mockagent_prompt (uses)
 

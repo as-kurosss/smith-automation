@@ -1,23 +1,41 @@
-# Community 14: SafeUIElement
+# Community 14: test_set_and_get_variable()
 
-**Members:** 7
+**Members:** 12
 
 ## Nodes
 
-- **element** (`crates_smith_windows_src_element_rs`, File, degree: 3)
-- **std::sync::Arc** (`crates_smith_windows_src_element_rs_import_std_sync_arc`, Module, degree: 1)
-- **uiautomation::UIElement** (`crates_smith_windows_src_element_rs_import_uiautomation_uielement`, Module, degree: 1)
-- **SafeUIElement** (`crates_smith_windows_src_element_rs_safeuielement`, Struct, degree: 4)
-- **.clone()** (`crates_smith_windows_src_element_rs_safeuielement_clone`, Method, degree: 1)
-- **.inner()** (`crates_smith_windows_src_element_rs_safeuielement_inner`, Method, degree: 1)
-- **.new()** (`crates_smith_windows_src_element_rs_safeuielement_new`, Method, degree: 1)
+- **ExecutionContext** (`crates_smith_core_src_context_rs_executioncontext`, Struct, degree: 7)
+- **.default()** (`crates_smith_core_src_context_rs_executioncontext_default`, Method, degree: 2)
+- **.get()** (`crates_smith_core_src_context_rs_executioncontext_get`, Method, degree: 1)
+- **.new()** (`crates_smith_core_src_context_rs_executioncontext_new`, Method, degree: 8)
+- **.pop_scope()** (`crates_smith_core_src_context_rs_executioncontext_pop_scope`, Method, degree: 3)
+- **.push_scope()** (`crates_smith_core_src_context_rs_executioncontext_push_scope`, Method, degree: 3)
+- **.set()** (`crates_smith_core_src_context_rs_executioncontext_set`, Method, degree: 4)
+- **test_get_returns_none_for_missing_key()** (`crates_smith_core_src_context_rs_test_get_returns_none_for_missing_key`, Function, degree: 2)
+- **test_new_creates_empty_scope()** (`crates_smith_core_src_context_rs_test_new_creates_empty_scope`, Function, degree: 2)
+- **test_pop_scope_does_not_remove_global()** (`crates_smith_core_src_context_rs_test_pop_scope_does_not_remove_global`, Function, degree: 4)
+- **test_push_scope_isolation()** (`crates_smith_core_src_context_rs_test_push_scope_isolation`, Function, degree: 5)
+- **test_set_and_get_variable()** (`crates_smith_core_src_context_rs_test_set_and_get_variable`, Function, degree: 3)
 
 ## Relationships
 
-- crates_smith_windows_src_element_rs → crates_smith_windows_src_element_rs_import_std_sync_arc (imports)
-- crates_smith_windows_src_element_rs → crates_smith_windows_src_element_rs_import_uiautomation_uielement (imports)
-- crates_smith_windows_src_element_rs → crates_smith_windows_src_element_rs_safeuielement (defines)
-- crates_smith_windows_src_element_rs_safeuielement → crates_smith_windows_src_element_rs_safeuielement_new (defines)
-- crates_smith_windows_src_element_rs_safeuielement → crates_smith_windows_src_element_rs_safeuielement_inner (defines)
-- crates_smith_windows_src_element_rs_safeuielement → crates_smith_windows_src_element_rs_safeuielement_clone (defines)
+- crates_smith_core_src_context_rs_executioncontext → crates_smith_core_src_context_rs_executioncontext_new (defines)
+- crates_smith_core_src_context_rs_executioncontext → crates_smith_core_src_context_rs_executioncontext_push_scope (defines)
+- crates_smith_core_src_context_rs_executioncontext → crates_smith_core_src_context_rs_executioncontext_pop_scope (defines)
+- crates_smith_core_src_context_rs_executioncontext → crates_smith_core_src_context_rs_executioncontext_set (defines)
+- crates_smith_core_src_context_rs_executioncontext → crates_smith_core_src_context_rs_executioncontext_get (defines)
+- crates_smith_core_src_context_rs_executioncontext → crates_smith_core_src_context_rs_executioncontext_default (defines)
+- crates_smith_core_src_context_rs_executioncontext_push_scope → crates_smith_core_src_context_rs_executioncontext_new (calls)
+- crates_smith_core_src_context_rs_executioncontext_default → crates_smith_core_src_context_rs_executioncontext_new (calls)
+- crates_smith_core_src_context_rs_test_new_creates_empty_scope → crates_smith_core_src_context_rs_executioncontext_new (calls)
+- crates_smith_core_src_context_rs_test_set_and_get_variable → crates_smith_core_src_context_rs_executioncontext_new (calls)
+- crates_smith_core_src_context_rs_test_set_and_get_variable → crates_smith_core_src_context_rs_executioncontext_set (calls)
+- crates_smith_core_src_context_rs_test_get_returns_none_for_missing_key → crates_smith_core_src_context_rs_executioncontext_new (calls)
+- crates_smith_core_src_context_rs_test_push_scope_isolation → crates_smith_core_src_context_rs_executioncontext_new (calls)
+- crates_smith_core_src_context_rs_test_push_scope_isolation → crates_smith_core_src_context_rs_executioncontext_set (calls)
+- crates_smith_core_src_context_rs_test_push_scope_isolation → crates_smith_core_src_context_rs_executioncontext_push_scope (calls)
+- crates_smith_core_src_context_rs_test_push_scope_isolation → crates_smith_core_src_context_rs_executioncontext_pop_scope (calls)
+- crates_smith_core_src_context_rs_test_pop_scope_does_not_remove_global → crates_smith_core_src_context_rs_executioncontext_new (calls)
+- crates_smith_core_src_context_rs_test_pop_scope_does_not_remove_global → crates_smith_core_src_context_rs_executioncontext_set (calls)
+- crates_smith_core_src_context_rs_test_pop_scope_does_not_remove_global → crates_smith_core_src_context_rs_executioncontext_pop_scope (calls)
 

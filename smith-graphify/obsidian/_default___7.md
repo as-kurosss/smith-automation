@@ -1,12 +1,12 @@
 ---
-id: crates_smith_windows_src_tools_click_rs_clicktool_default
+id: crates_smith_windows_src_tools_wait_rs_waittool_default
 type: Method
-source: ./crates/smith-windows/src/tools/click.rs
-community: 16
-community_label: ClickTool
+source: .\crates\smith-windows\src\tools\wait.rs
+community: 29
+community_label: WaitTool
 ---
 
 ## Connections
 
-- [[ClickTool]] (defines)
-- [[_new___7]] (calls)
+- [[WaitTool]] (defines)
+- [[_new___12]] (calls)

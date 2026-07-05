@@ -1,11 +1,11 @@
 ---
-id: crates_smith_windows_src_tools_process_rs_processtool_schema
+id: crates_smith_windows_src_tools_click_rs_clicktool_schema
 type: Method
-source: ./crates/smith-windows/src/tools/process.rs
-community: 23
-community_label: ProcessTool
+source: .\crates\smith-windows\src\tools\click.rs
+community: 33
+community_label: ClickTool
 ---
 
 ## Connections
 
-- [[ProcessTool]] (defines)
+- [[ClickTool]] (defines)

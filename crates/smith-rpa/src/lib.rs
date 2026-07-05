@@ -1,9 +1,9 @@
 // crates/smith-rpa/src/lib.rs
-//! Библиотека RPA-инструментов по доменам.
+//! Domain-specific RPA tool library.
 //!
-//! Предоставляет типобезопасные конструкторы Step-ов для доменов:
+//! Provides type-safe Step constructors for domains:
 //! - `windows` — Click, Find, InputText, SetText, Process
-//! - `browser` — (заглушка на будущее)
-//! - `excel` — (заглушка на будущее)
+//! - `browser` — (placeholder for future use)
+//! - `excel` — (placeholder for future use)
 
 pub mod windows;

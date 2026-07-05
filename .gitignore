@@ -12,3 +12,6 @@ smith-graphify/GRAPH_REPORT.md
 
 # Build artifacts
 apps/*/target/
+
+# Standalone utility (not part of the automation project)
+apps/smith-context/

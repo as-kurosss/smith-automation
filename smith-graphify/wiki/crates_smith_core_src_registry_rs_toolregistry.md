@@ -2,9 +2,9 @@
 
 - **ID:** `crates_smith_core_src_registry_rs_toolregistry`
 - **Type:** Struct
-- **File:** `./crates/smith-core/src/registry.rs`
+- **File:** `.\crates\smith-core\src\registry.rs`
 - **Location:** L11
-- **Community:** 2 (ToolRegistry)
+- **Community:** 53 (ToolRegistry)
 
 ## Relationships
 
