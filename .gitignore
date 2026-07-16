@@ -30,6 +30,9 @@ smith-graphify/
 .env
 .env.local
 
+# Server runtime data
+praxis-data/
+
 # Node.js dependencies
 node_modules/
 
