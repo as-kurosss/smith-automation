@@ -91,55 +91,65 @@ export function ProvidersPanel({ providers, onRefresh, addToast }: Props) {
 
   return (
     <>
-      <button className="btn btn-primary btn-sm" onClick={openCreate} style={{width:'100%',marginBottom:8}}>
+      <button className="bg-sage-teal text-white rounded-lg px-4 py-2 font-inter text-body-sm font-medium cursor-pointer transition hover:opacity-90 w-full mb-2 border-none" onClick={openCreate}>
         + New Provider
       </button>
       {providers.length === 0 ? (
-        <div className="empty-state"><p>No providers configured yet.</p></div>
+        <div className="text-center px-5 py-10 text-body-sm text-slate"><p>No providers configured yet.</p></div>
       ) : (
         providers.map(p => (
-          <div className="card" key={p.id} onClick={() => openEdit(p)}>
-            <div className="flex-between">
-              <h3>{p.label} <span className={`badge badge-${p.kind}`}>{p.kind}</span></h3>
-              <button className="btn btn-danger btn-sm" onClick={e => { e.stopPropagation(); remove(p.id) }}>✕</button>
+          <div className="bg-paper rounded-lg shadow-sm border border-cloud px-3 py-2.5 mb-1.5 cursor-pointer transition hover:border-sage-teal" key={p.id} onClick={() => openEdit(p)}>
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-body-sm font-semibold text-graphite inline">{p.label}</h3>
+                <span className={`inline-block px-1.5 py-0.5 rounded text-caption font-semibold ml-1 text-white ${
+                  p.kind === 'openai' ? 'bg-[#10a37f]' : p.kind === 'anthropic' ? 'bg-[#d97706]' : p.kind === 'gemini' ? 'bg-[#4285f4]' : 'bg-[#7a5ac2]'
+                }`}>{p.kind}</span>
+              </div>
+              <button className="text-red hover:opacity-80 cursor-pointer bg-transparent border-none p-1 text-caption rounded hover:bg-veil transition" onClick={e => { e.stopPropagation(); remove(p.id) }}>✕</button>
             </div>
-            <p>{p.model}</p>
-            <small>{p.id}</small>
+            <p className="text-caption text-slate mt-1">{p.model}</p>
+            <div className="text-caption text-fog mt-0.5">{p.id}</div>
           </div>
         ))
       )}
 
       {/* Provider form modal */}
-      <div className={`modal-overlay${showForm ? ' open' : ''}`}>
-        <div className="modal">
-          <h2>{editing ? 'Edit Provider' : 'New Provider'}</h2>
-          <div className="form-group">
-            <label>Label</label>
-            <input value={label} onChange={e => setLabel(e.target.value)} placeholder="My OpenAI Key" />
+      <div className={`fixed inset-0 bg-black/65 z-50 flex items-center justify-center ${showForm ? '' : 'hidden'}`}>
+        <div className="bg-paper rounded-lg shadow-md px-6 py-6 w-[90%] max-w-[560px] max-h-[85vh] overflow-y-auto">
+          <h2 className="text-subheading font-semibold text-graphite mb-4">{editing ? 'Edit Provider' : 'New Provider'}</h2>
+          <div className="mb-3">
+            <label className="block text-caption text-slate mb-1 font-medium">Label</label>
+            <input value={label} onChange={e => setLabel(e.target.value)} placeholder="My OpenAI Key"
+              className="w-full px-2.5 py-2 rounded-lg border border-mist bg-paper text-body-sm text-graphite outline-none focus:border-sage-teal" />
           </div>
-          <div className="form-row">
-            <div className="form-group">
-              <label>Provider</label>
-              <select value={kind} onChange={e => handleKindChange(e.target.value as ProviderKind)}>
+          <div className="flex gap-2 mb-3">
+            <div className="flex-1">
+              <label className="block text-caption text-slate mb-1 font-medium">Provider</label>
+              <select value={kind} onChange={e => handleKindChange(e.target.value as ProviderKind)}
+                className="w-full px-2.5 py-2 rounded-lg border border-mist bg-paper text-body-sm text-graphite outline-none focus:border-sage-teal">
                 {PROVIDER_KINDS.map(k => <option key={k.value} value={k.value}>{k.label}</option>)}
               </select>
             </div>
-            <div className="form-group">
-              <label>Model</label>
-              <input value={model} onChange={e => setModel(e.target.value)} placeholder="gpt-4o" />
+            <div className="flex-1">
+              <label className="block text-caption text-slate mb-1 font-medium">Model</label>
+              <input value={model} onChange={e => setModel(e.target.value)} placeholder="gpt-4o"
+                className="w-full px-2.5 py-2 rounded-lg border border-mist bg-paper text-body-sm text-graphite outline-none focus:border-sage-teal" />
             </div>
           </div>
-          <div className="form-group">
-            <label>API Key {kind === 'ollama' ? <span style={{color:'var(--text2)',fontWeight:400}}>(optional for local)</span> : ''}</label>
-            <input value={apiKey} onChange={e => setApiKey(e.target.value)} type="password" placeholder={kind === 'ollama' ? 'Leave empty for local' : 'sk-...'} />
+          <div className="mb-3">
+            <label className="block text-caption text-slate mb-1 font-medium">API Key {kind === 'ollama' ? <span className="font-normal text-fog">(optional for local)</span> : ''}</label>
+            <input value={apiKey} onChange={e => setApiKey(e.target.value)} type="password" placeholder={kind === 'ollama' ? 'Leave empty for local' : 'sk-...'}
+              className="w-full px-2.5 py-2 rounded-lg border border-mist bg-paper text-body-sm text-graphite outline-none focus:border-sage-teal" />
           </div>
-          <div className="form-group">
-            <label>API URL</label>
-            <input value={apiUrl} onChange={e => setApiUrl(e.target.value)} placeholder={PROVIDER_KINDS.find(k => k.value === kind)?.defaultUrl || 'https://...'} />
+          <div className="mb-3">
+            <label className="block text-caption text-slate mb-1 font-medium">API URL</label>
+            <input value={apiUrl} onChange={e => setApiUrl(e.target.value)} placeholder={PROVIDER_KINDS.find(k => k.value === kind)?.defaultUrl || 'https://...'}
+              className="w-full px-2.5 py-2 rounded-lg border border-mist bg-paper text-body-sm text-graphite outline-none focus:border-sage-teal" />
           </div>
-          <div className="form-actions">
-            <button className="btn btn-outline" onClick={() => setShowForm(false)}>Cancel</button>
-            <button className="btn btn-primary" onClick={save}>Save</button>
+          <div className="flex justify-end gap-2 mt-4">
+            <button className="bg-paper border border-mist text-graphite rounded-lg px-4 py-2 font-inter text-body-sm font-medium cursor-pointer transition hover:border-sage-teal" onClick={() => setShowForm(false)}>Cancel</button>
+            <button className="bg-sage-teal text-white rounded-lg px-4 py-2 font-inter text-body-sm font-medium cursor-pointer transition hover:opacity-90 border-none" onClick={save}>Save</button>
           </div>
         </div>
       </div>

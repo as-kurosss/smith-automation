@@ -88,36 +88,26 @@ export function SessionsPanel({
   }
 
   return (
-    <div ref={ref} style={{ position: 'relative' }}>
-      <button className="btn btn-outline btn-sm" onClick={() => setOpen(!open)}>
+    <div ref={ref} className="relative">
+      <button className="bg-paper border border-mist text-graphite rounded-lg px-3 py-1.5 font-inter text-caption font-medium cursor-pointer transition hover:border-sage-teal" onClick={() => setOpen(!open)}>
         {open ? '▲' : '▼'} Sessions {sessions.length > 0 && `(${sessions.length})`}
       </button>
-      <button className="btn btn-outline btn-sm" onClick={onNewSession} style={{ marginLeft: 4 }}>
+      <button className="bg-paper border border-mist text-graphite rounded-lg px-3 py-1.5 font-inter text-caption font-medium cursor-pointer transition hover:border-sage-teal ml-1" onClick={onNewSession}>
         + New
       </button>
 
       {open && (
-        <div style={{
-          position: 'absolute', top: '100%', right: 0, marginTop: 4,
-          width: 300, maxHeight: 360, overflowY: 'auto',
-          background: 'var(--surface2)', border: '1px solid var(--border)',
-          borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', zIndex: 50,
-          display: 'flex', flexDirection: 'column',
-        }}>
+        <div className="absolute top-full right-0 mt-1 w-[300px] max-h-[360px] overflow-y-auto bg-paper border border-mist rounded-lg shadow-md z-50 flex flex-col">
           {/* Search filter */}
-          <div style={{ padding: '6px 8px', borderBottom: '1px solid var(--border)' }}>
+          <div className="px-2 py-1.5 border-b border-mist">
             <input value={filter} onChange={e => setFilter(e.target.value)}
               placeholder="Filter by title..."
-              style={{
-                width: '100%', padding: '4px 8px', fontSize: 11,
-                border: '1px solid var(--border)', borderRadius: 'var(--radius-sm)',
-                background: 'var(--bg)', color: 'var(--text)', outline: 'none',
-              }} />
+              className="w-full px-2 py-1 text-caption border border-mist rounded bg-paper text-graphite outline-none focus:border-sage-teal" />
           </div>
 
-          <div style={{ flex: 1, overflowY: 'auto' }}>
+          <div className="flex-1 overflow-y-auto">
             {filteredSessions.length === 0 ? (
-              <div style={{ padding: 16, color: 'var(--text2)', fontSize: 12, textAlign: 'center' }}>
+              <div className="px-4 py-4 text-caption text-slate text-center">
                 {filter ? 'No matching sessions' : 'No sessions yet'}
               </div>
             ) : (
@@ -126,23 +116,14 @@ export function SessionsPanel({
                 if (!items?.length) return null
                 return (
                   <div key={group}>
-                    <div style={{
-                      padding: '6px 12px', fontSize: 10, fontWeight: 600,
-                      color: 'var(--text2)', textTransform: 'uppercase',
-                      letterSpacing: '0.5px', background: 'rgba(0,0,0,.15)',
-                    }}>{group}</div>
+                    <div className="px-3 py-1.5 text-caption font-semibold text-slate uppercase tracking-wide bg-[#f5f5f5]">{group}</div>
                     {items.map(s => (
                       <div key={s.id}
                         onClick={() => { onSelectSession(s.id); setOpen(false) }}
                         onContextMenu={e => handleContextMenu(e, s)}
-                        style={{
-                          padding: '8px 12px', cursor: 'pointer', fontSize: 12,
-                          borderBottom: '1px solid var(--border)',
-                          background: s.id === currentSessionId ? 'var(--accent-dim)' : 'transparent',
-                          transition: 'background .1s',
-                        }}
-                        onMouseEnter={e => { if (s.id !== currentSessionId) (e.target as HTMLElement).style.background = 'var(--surface)' }}
-                        onMouseLeave={e => { if (s.id !== currentSessionId) (e.target as HTMLElement).style.background = 'transparent' }}
+                        className={`px-3 py-2 cursor-pointer text-caption border-b border-mist transition ${
+                          s.id === currentSessionId ? 'bg-[#f0faf8]' : 'hover:bg-veil'
+                        }`}
                       >
                         {renaming === s.id ? (
                           <input ref={renameRef} value={renameValue}
@@ -180,34 +161,20 @@ export function SessionsPanel({
 
       {/* Right-click context menu */}
       {contextMenu && (
-        <div style={{
-          position: 'fixed', left: contextMenu.x, top: contextMenu.y,
-          background: 'var(--surface)', border: '1px solid var(--border)',
-          borderRadius: 'var(--radius)', boxShadow: 'var(--shadow)', zIndex: 100,
-          minWidth: 140, overflow: 'hidden',
-        }}>
-          <div style={{ padding: '8px 12px', cursor: 'pointer', fontSize: 12,
-            borderBottom: '1px solid var(--border)', transition: 'background .1s',
-          }}
-            onMouseEnter={e => (e.target as HTMLElement).style.background = 'var(--surface2)'}
-            onMouseLeave={e => (e.target as HTMLElement).style.background = 'transparent'}
+        <div className="fixed bg-paper border border-mist rounded-lg shadow-md z-[100] min-w-[140px] overflow-hidden"
+          style={{ left: contextMenu.x, top: contextMenu.y }}>
+          <div className="px-3 py-2 cursor-pointer text-caption border-b border-mist transition hover:bg-veil"
             onClick={() => {
               setRenaming(contextMenu.session.id)
               setRenameValue(contextMenu.session.title || `Session ${contextMenu.session.id.slice(0, 8)}`)
               setContextMenu(null)
             }}>✎ Rename</div>
-          <div style={{ padding: '8px 12px', cursor: 'pointer', fontSize: 12,
-            borderBottom: '1px solid var(--border)',
-          }}
-            onMouseEnter={e => (e.target as HTMLElement).style.background = 'var(--surface2)'}
-            onMouseLeave={e => (e.target as HTMLElement).style.background = 'transparent'}
+          <div className="px-3 py-2 cursor-pointer text-caption border-b border-mist hover:bg-veil"
             onClick={() => {
               addToast?.('Session pinned', 'success')
               setContextMenu(null)
             }}>📌 Pin</div>
-          <div style={{ padding: '8px 12px', cursor: 'pointer', fontSize: 12, color: 'var(--red)' }}
-            onMouseEnter={e => (e.target as HTMLElement).style.background = 'var(--surface2)'}
-            onMouseLeave={e => (e.target as HTMLElement).style.background = 'transparent'}
+          <div className="px-3 py-2 cursor-pointer text-caption text-red hover:bg-veil"
             onClick={() => deleteSession(contextMenu.session.id)}>✕ Delete</div>
         </div>
       )}

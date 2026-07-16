@@ -1,4 +1,4 @@
-// ── Mirror of Rust praxis_core::registry types ──────────────────
+// ── Smith Console — shared types ────────────────────────────────
 
 export type ProviderKind = 'openai' | 'anthropic' | 'gemini' | 'ollama' | 'custom' | 'lm_studio';
 

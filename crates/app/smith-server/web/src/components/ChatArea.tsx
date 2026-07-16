@@ -244,22 +244,22 @@ export function ChatArea({ agentId, sessionId, messages, onMessagesChange, onSes
 
   return (
     <>
-      <div className="chat-area" ref={chatRef}>
+      <div className="flex-1 overflow-y-auto px-5 py-4 flex flex-col gap-2" ref={chatRef}>
         {messages.length === 0 ? (
-          <div className="empty-state" style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <h3>Start a conversation</h3>
-            <p>Type a message below to chat with this agent.</p>
+          <div className="flex-1 flex flex-col items-center justify-center text-center">
+            <h3 className="text-body font-semibold text-graphite mb-2">Start a conversation</h3>
+            <p className="text-body-sm text-slate">Type a message below to chat with this agent.</p>
           </div>
         ) : (
           messages.map((msg, i) => {
             if (msg.role === 'user') {
-              return <div key={i} className="msg msg-user">{msg.content}</div>
+              return <div key={i} className="max-w-[80%] px-3.5 py-2.5 rounded-lg text-body-sm leading-relaxed whitespace-pre-wrap break-words self-end bg-veil text-graphite">{msg.content}</div>
             } else if (msg.role === 'assistant') {
               const isLast = i === messages.length - 1
               const isStreamingAssistant = streaming && isLast
               const isReasoningExpanded = expandedReasoning === i
               return (
-                <div key={i} className={`msg msg-assistant${isStreamingAssistant ? ' msg-streaming' : ''}`}>
+                <div key={i} className={`max-w-[80%] px-3.5 py-2.5 rounded-lg text-body-sm leading-relaxed whitespace-pre-wrap break-words self-start bg-paper border border-cloud text-graphite${isStreamingAssistant ? ' border-l-2 border-sage-teal' : ''}`}>
                   {msg.reasoning_content && (
                     <div className="reasoning-block">
                       <div
@@ -276,30 +276,30 @@ export function ChatArea({ agentId, sessionId, messages, onMessagesChange, onSes
                   )}
                   {msg.content || ''}
                   {msg.tool_calls && msg.tool_calls.length > 0 && (
-                    <div style={{ marginTop: 6, fontSize: 11, color: 'var(--text2)' }}>
+                    <div className="mt-1.5 text-caption text-slate">
                       {msg.tool_calls.map((tc, j) => (
                         <div key={j}>🔧 {tc.name} ({tc.id})</div>
                       ))}
                     </div>
                   )}
                   {isStreamingAssistant && !msg.content && !msg.tool_calls?.length && (
-                    <span className="cursor">▍</span>
+                    <span className="animate-[blink_1s_step-end_infinite]">▍</span>
                   )}
                   {/* Fallback for empty assistant response after streaming completes */}
                   {!isStreamingAssistant && i === messages.length - 1 && !msg.content && !msg.tool_calls?.length && !msg.reasoning_content && (
-                    <div className="fallback-msg">
+                    <div className="text-caption text-slate text-center italic py-2">
                       The agent returned an empty response. Try rephrasing your message or check provider settings.
                     </div>
                   )}
                 </div>
               )
             } else if (msg.role === 'system') {
-              return <div key={i} className="msg msg-system">{msg.content}</div>
+              return <div key={i} className="max-w-[80%] px-3.5 py-2 rounded-lg text-body-sm leading-relaxed whitespace-pre-wrap break-words self-center text-slate italic bg-[#f5f5f5]">{msg.content}</div>
             } else if (msg.role === 'tool') {
               return (
-                <div key={i} className="msg msg-tool">
-                  <strong>{msg.name || 'tool'}</strong>
-                  {msg.content && <pre>{msg.content}</pre>}
+                <div key={i} className="max-w-[90%] px-3.5 py-2 rounded-lg text-caption text-slate self-center border border-mist bg-[#f8f8fa]">
+                  <strong className="text-body-sm text-carbon">{msg.name || 'tool'}</strong>
+                  {msg.content && <pre className="text-caption mt-1 p-1.5 bg-[#f0f0f0] rounded overflow-x-auto">{msg.content}</pre>}
                 </div>
               )
             }
@@ -307,11 +307,11 @@ export function ChatArea({ agentId, sessionId, messages, onMessagesChange, onSes
           })
         )}
         {isLoading && !streaming && (
-          <div className="msg msg-assistant">…</div>
+          <div className="max-w-[80%] px-3.5 py-2.5 rounded-lg self-start bg-paper border border-cloud text-graphite text-body-sm">…</div>
         )}
       </div>
 
-      <div className="chat-input-area">
+      <div className="px-5 py-3 border-t border-mist flex gap-2 bg-paper relative">
         {messageQueue.length > 0 && (
           <div className="queue-indicator">
             {messageQueue.length} queued
@@ -324,8 +324,9 @@ export function ChatArea({ agentId, sessionId, messages, onMessagesChange, onSes
           onKeyDown={handleKeyDown}
           placeholder={streaming ? 'Streaming in progress...' : 'Type a message...'}
           disabled={false}
+          className="flex-1 px-3.5 py-2.5 rounded-lg border border-mist bg-paper text-body-sm text-graphite outline-none focus:border-sage-teal"
         />
-        <button className="btn btn-primary" onClick={() => sendMessage()} disabled={!input.trim()}>
+        <button className="bg-sage-teal text-white rounded-lg px-5 py-2.5 font-inter text-body-sm font-medium cursor-pointer transition hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed border-none" onClick={() => sendMessage()} disabled={!input.trim()}>
           {streaming ? 'Queue' : 'Send'}
         </button>
       </div>

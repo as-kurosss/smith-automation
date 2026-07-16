@@ -1,0 +1,154 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════
+   Smith Console — Design System
+   Based on DESIGN.md — Light Engineering Canvas
+   ═══════════════════════════════════════════════════════════ */
+
+@theme {
+  /* ── Colors ── */
+  --color-sage-teal: #008F7A;
+  --color-mist-wash: #00B9A3;
+  --color-deep-cyan: #00D4C8;
+  --color-signal-blue: #3DA8FF;
+  --color-obsidian: #000000;
+  --color-graphite: #141414;
+  --color-carbon: #313232;
+  --color-slate: #545454;
+  --color-fog: #707070;
+  --color-ash: #949494;
+  --color-mist: #d6d6d6;
+  --color-cloud: #e6e6e6;
+  --color-veil: #f0f0f0;
+  --color-paper: #fafafa;
+  --color-red: #c94c4c;
+  --color-red-hover: #b03e3e;
+  --color-green: #1a7d36;
+
+  /* ── Typography ── */
+  --font-inter: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-poppins: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+
+  --text-caption: 12px;
+  --leading-caption: 15.6;
+  --tracking-caption: -0.36px;
+
+  --text-body-sm: 14px;
+  --leading-body-sm: 20;
+  --tracking-body-sm: -0.42px;
+
+  --text-body: 16px;
+  --leading-body: 24;
+  --tracking-body: -0.32px;
+
+  --text-subheading: 18px;
+  --leading-subheading: 27;
+  --tracking-subheading: -0.36px;
+
+  --text-heading-sm: 20px;
+  --leading-heading-sm: 30;
+  --tracking-heading-sm: -0.4px;
+
+  /* ── Radius — STRICT ── */
+  --radius-sm: 2px;
+  --radius-lg: 10px;
+  --radius-xl: 14px;
+
+  /* ── Shadows ── */
+  --shadow-sm: rgba(0,0,0,0.04) 0px 4px 8px 0px;
+  --shadow-md: rgba(0,0,0,0.08) 0px 4px 16px 0px;
+  --shadow-inset: rgba(0,0,0,0.05) 0px 0px 12px 0px inset;
+
+  /* ── Layout ── */
+  --spacing-page: 24px;
+  --spacing-card: 24px;
+}
+
+/* ── Base ── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: var(--font-inter);
+  background: var(--color-paper);
+  color: var(--color-graphite);
+  height: 100vh;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root { height: 100vh; }
+
+/* ── Toast ── */
+.toast-container {
+  position: fixed; bottom: 16px; right: 16px;
+  display: flex; flex-direction: column; gap: 8px; z-index: 200;
+}
+.toast {
+  padding: 10px 16px; border-radius: var(--radius-lg);
+  font-size: 13px; box-shadow: var(--shadow-md);
+  animation: slideIn .2s ease-out;
+}
+.toast-error { background: var(--color-red); color: #fff; }
+.toast-success { background: var(--color-sage-teal); color: #fff; }
+.toast-info { background: var(--color-slate); color: #fff; }
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-cloud); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-mist); }
+
+/* ── Reasoning block (мысли модели) ── */
+.reasoning-block {
+  margin-bottom: 8px;
+  border: 1px solid var(--color-mist);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.reasoning-header {
+  display: flex; align-items: center; gap: 6px;
+  padding: 4px 8px; cursor: pointer;
+  font-size: 11px; color: var(--color-slate);
+  background: var(--color-veil);
+  user-select: none;
+}
+.reasoning-header:hover { background: var(--color-cloud); }
+.reasoning-toggle {
+  font-size: 9px; width: 12px; text-align: center;
+  flex-shrink: 0;
+}
+.reasoning-content {
+  padding: 8px 10px;
+  font-size: 12px; line-height: 1.5;
+  color: var(--color-fog);
+  background: var(--color-paper);
+  white-space: pre-wrap; word-break: break-word;
+  border-top: 1px solid var(--color-mist);
+}
+
+/* ── Queue indicator ── */
+.queue-indicator {
+  position: absolute;
+  top: -22px; left: 16px;
+  font-size: 11px; color: var(--color-sage-teal);
+  background: var(--color-paper);
+  padding: 2px 8px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-mist);
+}
+
+/* ── View-only banner ── */
+.viewonly-banner {
+  background: var(--color-sage-teal);
+  color: #fff; text-align: center;
+  padding: 6px 16px; font-size: 12px; font-weight: 500;
+  flex-shrink: 0;
+}
+
+@keyframes blink { 50% { opacity: 0; } }

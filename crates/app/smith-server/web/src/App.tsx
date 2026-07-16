@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import './styles.css'
+import './app.css'
 import { ProvidersPanel } from './components/ProvidersPanel'
 import { AgentsPanel } from './components/AgentsPanel'
 import { ChatArea } from './components/ChatArea'
@@ -18,14 +18,14 @@ let toastId = 0;
 
 function loadViewMode(): ViewMode {
   try {
-    const saved = localStorage.getItem('praxis_view_mode')
+    const saved = localStorage.getItem('smith_view_mode')
     if (saved === 'wide' || saved === 'simple') return saved
   } catch { /* ignore */ }
   return 'normal'
 }
 
 function saveViewMode(mode: ViewMode) {
-  try { localStorage.setItem('praxis_view_mode', mode) }
+  try { localStorage.setItem('smith_view_mode', mode) }
   catch { /* ignore */ }
 }
 
@@ -114,14 +114,8 @@ export default function App() {
 
   const sidebarVisible = viewMode === 'normal'
 
-  const appClass = [
-    'app',
-    viewMode === 'wide' ? 'app-wide' : '',
-    viewMode === 'simple' ? 'app-simple' : '',
-  ].filter(Boolean).join(' ')
-
   return (
-    <div className={appClass}>
+    <div className={`flex h-screen font-inter ${viewMode === 'wide' ? 'app-wide' : ''} ${viewMode === 'simple' ? 'app-simple' : ''}`}>
       {/* View-only banner */}
       {config?.owner_id && (
         <div className="viewonly-banner">
@@ -131,18 +125,27 @@ export default function App() {
 
       {/* Sidebar */}
       {sidebarVisible && (
-        <div className="sidebar">
-          <div className="header">
-            <h1>Praxis</h1>
-            <span className="subtitle">Console</span>
+        <div className="w-72 min-w-72 bg-paper border-r border-mist flex flex-col">
+          <div className="px-5 py-4 border-b border-mist flex items-center gap-2">
+            <div className="w-7 h-7 bg-sage-teal rounded-lg flex items-center justify-center text-white text-body-sm font-semibold">S</div>
+            <div>
+              <h1 className="text-heading-sm font-semibold text-graphite tracking-tight">Smith</h1>
+              <span className="text-caption text-slate -mt-0.5 block">Console</span>
+            </div>
           </div>
-          <div className="nav-tabs">
-            <div className={`nav-tab${tab === 'agents' ? ' active' : ''}`}
-                 onClick={() => setTab('agents')}>Agents</div>
-            <div className={`nav-tab${tab === 'providers' ? ' active' : ''}`}
-                 onClick={() => setTab('providers')}>Providers</div>
+          <div className="flex border-b border-mist">
+            <div
+              className={`flex-1 py-2.5 text-center cursor-pointer text-body-sm font-medium transition border-b-2 select-none ${
+                tab === 'agents' ? 'text-sage-teal border-sage-teal' : 'text-slate hover:text-graphite border-transparent'
+              }`}
+              onClick={() => setTab('agents')}>Agents</div>
+            <div
+              className={`flex-1 py-2.5 text-center cursor-pointer text-body-sm font-medium transition border-b-2 select-none ${
+                tab === 'providers' ? 'text-sage-teal border-sage-teal' : 'text-slate hover:text-graphite border-transparent'
+              }`}
+              onClick={() => setTab('providers')}>Providers</div>
           </div>
-          <div className={`tab-content${tab === 'agents' ? ' active' : ''}`}>
+          <div className={`flex-1 overflow-y-auto px-3 py-3 ${tab === 'agents' ? 'block' : 'hidden'}`}>
             <AgentsPanel
               agents={agents}
               providers={providers}
@@ -152,7 +155,7 @@ export default function App() {
               addToast={addToast}
             />
           </div>
-          <div className={`tab-content${tab === 'providers' ? ' active' : ''}`}>
+          <div className={`flex-1 overflow-y-auto px-3 py-3 ${tab === 'providers' ? 'block' : 'hidden'}`}>
             <ProvidersPanel
               providers={providers}
               onRefresh={loadProviders}
@@ -163,25 +166,25 @@ export default function App() {
       )}
 
       {/* Main area */}
-      <div className="main">
-        <div className="header flex-between">
-          <div className="header-left">
+      <div className="flex-1 flex flex-col min-w-0 bg-paper">
+        <div className="px-5 py-3 border-b border-mist flex items-center justify-between bg-paper">
+          <div className="flex items-center gap-3">
             {!sidebarVisible && (
-              <button className="btn btn-ghost btn-sm" onClick={() => handleViewModeChange('normal')} title="Show sidebar">
+              <button className="text-slate hover:text-graphite transition cursor-pointer bg-transparent border-none p-1 text-body-sm" onClick={() => handleViewModeChange('normal')} title="Show sidebar">
                 ☰
               </button>
             )}
-            <span id="active-agent-name">
+            <span id="active-agent-name" className="text-body font-medium text-graphite">
               {selectedAgent ? selectedAgent.name : 'Select an agent'}
             </span>
             {selectedAgent && (
-              <div className="subtitle">
+              <span className="text-caption text-slate">
                 {providers.find(p => p.id === selectedAgent.provider_id)?.label || selectedAgent.provider_id}
                 {' · '}{selectedAgent.tool_count} tools
-              </div>
+              </span>
             )}
           </div>
-          <div className="header-right" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+          <div className="flex items-center gap-1.5">
             {selectedAgent && (
               <SessionsPanel
                 sessions={sessions}
@@ -198,7 +201,7 @@ export default function App() {
                 onSessionsChange={() => loadSessions(selectedAgent.id)}
               />
             )}
-            <button className="btn btn-ghost btn-sm" onClick={() => setShowSettings(true)} title="Settings">
+            <button className="text-slate hover:text-graphite transition cursor-pointer bg-transparent border-none p-1.5 text-body-sm rounded-lg hover:bg-veil" onClick={() => setShowSettings(true)} title="Settings">
               ⚙
             </button>
           </div>
@@ -218,9 +221,10 @@ export default function App() {
             addToast={addToast}
           />
         ) : (
-          <div className="empty-state" style={{flex:1,display:'flex',flexDirection:'column',justifyContent:'center'}}>
-            <h3>Praxis Console</h3>
-            <p>Select an agent from the sidebar to start chatting.</p>
+          <div className="flex-1 flex flex-col items-center justify-center text-center px-5">
+            <div className="w-12 h-12 bg-veil rounded-lg flex items-center justify-center text-heading-sm text-sage-teal mb-4">S</div>
+            <h3 className="text-body font-semibold text-graphite mb-2">Smith Console</h3>
+            <p className="text-body-sm text-slate">Select an agent from the sidebar to start chatting.</p>
           </div>
         )}
 

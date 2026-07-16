@@ -153,68 +153,73 @@ export function AgentsPanel({ agents, providers, selectedAgent, onSelect, onRefr
 
   return (
     <>
-      <button className="btn btn-primary btn-sm" onClick={openCreate} style={{ width: '100%', marginBottom: 8 }}>
+      <button className="bg-sage-teal text-white rounded-lg px-4 py-2 font-inter text-body-sm font-medium cursor-pointer transition hover:opacity-90 w-full mb-2 border-none" onClick={openCreate}>
         + New Agent
       </button>
 
       {agents.length === 0 ? (
-        <div className="empty-state"><p>No agents yet.<br />Create one to get started.</p></div>
+        <div className="text-center px-5 py-10 text-body-sm text-slate"><p>No agents yet.<br />Create one to get started.</p></div>
       ) : (
         agents.map(a => (
           <div key={a.id}
-            className={`card${selectedAgent?.id === a.id ? ' active' : ''}`}
+            className={`bg-paper rounded-lg shadow-sm border px-3 py-2.5 mb-1.5 cursor-pointer transition ${
+              selectedAgent?.id === a.id ? 'border-sage-teal bg-[#f0faf8]' : 'border-cloud hover:border-sage-teal'
+            }`}
             onClick={() => onSelect(a)}
             onDoubleClick={() => openEdit(a.id)}
           >
-            <div className="flex-between">
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                <label style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <label className="cursor-pointer flex items-center"
                   onClick={e => { e.stopPropagation(); toggleEnabled(a.id) }}>
                   <input type="checkbox" checked={agentEnabled[a.id] !== false} readOnly
-                    style={{ cursor: 'pointer' }} />
+                    className="cursor-pointer accent-sage-teal" />
                 </label>
-                <h3>{a.name}</h3>
+                <h3 className="text-body-sm font-semibold text-graphite">{a.name}</h3>
               </div>
-              <div style={{ display: 'flex', gap: 4 }}>
-                <button className="btn btn-outline btn-sm"
+              <div className="flex gap-1">
+                <button className="text-slate hover:text-graphite cursor-pointer bg-transparent border-none p-1 text-caption rounded hover:bg-veil transition"
                   onClick={e => { e.stopPropagation(); openEdit(a.id) }}
                   title="Edit">✎</button>
-                <button className="btn btn-danger btn-sm"
+                <button className="text-red hover:opacity-80 cursor-pointer bg-transparent border-none p-1 text-caption rounded hover:bg-veil transition"
                   onClick={e => { e.stopPropagation(); remove(a.id) }}>✕</button>
               </div>
             </div>
-            <p>{a.system_prompt}</p>
-            <small>{providers.find(p => p.id === a.provider_id)?.label || a.provider_id} · {a.tool_count} tools</small>
+            <p className="text-caption text-slate mt-1 truncate">{a.system_prompt}</p>
+            <div className="text-caption text-fog mt-1">{providers.find(p => p.id === a.provider_id)?.label || a.provider_id} · {a.tool_count} tools</div>
             {!agentEnabled[a.id] && agentEnabled[a.id] !== undefined && (
-              <span style={{ fontSize: 10, color: 'var(--red)' }}>Disabled</span>
+              <span className="text-caption text-red">Disabled</span>
             )}
           </div>
         ))
       )}
 
       {/* Agent form modal */}
-      <div className={`modal-overlay${showForm ? ' open' : ''}`}>
-        <div className="modal">
-          <h2>{editId ? 'Edit Agent' : 'New Agent'}</h2>
+      <div className={`fixed inset-0 bg-black/65 z-50 flex items-center justify-center ${showForm ? '' : 'hidden'}`}>
+        <div className="bg-paper rounded-lg shadow-md px-6 py-6 w-[90%] max-w-[560px] max-h-[85vh] overflow-y-auto">
+          <h2 className="text-subheading font-semibold text-graphite mb-4">{editId ? 'Edit Agent' : 'New Agent'}</h2>
 
-          <div className="form-group">
-            <label>Name</label>
-            <input value={name} onChange={e => setName(e.target.value)} placeholder="My Assistant" />
+          <div className="mb-3">
+            <label className="block text-caption text-slate mb-1 font-medium">Name</label>
+            <input value={name} onChange={e => setName(e.target.value)} placeholder="My Assistant"
+              className="w-full px-2.5 py-2 rounded-lg border border-mist bg-paper text-body-sm text-graphite outline-none focus:border-sage-teal" />
           </div>
 
-          <div className="form-group">
-            <label>Description</label>
-            <input value={description} onChange={e => setDescription(e.target.value)} placeholder="Optional description" />
+          <div className="mb-3">
+            <label className="block text-caption text-slate mb-1 font-medium">Description</label>
+            <input value={description} onChange={e => setDescription(e.target.value)} placeholder="Optional description"
+              className="w-full px-2.5 py-2 rounded-lg border border-mist bg-paper text-body-sm text-graphite outline-none focus:border-sage-teal" />
           </div>
 
-          <div className="form-group">
-            <label>Provider</label>
+          <div className="mb-3">
+            <label className="block text-caption text-slate mb-1 font-medium">Provider</label>
             {providers.length === 0 ? (
-              <div style={{ color: 'var(--red)', fontSize: 12, padding: '8px 0' }}>
+              <div className="text-caption text-red py-2">
                 No providers configured. Create one in the Providers tab first.
               </div>
             ) : (
-              <select value={providerId} onChange={e => setProviderId(e.target.value)}>
+              <select value={providerId} onChange={e => setProviderId(e.target.value)}
+                className="w-full px-2.5 py-2 rounded-lg border border-mist bg-paper text-body-sm text-graphite outline-none focus:border-sage-teal">
                 {providers.map(p => (
                   <option key={p.id} value={p.id}>{p.label} ({p.kind})</option>
                 ))}
@@ -222,60 +227,67 @@ export function AgentsPanel({ agents, providers, selectedAgent, onSelect, onRefr
             )}
           </div>
 
-          <div className="form-group">
-            <label>System Prompt</label>
+          <div className="mb-3">
+            <label className="block text-caption text-slate mb-1 font-medium">System Prompt</label>
             <textarea value={systemPrompt} onChange={e => setSystemPrompt(e.target.value)}
               placeholder="You are a helpful assistant."
-              style={{ minHeight: 80 }}
+              className="w-full px-2.5 py-2 rounded-lg border border-mist bg-paper text-body-sm text-graphite outline-none focus:border-sage-teal min-h-[80px] resize-y"
             />
           </div>
 
-          <div className="form-row">
-            <div className="form-group">
-              <label>Temperature</label>
+          <div className="flex gap-2 mb-3">
+            <div className="flex-1">
+              <label className="block text-caption text-slate mb-1 font-medium">Temperature</label>
               <input value={temperature} onChange={e => setTemperature(e.target.value)}
-                type="number" step="0.1" placeholder="Default" />
+                type="number" step="0.1" placeholder="Default"
+                className="w-full px-2.5 py-2 rounded-lg border border-mist bg-paper text-body-sm text-graphite outline-none focus:border-sage-teal" />
             </div>
-            <div className="form-group">
-              <label>Max Tokens</label>
+            <div className="flex-1">
+              <label className="block text-caption text-slate mb-1 font-medium">Max Tokens</label>
               <input value={maxTokens} onChange={e => setMaxTokens(e.target.value)}
-                type="number" placeholder="Default" />
+                type="number" placeholder="Default"
+                className="w-full px-2.5 py-2 rounded-lg border border-mist bg-paper text-body-sm text-graphite outline-none focus:border-sage-teal" />
             </div>
           </div>
 
-          <div className="form-group">
-            <label>Model Override <span style={{color:'var(--text2)',fontWeight:400}}>(optional)</span></label>
+          <div className="mb-3">
+            <label className="block text-caption text-slate mb-1 font-medium">Model Override <span className="font-normal text-fog">(optional)</span></label>
             <input value={modelOverride} onChange={e => setModelOverride(e.target.value)}
-              placeholder="Leave empty to use provider default model" />
+              placeholder="Leave empty to use provider default model"
+              className="w-full px-2.5 py-2 rounded-lg border border-mist bg-paper text-body-sm text-graphite outline-none focus:border-sage-teal" />
           </div>
 
-          <div className="form-group">
-            <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
+          <div className="mb-3">
+            <label className="flex items-center gap-1.5 cursor-pointer text-caption text-slate font-medium mb-1">
               <input type="checkbox" checked={protectActiveTurn}
-                onChange={e => setProtectActiveTurn(e.target.checked)} />
+                onChange={e => setProtectActiveTurn(e.target.checked)}
+                className="accent-sage-teal" />
               Protect Active Turn
             </label>
-            <div className="setting-hint" style={{ fontSize: 11, color: 'var(--text2)', marginTop: 2 }}>
+            <div className="text-caption text-fog mt-0.5">
               Pins the most recent user message and prevents it from being evicted during scroll.
             </div>
           </div>
 
-          <div className="form-group">
-            <label>Tool Result Cap (bytes) <span style={{color:'var(--text2)',fontWeight:400}}>(empty = no cap)</span></label>
+          <div className="mb-3">
+            <label className="block text-caption text-slate mb-1 font-medium">Tool Result Cap (bytes) <span className="font-normal text-fog">(empty = no cap)</span></label>
             <input value={toolResultCap} onChange={e => setToolResultCap(e.target.value)}
               type="number" min="0" step="1024"
-              placeholder="e.g. 4096 for 4 KiB cap" />
-            <div className="setting-hint" style={{ fontSize: 11, color: 'var(--text2)', marginTop: 2 }}>
+              placeholder="e.g. 4096 for 4 KiB cap"
+              className="w-full px-2.5 py-2 rounded-lg border border-mist bg-paper text-body-sm text-graphite outline-none focus:border-sage-teal" />
+            <div className="text-caption text-fog mt-0.5">
               Large tool results exceeding this limit are stored in episodic memory and replaced with a recall stub.
             </div>
           </div>
 
-          <div className="form-group">
-            <label>Tools</label>
-            <div className="tool-chips">
+          <div className="mb-3">
+            <label className="block text-caption text-slate mb-1 font-medium">Tools</label>
+            <div className="flex flex-wrap gap-1 mt-1">
               {AVAILABLE_TOOLS.map(t => (
                 <span key={t.name}
-                  className={`tool-chip${selectedTools.has(t.name) ? ' selected' : ''}`}
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-caption cursor-pointer transition border ${
+                    selectedTools.has(t.name) ? 'bg-sage-teal text-white border-sage-teal' : 'bg-paper text-slate border-mist hover:border-sage-teal'
+                  }`}
                   onClick={() => toggleTool(t.name)}
                   title={t.desc}
                 >{t.name}</span>
@@ -283,18 +295,19 @@ export function AgentsPanel({ agents, providers, selectedAgent, onSelect, onRefr
             </div>
           </div>
 
-          <div className="form-group">
-            <label>Scroll Strategy</label>
-            <select value={scrollStr} onChange={e => setScrollStr(e.target.value)}>
+          <div className="mb-3">
+            <label className="block text-caption text-slate mb-1 font-medium">Scroll Strategy</label>
+            <select value={scrollStr} onChange={e => setScrollStr(e.target.value)}
+              className="w-full px-2.5 py-2 rounded-lg border border-mist bg-paper text-body-sm text-graphite outline-none focus:border-sage-teal">
               {SCROLL_OPTIONS.map((o, i) => (
                 <option key={i} value={o.value}>{o.label}</option>
               ))}
             </select>
           </div>
 
-          <div className="form-actions">
-            <button className="btn btn-outline" onClick={() => setShowForm(false)}>Cancel</button>
-            <button className="btn btn-primary" onClick={save} disabled={providers.length === 0}>Save</button>
+          <div className="flex justify-end gap-2 mt-4">
+            <button className="bg-paper border border-mist text-graphite rounded-lg px-4 py-2 font-inter text-body-sm font-medium cursor-pointer transition hover:border-sage-teal" onClick={() => setShowForm(false)}>Cancel</button>
+            <button className="bg-sage-teal text-white rounded-lg px-4 py-2 font-inter text-body-sm font-medium cursor-pointer transition hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed border-none" onClick={save} disabled={providers.length === 0}>Save</button>
           </div>
         </div>
       </div>
