@@ -5,7 +5,7 @@
 //!
 //! Run:
 //! ```bash
-//! cargo run --package praxis-examples --bin multi_agent
+//! cargo run --example multi_agent
 //! ```
 
 use smith_agent::loops::{Context, CycleType, Loop, LoopId, LoopResult, StopCondition};
@@ -69,7 +69,7 @@ fn make_ctx(input: &str) -> Context<String> {
 
 #[tokio::main]
 async fn main() {
-    println!("═══ Praxis — Multi-Agent Orchestration ═══\n");
+    println!("═══ Smith — Multi-Agent Orchestration ═══\n");
 
     // ── 1. Broadcast ────────────────────────────────────────────
     println!("--- Broadcast ---");

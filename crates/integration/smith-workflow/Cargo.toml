@@ -3,6 +3,8 @@ name = "smith-workflow"
 version = "0.1.0"
 edition = "2024"
 license = "MIT"
+description = "FlowGraph execution engine with conditional routing and error handling for the Smith agent framework"
+repository = "https://github.com/as-kurosss/smith.git"
 
 [dependencies]
 smith-core = { path = "../../core/smith-core" }

@@ -3,16 +3,16 @@
 //!
 //! Run:
 //! ```bash
-//! cargo run --package praxis-examples --bin persistent_graph
+//! cargo run --example persistent_graph
 //! ```
 
 use smith_agent::loops::{GraphSnapshot, NodeId};
 use smith_agent::persistence::{load_snapshot, save_snapshot};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("═══ Praxis — Persistent Graph ═══");
+    println!("═══ Smith — Persistent Graph ═══");
 
-    let path = std::env::temp_dir().join("praxis_graph_snapshot.json");
+    let path = std::env::temp_dir().join("smith_graph_snapshot.json");
     println!("Snapshot path: {}", path.display());
 
     // Create and save a snapshot

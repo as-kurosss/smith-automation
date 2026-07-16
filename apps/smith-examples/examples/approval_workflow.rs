@@ -3,7 +3,7 @@
 //!
 //! Run:
 //! ```bash
-//! cargo run --package praxis-examples --bin approval_workflow
+//! cargo run --example approval_workflow
 //! ```
 
 use smith_agent::loops::ApprovalGate;
@@ -12,7 +12,7 @@ use std::time::Duration;
 
 #[tokio::main]
 async fn main() {
-    println!("═══ Praxis — Approval Workflow ═══\n");
+    println!("═══ Smith — Approval Workflow ═══\n");
 
     // Create an approval gate (no inner loop — gate itself implements Loop)
     let gate = ApprovalGate::<String, String>::new();

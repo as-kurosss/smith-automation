@@ -2,7 +2,7 @@
 //!
 //! Run:
 //! ```bash
-//! cargo run --package praxis-examples --bin simple_agent
+//! cargo run --example simple_agent
 //! ```
 
 use smith_agent::agent::{Agent, AgentConfig};
@@ -12,7 +12,7 @@ use std::time::Duration;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("═══ Praxis — Simple Agent ═══");
+    println!("═══ Smith — Simple Agent ═══");
 
     // Create an LLM client from environment variables:
     //   OPENAI_API_KEY, OPENAI_API_URL, OPENAI_MODEL

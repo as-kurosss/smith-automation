@@ -2,7 +2,7 @@
 //!
 //! Run:
 //! ```bash
-//! cargo run --package praxis-examples --bin streaming
+//! cargo run --example streaming
 //! ```
 
 use smith_agent::agent::{Agent, AgentConfig, StreamChunk};
@@ -12,7 +12,7 @@ use std::time::Duration;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("═══ Praxis — Streaming ═══");
+    println!("═══ Smith — Streaming ═══");
 
     let client = OpenAiClient::from_env("gpt-4o")?;
     let agent = Agent::new(client, AgentConfig::default());

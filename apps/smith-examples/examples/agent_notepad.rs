@@ -1,7 +1,7 @@
 //! # Example 2: Q&A with AI (no agent loop)
 //!
 //! Minimal LLM call — smith-ai is for simple Q&A, not agentic tool use.
-//! For tool-calling agents, use `smith-agent` (formerly praxis).
+//! For tool-calling agents, use `smith-agent`.
 //!
 //! ## Run
 //! ```bash

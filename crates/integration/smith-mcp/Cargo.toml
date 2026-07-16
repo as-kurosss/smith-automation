@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2024"
 rust-version = "1.88"
 license = "MIT"
+description = "Model Context Protocol (MCP) integration for the Smith agent framework"
+repository = "https://github.com/as-kurosss/smith.git"
 
 [dependencies]
 smith-agent = { path = "../../agent/smith-agent" }

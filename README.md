@@ -4,25 +4,99 @@
 
 Smith provides a layered architecture for creating autonomous agents — from simple tool-calling loops to multi-agent orchestration with workflow graphs, memory, and undo support — all with first-class Windows UI Automation (UIA) integration.
 
-```rust
-use smith_core::{ExecutionContext, ToolRegistry};
-use smith_windows::ClickTool;
-
-let mut ctx = ExecutionContext::new();
-let mut registry = ToolRegistry::new();
-registry.register(ClickTool::new());
-
-let result = registry
-    .execute("windows.click", config, &mut ctx, token)
-    .await?;
-```
-
 ## Goals
 
 - Type-safe, async-first API for UI automation in Rust
 - Windows UI Automation (UIA) — primary engine
 - Cancellation, timeouts, scoped variables
 - Plugin architecture via the `Tool` trait
+
+## Quick Start
+
+### 1. Add dependencies
+
+```toml
+[dependencies]
+smith-agent = { git = "https://github.com/as-kurosss/smith.git" }
+smith-providers = { git = "https://github.com/as-kurosss/smith.git" }
+tokio = { version = "1", features = ["full"] }
+```
+
+### 2. Create an agent
+
+A minimal agent that answers questions via an LLM:
+
+```rust
+use smith_agent::agent::{Agent, AgentConfig};
+use smith_agent::loops::{Context, CycleType, Loop, LoopId, StopCondition};
+use smith_providers::OpenAiClient;
+use std::time::Duration;
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Create an LLM client from environment variables:
+    //   OPENAI_API_KEY, OPENAI_API_URL, OPENAI_MODEL
+    let client = OpenAiClient::from_env("gpt-4o")?;
+
+    // Configure the agent
+    let config = AgentConfig {
+        model: "gpt-4o".into(),
+        model_id: None,
+        system_prompt: "You are a concise assistant.".into(),
+        temperature: Some(0.5),
+        max_tokens: Some(1024),
+        scroll_strategy: None,
+        protect_active_turn: false,
+        tool_result_cap: None,
+    };
+
+    let agent = Agent::new(client, config);
+
+    // Build the execution context
+    let ctx = Context::new(
+        LoopId::new(),
+        CycleType::Turn,
+        StopCondition::new(Some(25), Some(Duration::from_secs(120))),
+        "What is the capital of France?".to_string(),
+    );
+
+    let mut state = Vec::new();
+    let result = agent.execute(ctx, &mut state).await;
+
+    match result.output {
+        Some(answer) => println!("Answer: {answer}"),
+        None => eprintln!("Agent failed: {:?}", result.status),
+    }
+
+    Ok(())
+}
+```
+
+Run it:
+
+```bash
+cargo run --example simple_agent
+```
+
+### 3. Add tools
+
+Bridge domain tools (e.g. Windows UI Automation) into the agent via `SmithToolAdapter`:
+
+```rust
+use smith_agent::tools::ToolSet;
+use smith_agent::tools::SmithToolAdapter;
+use smith_windows::ClickTool;
+
+let mut toolset = ToolSet::new();
+toolset.register(SmithToolAdapter::from(ClickTool::new()));
+agent.set_tools(toolset);
+```
+
+See `rpa_with_agent` for a complete working example:
+
+```bash
+cargo run --example rpa_with_agent
+```
 
 ## Architectural Layers
 
@@ -87,9 +161,9 @@ apps/
 | **smith-core** | `Tool` trait, `ExecutionContext` with scoped variables, `SmithError` |
 | **smith-windows** | UI Automation tools (`ClickTool`, `FindTool`, `InputTextTool`, `ProcessTool`, `SetTextTool`, `WaitTool`) |
 | **smith-rpa** | Type-safe `Node::Rpa` constructors by domain (windows) |
-| **smith-ai** | Rig-based LLM agent wrapper (`SmithAgent`) |
+| **smith-ai** | Minimal HTTP-based LLM client for Q&A, Think, and Decide operations |
 | **smith-workflow** | FlowGraph — graph execution engine with error handling and routing |
-| **smith-providers** | LLM provider adapters (Anthropic, OpenAI, etc.) |
+| **smith-providers** | LLM provider adapters (Anthropic, OpenAI, Gemini) |
 | **smith-mcp** | MCP server and protocol implementation |
 | **smith-agent** | Agent lifecycle, tool orchestration, and session management (`SmithToolAdapter`) |
 | **smith-observe** | OpenTelemetry tracing, logging, and metrics |
@@ -97,66 +171,6 @@ apps/
 | **smith-cli** | CLI entrypoint, configuration, and argument parsing |
 | **smith-examples** | Example apps covering all layers |
 | **selector-capture** | UI element selector capture utility |
-
-## Quick Start
-
-### Level 1 — Pure RPA (no AI)
-
-Run a tool directly via `ToolRegistry`:
-
-```rust
-use smith_core::{ExecutionContext, ToolRegistry};
-use smith_windows::ClickTool;
-
-let mut ctx = ExecutionContext::new();
-let mut registry = ToolRegistry::new();
-registry.register(ClickTool::new());
-
-let result = registry
-    .execute("windows.click", config, &mut ctx, token)
-    .await?;
-```
-
-### Level 2 — RPA + AI
-
-Use `smith-ai` to let an LLM decide which tool to call:
-
-```rust
-use smith_ai::SmithAgent;
-use smith_core::ToolRegistry;
-
-let mut registry = ToolRegistry::new();
-registry.register(Tool::new());
-let agent = SmithAgent::new(provider, registry);
-let response = agent.prompt("Click the login button").await?;
-```
-
-### Level 3 — Agent orchestration
-
-Bridge domain tools into the agent `ToolSet` via `SmithToolAdapter`:
-
-```rust
-use smith_agent::tools::SmithToolAdapter;
-use smith_windows::ClickTool;
-
-let adapter = SmithToolAdapter::from(ClickTool::new());
-toolset.register(adapter);
-```
-
-### Level 4 — FlowGraph
-
-Define a multi-step workflow with conditional routing:
-
-```rust
-use smith_workflow::FlowGraph;
-
-let mut graph = FlowGraph::new();
-graph.add_node("classify", Node::ai_prompt(classify_prompt));
-graph.add_node("click", Node::tool("windows.click"));
-graph.add_node("extract", Node::tool("windows.get_text"));
-graph.add_edge("classify", "click", "click");
-graph.add_edge("classify", "extract", "extract");
-```
 
 ## Examples
 

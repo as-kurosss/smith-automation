@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2024"
 rust-version = "1.88"
 license = "MIT"
+description = "OpenTelemetry tracing, logging, and metrics for Smith agents"
+repository = "https://github.com/as-kurosss/smith.git"
 
 [dependencies]
 serde = { workspace = true }
