@@ -38,4 +38,4 @@ click.execute(json!({ "element_key": "btn" }), ctx, token)
 // 2. windows.click → reads "btn" from context and clicks
 ```
 
-📎 `crates/smith-windows/src/tools/click.rs`
+📎 `crates/domain/smith-windows/src/tools/click.rs`

@@ -44,4 +44,4 @@ ctx.set("btn", ContextValue::Custom(Arc::new(SafeUIElement::new(element))));
 click.execute(json!({ "element_key": "btn" }), ctx, token)
 ```
 
-📎 `crates/smith-windows/src/tools/find.rs` | `crates/smith-windows/src/selector.rs`
+📎 `crates/domain/smith-windows/src/tools/find.rs` | `crates/domain/smith-windows/src/selector.rs`

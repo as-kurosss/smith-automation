@@ -1,0 +1,16 @@
+[package]
+name = "smith-ai"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+
+[dependencies]
+smith-core = { path = "../../core/smith-core" }
+anyhow = { workspace = true }
+serde_json = { workspace = true }
+async-trait = { workspace = true }
+tokio = { workspace = true }
+tokio-util = { workspace = true }
+serde = { workspace = true }
+tracing = { workspace = true }
+reqwest = { workspace = true }

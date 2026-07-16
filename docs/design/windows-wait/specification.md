@@ -47,4 +47,4 @@ let wait = b.add_node(Node::Rpa {
 });
 ```
 
-📎 `crates/smith-windows/src/tools/wait.rs`
+📎 `crates/domain/smith-windows/src/tools/wait.rs`

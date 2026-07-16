@@ -5,28 +5,23 @@
 ```
 smith-automation/
 ├── crates/
-│   ├── smith-core/          # Cross-platform core
-│   │   ├── src/
-│   │   │   ├── lib.rs       # Public API (flat re-exports)
-│   │   │   ├── tool.rs      # Trait Tool, ToolConfig/ToolResult types
-│   │   │   ├── context.rs   # ExecutionContext, ContextValue
-│   │   │   ├── registry.rs  # ToolRegistry
-│   │   │   └── error.rs     # SmithError, SmithResult
-│   │   └── Cargo.toml
-│   ├── smith-windows/       # Windows UI automation
-│   │   ├── src/
-│   │   │   ├── lib.rs       # Re-export under cfg(windows)
-│   │   │   ├── tools/mod.rs # Tool module
-│   │   │   ├── tools/       # Tool implementations
-│   │   │   ├── selector.rs  # ElementSelector
-│   │   │   └── element.rs   # SafeUIElement
-│   │   └── Cargo.toml
-│   └── smith-daemon/        # HTTP daemon
-│       ├── src/
-│       │   └── main.rs      # axum server for smithd
-│       └── Cargo.toml
+│   ├── core/smith-core/     # Cross-platform core
+│   ├── domain/
+│   │   ├── smith-windows/   # Windows UI automation
+│   │   ├── smith-rpa/       # Type-safe RPA node constructors
+│   │   └── smith-ai/        # Rig-based LLM agent
+│   ├── integration/
+│   │   ├── smith-workflow/  # FlowGraph execution engine
+│   │   ├── smith-providers/ # LLM provider adapters
+│   │   └── smith-mcp/       # MCP protocol integration
+│   ├── agent/smith-agent/   # Agent lifecycle & orchestration
+│   └── app/
+│       ├── smith-cli/       # CLI entrypoint
+│       ├── smith-server/    # HTTP API server
+│       └── smith-observe/   # Observability
 ├── apps/
-│   └── smith-context/       # Context gathering utility (separate)
+│   ├── smith-examples/      # Example applications
+│   └── selector-capture/    # UI selector capture utility
 ├── docs/
 │   ├── adr/                 # ADR
 │   └── templates/
@@ -151,7 +146,7 @@ The `uiautomation` library (and transitive dependencies via `windows`) are only 
 
 ### smith-daemon
 
-The HTTP server `smithd` (`crates/smith-daemon`) provides remote access to tools:
+The HTTP server `smithd` (`crates/app/smith-server`) provides remote access to tools:
 
 - Runs on Windows and registers all `smith-windows` tools.
 - Listens on a configurable host/port (`--host`, `--port`, default `127.0.0.1:8742`).
@@ -164,3 +159,7 @@ The HTTP server `smithd` (`crates/smith-daemon`) provides remote access to tools
 - For Linux: a `smith-linux` crate (X11/Wayland via AT-SPI).
 - For macOS: a `smith-macos` crate (Accessibility API).
 - Backend selection via feature flags in `smith-core` or through dynamic registry.
+
+## License
+
+Licensed under the [MIT License](LICENSE). See [LICENSE](LICENSE) for full text.

@@ -35,4 +35,4 @@ On `Err`: process is **not started** (idempotent per Canon 10.2).
 `cmd.exe` and `powershell.exe` are **excluded** — they allow arbitrary RCE via `/c` / `-Command`.
 Daemon must run on `--host 127.0.0.1` (default).
 
-📎 `crates/smith-windows/src/tools/process.rs`
+📎 `crates/domain/smith-windows/src/tools/process.rs`

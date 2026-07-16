@@ -1,9 +1,0 @@
-[package]
-name = "smith-rpa"
-version = "0.1.0"
-edition = "2024"
-
-[dependencies]
-smith-core = { path = "../smith-core" }
-smith-workflow = { path = "../smith-workflow" }
-serde_json = { workspace = true }

@@ -59,20 +59,25 @@ start at the level that fits their needs.
 
 ```text
 crates/
-├── smith-core/         # Core: Tool, ExecutionContext, SmithError
-├── smith-windows/      # Windows UI Automation tools
-├── smith-rpa/          # Type-safe Node::Rpa constructors
-├── smith-ai/           # Rig-based LLM agent
-├── smith-workflow/     # FlowGraph execution engine
-├── smith-providers/    # LLM provider adapters
-├── smith-mcp/          # MCP protocol integration
-├── smith-agent/        # Agent lifecycle and orchestration
-├── smith-observe/      # Observability (tracing, metrics)
-├── smith-server/       # HTTP server for remote control
-└── smith-cli/          # CLI entrypoint
+├── core/
+│   └── smith-core/         # Tool trait, ExecutionContext, SmithError
+├── domain/
+│   ├── smith-windows/      # Windows UI Automation tools
+│   ├── smith-rpa/          # Type-safe Node::Rpa constructors
+│   └── smith-ai/           # Rig-based LLM agent
+├── integration/
+│   ├── smith-workflow/     # FlowGraph execution engine
+│   ├── smith-providers/    # LLM provider adapters
+│   └── smith-mcp/          # MCP protocol integration
+├── agent/
+│   └── smith-agent/        # Agent lifecycle and orchestration
+└── app/
+    ├── smith-observe/      # Observability (tracing, metrics)
+    ├── smith-server/       # HTTP server for remote control
+    └── smith-cli/          # CLI entrypoint
 apps/
-├── smith-examples/     # Example applications
-└── selector-capture/   # UI selector capture utility
+├── smith-examples/         # Example applications
+└── selector-capture/       # UI selector capture utility
 ```
 
 | Crate | Description |

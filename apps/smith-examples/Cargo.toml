@@ -2,14 +2,15 @@
 name = "smith-examples"
 version = "0.1.0"
 edition = "2024"
+license = "MIT"
 
 [dependencies]
-smith-agent = { path = "../../crates/smith-agent" }
-smith-core = { path = "../../crates/smith-core" }
-smith-providers = { path = "../../crates/smith-providers" }
-smith-windows = { path = "../../crates/smith-windows" }
-smith-ai = { path = "../../crates/smith-ai" }
-smith-workflow = { path = "../../crates/smith-workflow" }
+smith-agent = { path = "../../crates/agent/smith-agent" }
+smith-core = { path = "../../crates/core/smith-core" }
+smith-providers = { path = "../../crates/integration/smith-providers" }
+smith-windows = { path = "../../crates/domain/smith-windows" }
+smith-ai = { path = "../../crates/domain/smith-ai" }
+smith-workflow = { path = "../../crates/integration/smith-workflow" }
 async-trait = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }

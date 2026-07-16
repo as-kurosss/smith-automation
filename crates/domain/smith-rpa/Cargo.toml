@@ -1,0 +1,10 @@
+[package]
+name = "smith-rpa"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+
+[dependencies]
+smith-core = { path = "../../core/smith-core" }
+smith-workflow = { path = "../../integration/smith-workflow" }
+serde_json = { workspace = true }

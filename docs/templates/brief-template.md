@@ -10,8 +10,8 @@
 **🔗 Cross-references:**
 - `docs/design/[module]/brief.md` — dependency description (if any)
 - `docs/adr/XXX-[module].md` — cross-cutting concerns, spawn_blocking (if applicable)
-- `crates/smith-core/src/` — core traits: `Tool`, `ExecutionContext`, `SmithError`
-- `crates/smith-windows/src/` — WinAPI specifics: `SafeUIElement`, `spawn_blocking`
+- `crates/core/smith-core/src/` — core traits: `Tool`, `ExecutionContext`, `SmithError`
+- `crates/domain/smith-windows/src/` — WinAPI specifics: `SafeUIElement`, `spawn_blocking`
 
 **🎯 Task:**
 [Describe task: form implementation plan, generate code, or another specific task]

@@ -3,18 +3,32 @@ resolver = "3"
 members = [
     "apps/selector-capture",
     "apps/smith-examples",
-    "crates/smith-core",
-    "crates/smith-windows",
-    "crates/smith-rpa",
-    "crates/smith-ai",
-    "crates/smith-workflow",
-    "crates/smith-agent",
-    "crates/smith-providers",
-    "crates/smith-mcp",
-    "crates/smith-observe",
-    "crates/smith-server",
-    "crates/smith-cli",
+    "crates/core/smith-core",
+    "crates/domain/smith-windows",
+    "crates/domain/smith-rpa",
+    "crates/domain/smith-ai",
+    "crates/integration/smith-workflow",
+    "crates/integration/smith-providers",
+    "crates/integration/smith-mcp",
+    "crates/agent/smith-agent",
+    "crates/app/smith-cli",
+    "crates/app/smith-server",
+    "crates/app/smith-observe",
 ]
+
+[workspace.lints.clippy]
+all = { level = "deny", priority = -1 }
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+todo = "deny"
+unimplemented = "deny"
+dbg_macro = "deny"
+print_stdout = "deny"
+print_stderr = "deny"
+await_holding_lock = "deny"
+await_holding_refcell_ref = "deny"
+mutex_atomic = "deny"
 
 [workspace.dependencies]
 thiserror = "2"

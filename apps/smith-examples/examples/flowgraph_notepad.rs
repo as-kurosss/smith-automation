@@ -43,7 +43,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // -- Create AI agent (Q&A only, no tool loop) --
     let provider = smith_ai::ProviderConfig::openai(api_key).with_model("gpt-4o-mini");
-    let ai_agent = SmithAgent::new(provider);
+    let ai_agent = SmithAgent::new(provider).expect("Failed to create AI client");
 
     // -- Build FlowGraph --
     let mut b = FlowGraph::builder("notepad_flowgraph");

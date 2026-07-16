@@ -9,42 +9,51 @@
 ```
 smith/
 ├── crates/
-│   ├── smith-core/             # Tool trait, ToolRegistry, ExecutionContext (as-is)
-│   ├── smith-rpa/              # RPA tool library by domain
-│   │   ├── src/
-│   │   │   ├── lib.rs
-│   │   │   ├── windows/        # Click, Find, InputText, SetText, Process
-│   │   │   │   ├── mod.rs
-│   │   │   │   ├── click.rs
-│   │   │   │   ├── find.rs
-│   │   │   │   ├── input_text.rs
-│   │   │   │   ├── set_text.rs
-│   │   │   │   └── process.rs
-│   │   │   ├── browser/        # (placeholder for future)
-│   │   │   │   └── mod.rs
-│   │   │   └── excel/          # (placeholder for future)
-│   │   │       └── mod.rs
-│   │   └── Cargo.toml
-│   ├── smith-ai/               # Rig-based LLM agent
-│   │   ├── src/
-│   │   │   ├── lib.rs
-│   │   │   ├── adapter.rs      # smith-core::Tool → rig::tool::Tool
-│   │   │   ├── agent.rs        # SmithAgent — wrapper over Rig Agent
-│   │   │   └── provider.rs     # Provider configuration (OpenAI, Anthropic...)
-│   │   └── Cargo.toml
-│   └── smith-workflow/         # Workflow engine with steps
-│       ├── src/
-│       │   ├── lib.rs
-│       │   ├── workflow.rs     # Workflow, Step
-│   │   ├── step.rs         # StepKind (Rpa, Agent, Think, Decide)
-│       │   ├── context.rs      # WorkflowContext — ExecutionContext + step results
-│       │   ├── executor.rs     # WorkflowExecutor
-│       │   └── error.rs        # WorkflowError
-│       └── Cargo.toml
+│   ├── core/smith-core/        # Tool trait, ToolRegistry, ExecutionContext (as-is)
+│   ├── domain/
+│   │   ├── smith-rpa/          # RPA tool library by domain
+│   │   │   ├── src/
+│   │   │   │   ├── lib.rs
+│   │   │   │   ├── windows/    # Click, Find, InputText, SetText, Process
+│   │   │   │   │   ├── mod.rs
+│   │   │   │   │   ├── click.rs
+│   │   │   │   │   ├── find.rs
+│   │   │   │   │   ├── input_text.rs
+│   │   │   │   │   ├── set_text.rs
+│   │   │   │   │   └── process.rs
+│   │   │   │   ├── browser/    # (placeholder for future)
+│   │   │   │   │   └── mod.rs
+│   │   │   │   └── excel/      # (placeholder for future)
+│   │   │   │       └── mod.rs
+│   │   │   └── Cargo.toml
+│   │   ├── smith-ai/           # Rig-based LLM agent
+│   │   │   ├── src/
+│   │   │   │   ├── lib.rs
+│   │   │   │   ├── adapter.rs  # smith-core → rig::tool::Tool
+│   │   │   │   ├── agent.rs    # SmithAgent — wrapper over Rig Agent
+│   │   │   │   └── provider.rs
+│   │   │   └── Cargo.toml
+│   │   └── (future: smith-browser, smith-excel, …)
+│   ├── integration/
+│   │   ├── smith-workflow/     # Workflow engine with steps
+│   │   │   ├── src/
+│   │   │   │   ├── lib.rs
+│   │   │   │   ├── workflow.rs # Workflow, Step
+│   │   │   │   ├── step.rs     # StepKind
+│   │   │   │   ├── context.rs  # WorkflowContext
+│   │   │   │   ├── executor.rs # WorkflowExecutor
+│   │   │   │   └── error.rs    # WorkflowError
+│   │   │   └── Cargo.toml
+│   │   ├── smith-providers/    # LLM provider adapters
+│   │   └── smith-mcp/          # MCP protocol integration
+│   ├── agent/smith-agent/      # Agent lifecycle & orchestration
+│   └── app/
+│       ├── smith-cli/          # CLI for running workflow
+│       ├── smith-server/       # HTTP API server
+│       └── smith-observe/      # Observability
 ├── apps/
 │   ├── selector-capture/       # as-is
-│   ├── smith-context/          # as-is
-│   └── smith-cli/              # (new) CLI for running workflow
+│   └── smith-examples/        # Example applications
 └── Cargo.toml                  # workspace manifest
 ```
 
@@ -305,9 +314,9 @@ n8n only triggers the workflow and does not manage RPA steps. **Not being develo
 
 ## 🗓️ Implementation plan
 
-- [ ] Create `crates/smith-rpa/` — move smith-windows as `windows` module, add `domain.rs` (DomainTool trait + DomainRegistry)
-- [ ] Create `crates/smith-ai/` — adapter `smith-core::Tool` → `rig::tool::Tool`, `SmithAgent` wrapper
-- [ ] Create `crates/smith-workflow/` — `Workflow`, `Step`, `StepKind`, `WorkflowExecutor`
+- [x] Create `crates/domain/smith-rpa/` — move smith-windows as `windows` module, add `domain.rs` (DomainTool trait + DomainRegistry)
+- [x] Create `crates/domain/smith-ai/` — adapter `smith-core::Tool` → `rig::tool::Tool`, `SmithAgent` wrapper
+- [x] Create `crates/integration/smith-workflow/` — `Workflow`, `Step`, `StepKind`, `WorkflowExecutor`
 - [ ] Implement `Agent` — combines ToolRegistry + SmithAgent, executes workflow
 - [ ] Add `Step::workflow(sub_workflow)` for composition
 - [ ] Add `on_choice` conditional routing for `Step::agent_decide`

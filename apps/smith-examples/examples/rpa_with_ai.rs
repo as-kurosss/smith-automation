@@ -124,7 +124,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         None
     };
 
-    let ai = provider.map(SmithAgent::new);
+    let ai = provider.map(|p| SmithAgent::new(p).expect("Failed to create AI client"));
 
     // -- RPA tool setup --
     let mut registry = ToolRegistry::new();

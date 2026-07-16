@@ -1,0 +1,17 @@
+[package]
+name = "smith-cli"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.88"
+license = "MIT"
+
+[dependencies]
+smith-agent = { path = "../../agent/smith-agent" }
+smith-providers = { path = "../../integration/smith-providers" }
+smith-mcp = { path = "../../integration/smith-mcp" }
+async-trait = { workspace = true }
+clap = { workspace = true }
+reqwest = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tokio = { workspace = true }

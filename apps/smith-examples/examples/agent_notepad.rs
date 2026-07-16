@@ -20,7 +20,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let provider = ProviderConfig::openai(api_key).with_model("gpt-4o-mini");
 
-    let agent = SmithAgent::new(provider);
+    let agent = SmithAgent::new(provider).expect("Failed to create AI client");
 
     let result = agent
         .prompt("What are the steps to automate Notepad on Windows using UI Automation?")
